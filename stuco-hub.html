@@ -9,7 +9,7 @@
   --rail:#F4B400; --rail-ink:#14202E; --rail-dim:rgba(20,32,46,.72); --rail-hover:rgba(20,32,46,.1);
   --info:#2650B8; --info-soft:#E3E9F8; --good:#1D7A45; --good-soft:#DFF0E5; --bad:#B3261E; --bad-soft:#F8E1DF; --warn:#8A5A00; --warn-soft:#FBEFC9;
   --paper:#FFFFFF; --paper-ink:#14202E; --paper-muted:#5E6873; --paper-line:#D5DAE0; --paper-gold:#F4B400;
-  --scrim:rgba(20,32,46,.55);
+  --scrim:rgba(20,32,46,.55); --stage:#0E141B;
   --f:"Libre Franklin","Franklin Gothic","Franklin Gothic Book","ITC Franklin Gothic","Helvetica Neue",Arial,sans-serif;
 }
 @media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
@@ -22,6 +22,7 @@
   --scrim:rgba(0,0,0,.6); color-scheme:dark}
 
 *{box-sizing:border-box}
+[hidden]{display:none!important}
 body{background:var(--ground);color:var(--ink);font-family:var(--f);font-size:16px;line-height:1.55;font-variant-numeric:tabular-nums}
 h1,h2,h3{font-family:var(--f);text-wrap:balance;margin:0;line-height:1.1}
 button,input,select,textarea{font:inherit;color:inherit}
@@ -239,6 +240,130 @@ td{padding:9px 8px;border-bottom:1px solid var(--rule);vertical-align:middle}
 .sugs select{width:auto}
 @media (max-width:860px){.prow{grid-template-columns:minmax(0,1fr);gap:10px}}
 
+/* rail: groups and the student/council switch */
+.navgroup{font-size:13px;font-weight:600;color:var(--rail-dim);padding:14px 10px 4px}
+.navgroup:first-child{padding-top:0}
+nav a.navsmall{font-size:14px;font-weight:600;white-space:normal;margin-top:10px;text-decoration:underline;text-underline-offset:3px}
+#modeBox .seg{display:flex;width:100%;border-color:var(--rail-ink)}
+#modeBox .seg button{flex:1;color:var(--rail-ink);border-color:var(--rail-ink);font-weight:600;padding:6px 8px}
+#modeBox .seg button[aria-pressed="true"]{background:var(--rail-ink);color:var(--rail)}
+.banner.preview{border-left-color:var(--info);display:flex;gap:12px;align-items:center;flex-wrap:wrap;max-width:none}
+
+/* section tabs */
+.subnav{display:flex;gap:4px 24px;flex-wrap:wrap;border-bottom:1px solid var(--rule);margin-bottom:-8px}
+.subnav a{padding:4px 0 9px;color:var(--muted);text-decoration:none;font-weight:600;font-size:17px;border-bottom:4px solid transparent;margin-bottom:-1px}
+.subnav a:hover{color:var(--ink)}
+.subnav a[aria-current="page"]{color:var(--ink);border-bottom-color:var(--rail)}
+a.title{color:var(--ink);text-decoration:none}
+a.title:hover{text-decoration:underline;text-underline-offset:3px}
+.changes{background:var(--surface);border-left:6px solid var(--bad);padding:14px 18px}
+.changes h2{font-size:19px;font-weight:800}
+.changes ul{list-style:none;margin:8px 0 0;padding:0;display:flex;flex-direction:column;gap:6px}
+.changes li{display:flex;gap:4px 12px;flex-wrap:wrap;align-items:baseline}
+.chip.dance{background:var(--rail);color:var(--rail-ink);border-color:transparent}
+.chip.trip{background:var(--good-soft);color:var(--good);border-color:transparent}
+.chip.competition{background:var(--ink);color:var(--ground);border-color:transparent}
+.fchips{display:flex;gap:6px;flex-wrap:wrap}
+.fchip{border:1.5px solid var(--rule);background:transparent;border-radius:99px;padding:4px 13px;font-size:14px;font-weight:600;color:var(--muted);cursor:pointer}
+.fchip:hover{color:var(--ink);border-color:var(--ink)}
+.fchip[aria-pressed="true"]{background:var(--ink);border-color:var(--ink);color:var(--ground)}
+.btn[aria-pressed="true"]{background:var(--rail);border-color:var(--rail);color:var(--rail-ink)}
+
+/* events */
+.evlist{display:flex;flex-direction:column;border-top:3px solid var(--rule-strong)}
+.event{display:flex;gap:20px;padding:20px 0;border-bottom:1px solid var(--rule)}
+.event h3{font-size:23px;font-weight:800;letter-spacing:-.015em}
+.event .grow{display:flex;flex-direction:column;gap:8px}
+.ev-top{display:flex;gap:8px 12px;align-items:center;flex-wrap:wrap}
+.changenote{font-weight:700;color:var(--bad)}
+.ev-more{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:18px;max-width:880px;padding:6px 0}
+.ev-more p{margin:4px 0 0;white-space:pre-wrap}
+.going{display:flex;align-items:center;gap:4px;flex-wrap:wrap;margin-top:6px}
+
+/* photo belts, after the Xander Hudson fan wall: two rows drifting opposite ways */
+.belts{--h:180px;display:grid;gap:14px;overflow:hidden}
+@media (min-width:760px){.belts{--h:230px}}
+.belt{overflow:hidden}
+.belt__track{display:flex;width:max-content;animation:belt var(--dur,60s) linear infinite}
+.belt--back .belt__track{animation-direction:reverse}
+.belt__set{display:flex;gap:14px;padding-right:14px}
+@keyframes belt{to{transform:translateX(-50%)}}
+@media (hover:hover){.belt:hover .belt__track{animation-play-state:paused}}
+.shot{flex:none;border:0;padding:0;background:var(--rule);cursor:zoom-in;border-radius:4px;overflow:hidden;height:var(--h)}
+.shot img{height:100%;width:auto;max-width:none;display:block}
+.shot:hover,.shot:focus-visible{outline:4px solid var(--rail);outline-offset:-4px}
+@media (prefers-reduced-motion:reduce){.belt{overflow-x:auto;scroll-snap-type:x proximity}.belt__track{animation:none}.belt__set[aria-hidden]{display:none}.shot{scroll-snap-align:start}}
+.albums{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:18px;margin-top:12px}
+.album-wrap{position:relative;min-width:0}
+.album{display:flex;flex-direction:column;gap:3px;border:0;background:none;padding:0;text-align:left;cursor:pointer;width:100%;color:var(--ink)}
+.album-img{aspect-ratio:4/3;background:var(--rule);border-radius:4px;overflow:hidden;display:block;width:100%;margin-bottom:6px}
+.album-img img{width:100%;height:100%;object-fit:cover;display:block}
+.album:hover .album-img,.album:focus-visible .album-img{outline:4px solid var(--rail);outline-offset:-4px}
+.album-wrap .edit{position:absolute;top:8px;right:8px;background:var(--surface)}
+
+/* stories, birthdays, playlists */
+.stories{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:20px;margin-top:14px}
+.story{background:var(--surface);border:1px solid var(--rule);border-radius:6px;overflow:hidden;display:flex;flex-direction:column;min-width:0}
+.story-img img{width:100%;aspect-ratio:16/10;object-fit:cover;display:block}
+.story.meme .story-img img{aspect-ratio:auto;object-fit:contain;max-height:440px;background:var(--stage)}
+.story-body{padding:16px 18px;display:flex;flex-direction:column;gap:8px}
+.story h3{font-size:21px;font-weight:800;letter-spacing:-.01em}
+.story p{margin:0;white-space:pre-wrap;overflow-wrap:anywhere}
+.bday{display:flex;align-items:baseline;gap:10px;padding:9px 0;border-bottom:1px solid var(--rule);flex-wrap:wrap}
+.bday b{font-size:17px}
+.playlist{display:flex;gap:12px;padding:10px 0;border-bottom:1px solid var(--rule);align-items:center}
+
+/* opportunities */
+.oppbar{display:flex;flex-direction:column;gap:12px}
+.oppbar input{border:2px solid var(--rule-strong);background:var(--surface);border-radius:3px;padding:11px 14px;font-size:18px;width:100%;max-width:640px}
+.opps{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:20px}
+.opp{background:var(--surface);border:1px solid var(--rule);border-radius:6px;padding:18px 20px;display:flex;flex-direction:column;gap:8px;min-width:0}
+.opp h3{font-size:21px;font-weight:800;letter-spacing:-.01em}
+.opp p{margin:0;max-width:65ch;overflow-wrap:anywhere}
+.opp-top{display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;align-items:center}
+
+/* polls */
+.polls{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:20px}
+.poll{background:var(--surface);border:1px solid var(--rule);border-radius:6px;padding:20px;display:flex;flex-direction:column;gap:12px;min-width:0}
+.poll h3{font-size:22px;font-weight:800;letter-spacing:-.015em}
+.opts{display:flex;flex-direction:column;gap:8px}
+.opt{position:relative;display:flex;justify-content:space-between;gap:10px;align-items:center;border:1.5px solid var(--rule);border-radius:3px;background:transparent;padding:10px 12px;cursor:pointer;text-align:left;overflow:hidden;font-weight:600}
+.opt:not(:disabled):hover{border-color:var(--ink)}
+.opt[aria-pressed="true"]{border-color:var(--ink);box-shadow:inset 5px 0 0 var(--rail)}
+.opt:disabled{cursor:default;color:var(--ink)}
+.optbar{position:absolute;inset:0 auto 0 0;background:var(--warn-soft)}
+.optlabel,.optpct{position:relative}
+.optpct{font-weight:800}
+
+/* album viewer */
+#gallery{position:fixed;inset:0;background:var(--scrim);z-index:55;overflow:auto;padding:max(16px,env(safe-area-inset-top,0px)) max(16px,env(safe-area-inset-right,0px)) max(16px,env(safe-area-inset-bottom,0px)) max(16px,env(safe-area-inset-left,0px))}
+.gal{background:var(--ground);max-width:1100px;margin:0 auto;border-top:8px solid var(--rail);padding:24px;display:flex;flex-direction:column;gap:16px;border-radius:0 0 6px 6px}
+.gal-head{display:flex;justify-content:space-between;gap:12px;align-items:flex-start}
+.gal-head h2{font-size:34px;font-weight:800;letter-spacing:-.025em}
+.gal-cap{margin:0;max-width:70ch}
+.stage{position:relative;background:var(--stage);border-radius:4px;display:grid;place-items:center;min-height:240px;overflow:hidden}
+.stage img{max-height:min(68vh,720px);max-width:100%;display:block}
+.stage-nav{position:absolute;top:50%;transform:translateY(-50%);width:48px;height:48px;border-radius:50%;border:0;background:var(--rail);color:var(--rail-ink);font-size:30px;font-weight:800;cursor:pointer;line-height:1;display:grid;place-items:center;padding-bottom:4px}
+.stage-nav.prev{left:12px}.stage-nav.next{right:12px}
+.stage-count{position:absolute;bottom:10px;right:12px;background:var(--rail);color:var(--rail-ink);font-weight:700;font-size:13px;padding:2px 8px;border-radius:3px}
+.thumbs-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(92px,1fr));gap:8px}
+.thumbs-grid button{border:0;padding:0;background:var(--rule);aspect-ratio:1;border-radius:3px;overflow:hidden;cursor:pointer}
+.thumbs-grid img{width:100%;height:100%;object-fit:cover;display:block}
+.thumbs-grid button[aria-current="true"]{outline:4px solid var(--rail);outline-offset:-4px}
+.gal-story{border-top:3px solid var(--rule-strong);padding-top:10px}
+.gal-story h3,.gal-more{font-size:20px;font-weight:800}
+.gal-story p{margin:6px 0 0;max-width:70ch;white-space:pre-wrap}
+
+/* photo upload field */
+.thumbs{display:flex;flex-wrap:wrap;gap:10px}
+.thumbs:empty{display:none}
+.thumb{position:relative}
+.thumb-img{border:0;padding:0;width:84px;height:84px;border-radius:3px;overflow:hidden;cursor:pointer;background:var(--rule);display:block;position:relative}
+.thumb-img img{width:100%;height:100%;object-fit:cover;display:block}
+.cover-tag{position:absolute;left:4px;bottom:4px;background:var(--rail);color:var(--rail-ink);font-size:11px;font-weight:700;padding:0 5px;border-radius:2px}
+.thumb-x{position:absolute;top:-7px;right:-7px;width:22px;height:22px;border-radius:50%;border:0;background:var(--ink);color:var(--ground);cursor:pointer;font-weight:700;line-height:1}
+@media (max-width:860px){.opps,.polls{grid-template-columns:minmax(0,1fr)}.event{gap:12px}.gal{padding:14px}.gal-head h2{font-size:25px}.stage-nav{width:40px;height:40px}}
+
 /* history */
 .hday{font-size:17px;font-weight:800;margin-top:14px}
 .hday:first-child{margin-top:0}
@@ -297,37 +422,42 @@ td{padding:9px 8px;border-bottom:1px solid var(--rule);vertical-align:middle}
       <div class="brand"><b>StuCo Hub</b><small>Student Council</small></div>
       <div class="me" id="meBox"><span class="avatar lg" style="background:var(--muted)">?</span><div class="grow"><div class="title">Checking sign-in…</div></div></div>
     </div>
+    <div id="modeBox" hidden></div>
     <nav id="nav" aria-label="Sections"></nav>
     <div class="status" id="status"><span class="dot"></span><span id="statusText">Connecting to council records…</span></div>
   </aside>
   <main><div class="wrap" id="main"></div></main>
 </div>
 <div id="modal" hidden></div>
+<div id="gallery" hidden></div>
 <div id="toast" hidden role="status"></div>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
 <script>
-const VIEWS=[["overview","Overview"],["bulletin","Bulletin"],["calendar","Calendar"],["tasks","Tasks"],["suggestions","Suggestions"],["proposals","Proposals"],["attendance","Attendance"],["members","Members"],["history","History"]];
-const COLS=["members","events","tasks","claims","bulletin","suggestions","proposals","meetings","history"];
+const STUDENT_NAV=[["hub","Student Hub"],["events","Events"],["life","Student Life"],["opportunities","Opportunities"],["voice","Student Voice"]];
+const COUNCIL_NAV=[["overview","Overview"],["tasks","Tasks"],["proposals","Proposals"],["attendance","Attendance"],["members","Members"],["history","History"]];
+const ROUTES={hub:"hub",calendar:"hub",bulletin:"hub",events:"events",life:"life",opportunities:"opportunities",voice:"voice",suggestions:"voice",working:"voice",overview:"overview",tasks:"tasks",proposals:"proposals",attendance:"attendance",members:"members",history:"history"};
+const STUDENT_ROUTES=["hub","calendar","bulletin","events","life","opportunities","voice","suggestions","working"];
+const COLS=["members","events","tasks","claims","bulletin","suggestions","albums","stories","opps","polls","votes","signups","birthdays","playlists","proposals","meetings","history"];
 const COUNCIL_ONLY=["proposals","meetings","history"];
 const SCHOOL="Avenues The World School";
-const SUG_CATS=["Events","Spirit","Facilities","Food","Clubs","School policy","Other"];
+const SUG_CATS=["Events","Spirit","Vending machine","Facilities","Food","Clubs","School policy","Report a problem","Other"];
 const SUG_STATUS=[["new","New"],["review","Under review"],["planned","Planned"],["done","Done"],["declined","Not this time"]];
-const S={members:[],events:[],tasks:[],claims:[],bulletin:[],suggestions:[],proposals:[],meetings:[],history:[]};
+const S={members:[],events:[],tasks:[],claims:[],bulletin:[],suggestions:[],albums:[],stories:[],opps:[],polls:[],votes:[],signups:[],birthdays:[],playlists:[],proposals:[],meetings:[],history:[]};
 let CFG={approved:{},roles:{},school:"",president:null}, cfgExists=false, ADMIN={emails:[]}, adminExists=false;
-const EV_TYPES=[["meeting","Meeting"],["event","School event"],["deadline","Deadline"],["fundraiser","Fundraiser"]];
+const EV_TYPES=[["meeting","StuCo meeting"],["event","School event"],["dance","Dance"],["trip","Trip"],["competition","Competition or tournament"],["fundraiser","Fundraiser"],["deadline","Deadline"]];
 const TASK_STATUS=[["todo","To do"],["doing","In progress"],["done","Done"]];
 const PRI=[["high","High"],["normal","Normal"],["low","Low"]];
-const POST_TAGS=[["Announcement","Announcement"],["Event","Event"],["Reminder","Reminder"],["Opportunity","Opportunity"],["Spirit","Spirit"]];
+const POST_TAGS=[["Announcement","Announcement"],["Event","Event"],["Reminder","Reminder"],["Opportunity","Opportunity"],["Spirit","Spirit"],["Schedule change","Schedule change"]];
 const P_STAGES=[["draft","Draft"],["moved","Moved"],["seconded","Seconded"],["voting","Vote open"],["passed","Passed"],["failed","Failed"]];
 const ROLES=["President","Vice President","Secretary","Treasurer","Historian","Class Representative","Committee Chair","Member","Advisor"];
 const COMMITTEES=["Events","Spirit","Fundraising","Communications","Service"];
 const ATT=[["present","Present"],["late","Late"],["excused","Excused"],["absent","Absent"]];
 const VOTES=[["aye","Aye"],["nay","Nay"],["abstain","Abstain"]];
 const PALETTE=["#2446C7","#B4442F","#1C8250","#8A4FBF","#9A6500","#0F7C8C","#C2407A","#5A6B2E"];
-const KINDS=[["all","Everything"],["task","Tasks"],["proposal","Proposals"],["event","Calendar"],["post","Bulletin"],["meeting","Attendance"],["member","Members"],["suggestion","Suggestions"]];
-const KIND_NOUN={task:"task",proposal:"proposal",event:"event",post:"bulletin post",meeting:"meeting",member:"member",settings:"settings",suggestion:"suggestion"};
+const KINDS=[["all","Everything"],["task","Tasks"],["proposal","Proposals"],["event","Calendar"],["post","Bulletin"],["meeting","Attendance"],["member","Members"],["suggestion","Suggestions"],["album","Photos"],["story","Stories"],["opportunity","Opportunities"],["poll","Polls"]];
+const KIND_NOUN={task:"task",proposal:"proposal",event:"event",post:"bulletin post",meeting:"meeting",member:"member",settings:"settings",suggestion:"suggestion",album:"photo album",story:"story",opportunity:"opportunity",poll:"poll"};
 const HINT={
   summary:"One or two sentences: what you want the council to approve.",
   background:"What problem does this solve? Who asked for it? Include any facts, such as survey results or how many students it affects.",
@@ -370,13 +500,13 @@ function roster(){const r=S.members.filter(isApproved).map(full);return r.sort((
 const myDoc=()=>me.id?S.members.find(m=>m.id===me.id):null;
 const amMember=()=>isPres||isApproved(myDoc());
 const W=()=>canWrite&&!!db;
-const council=()=>isPres||(amMember()&&isEditor);
+let preview=false;try{preview=localStorage.getItem("stuco-view")==="student"}catch(e){}
+const canCouncil=()=>isPres||(amMember()&&isEditor);
+const council=()=>canCouncil()&&!preview;
 const canAct=()=>W()&&council();
 const canJoin=()=>W()&&!!me.id;
-const PUBLIC_VIEWS=["bulletin","calendar","tasks","suggestions"];
-const allowed=v=>council()||PUBLIC_VIEWS.includes(v)||(v==="members"&&canJoin());
-const shownView=()=>allowed(view)?view:(council()?"overview":"bulletin");
-const navViews=()=>VIEWS.filter(([k])=>allowed(k));
+const allowed=v=>!!ROUTES[v]&&(council()||STUDENT_ROUTES.includes(v)||(v==="members"&&canJoin()));
+const shownView=()=>view&&allowed(view)?view:(council()?"overview":"hub");
 const safeUrl=u=>/^https:\/\/[^\s"'<>]+$/i.test(u||"")?u:"";
 function nameOf(id){if(!id)return"";const m=S.members.find(x=>x.id===id);if(m&&m.name)return m.name;if(PROF[id]&&PROF[id].name)return PROF[id].name;if(id===me.id)return me.name||"You";return"Someone"}
 function resolveIds(ids){if(!U)return;const need=[...new Set(ids)].filter(i=>i&&!asked.has(i));if(!need.length)return;need.forEach(i=>asked.add(i));U.profiles(need).then(ps=>{Object.assign(PROF,ps);render()}).catch(()=>{})}
@@ -410,9 +540,9 @@ const col=c=>db.collection(c);
 function cfgSet(mut){if(!loaded.has("config"))return Promise.reject({code:"unavailable"});const next=JSON.parse(JSON.stringify({approved:{},roles:{},...CFG}));mut(next);return db.doc("config/access").set(next)}
 
 /* ---------- routing ---------- */
-function current(){const h=location.hash.slice(1);return VIEWS.some(v=>v[0]===h)?h:null}
-let view=current()||"overview";
-addEventListener("hashchange",()=>{view=current()||"overview";if(view!=="proposals")editing=null;render();window.scrollTo(0,0)});
+function current(){const h=location.hash.slice(1);return ROUTES[h]?h:null}
+let view=current();
+addEventListener("hashchange",()=>{view=current();if(view!=="proposals")editing=null;render();window.scrollTo(0,0)});
 
 function setStatus(s){
   dbState=s;const el=$("#status"),t=$("#statusText");el.className="status";
@@ -423,9 +553,14 @@ function setStatus(s){
 
 /* ---------- render ---------- */
 function renderNav(){
-  const counts={tasks:S.tasks.filter(t=>taskState(t).status!=="done").length,proposals:S.proposals.filter(p=>p.status==="voting").length,members:isPres?S.members.filter(d=>!isApproved(d)).length:0};
-  const cur=shownView();counts.suggestions=council()?allSuggestions().filter(x=>x.status==="new").length:0;
-  $("#nav").innerHTML=navViews().map(([k,l])=>`<a href="#${k}" ${k===cur?'aria-current="page"':""}>${l}${counts[k]?`<span class="count">${counts[k]}</span>`:""}</a>`).join("");
+  const counts={tasks:S.tasks.filter(t=>taskState(t).status!=="done").length,proposals:S.proposals.filter(p=>p.status==="voting").length,members:isPres?S.members.filter(d=>!isApproved(d)).length:0,voice:council()?allSuggestions().filter(x=>x.status==="new").length:0};
+  const sec=ROUTES[shownView()];
+  const link=([k,l])=>`<a href="#${k}" ${k===sec?'aria-current="page"':""}>${l}${counts[k]?`<span class="count">${counts[k]}</span>`:""}</a>`;
+  let h=council()?`<div class="navgroup">School site</div>${STUDENT_NAV.map(link).join("")}<div class="navgroup">Council</div>${COUNCIL_NAV.map(link).join("")}`:STUDENT_NAV.map(link).join("");
+  if(!canCouncil()&&canJoin())h+=`<a class="navsmall" href="#members">On Student Council? Set up your profile</a>`;
+  $("#nav").innerHTML=h;
+  const mb=$("#modeBox");mb.hidden=!canCouncil();
+  mb.innerHTML=canCouncil()?`<div class="seg" role="group" aria-label="Which side of the site to show"><button data-act="mode" data-to="student" aria-pressed="${preview}">Student view</button><button data-act="mode" data-to="council" aria-pressed="${!preview}">Council view</button></div>`:"";
 }
 function renderMe(){
   const b=$("#meBox");
@@ -442,7 +577,11 @@ function render(){
   else if(db&&dbState!=="connecting"&&me.id&&!council()){const d=myDoc();
     if(d&&!isApproved(d))banner=`<div class="banner">Your council profile is waiting for the president's approval.</div>`;
     else if(d&&isApproved(d)&&!isEditor)banner=`<div class="banner">You're an approved council member. Ask the president to give you Editor access to this page so you can make changes.</div>`;}
-  $("#main").innerHTML=banner+({overview,calendar,tasks,bulletin,suggestions,proposals,attendance,members,history:historyView}[shownView()])();
+  if(preview&&canCouncil())banner=`<div class="banner preview"><span>You're seeing the site the way students see it.</span><button class="btn sm" data-act="mode" data-to="council">Back to council view</button></div>`+banner;
+  const VIEWFN={hub:hubView,calendar:hubView,bulletin:hubView,events:eventsView,life:lifeView,opportunities:oppsView,voice:voiceView,suggestions:voiceView,working:voiceView,overview,tasks:()=>tasks(),proposals,attendance,members,history:historyView};
+  const ae=document.activeElement,keep=ae&&ae.id&&$("#main").contains(ae)?{id:ae.id,val:ae.value,sel:ae.selectionStart!=null?[ae.selectionStart,ae.selectionEnd]:null}:null;
+  $("#main").innerHTML=banner+VIEWFN[shownView()]();
+  if(keep){const n=document.getElementById(keep.id);if(n){if(keep.val!=null&&"value"in n&&n.type!=="file"&&n.tagName!=="SELECT")n.value=keep.val;n.focus({preventScroll:true});if(keep.sel&&n.setSelectionRange)try{n.setSelectionRange(...keep.sel)}catch(e){}}}
 }
 function head(context,title,actions=""){return`<div class="head"><div><h1>${title}</h1>${context?`<p class="context">${context}</p>`:""}</div><div class="toolbar">${actions}</div></div>`}
 const addBtn=(act,txt,ok=canAct())=>ok?`<button class="btn primary" data-act="${act}">+ ${txt}</button>`:"";
@@ -492,7 +631,7 @@ function overview(){
     </section>
   </div>`;
 }
-function evRow(e){return`<li>${datebox(e.date)}<div class="grow"><div class="title">${esc(e.title)}</div><div class="sub">${[fmtTime(e.time),e.location].filter(Boolean).map(esc).join(", ")||"&nbsp;"}</div></div><span class="chip ${esc(e.type)}">${label(EV_TYPES,e.type)}</span>${canAct()?`<button class="ib" data-act="edit-event" data-id="${e.id}" aria-label="Edit ${esc(e.title)}">✎</button>`:""}</li>`}
+function evRow(e){return`<li>${datebox(e.date)}<div class="grow"><div class="title">${esc(e.title)}</div><div class="sub">${[fmtTime(e.time),e.location].filter(Boolean).map(esc).join(", ")||"&nbsp;"}</div>${e.change?`<div class="changenote">Changed: ${esc(e.change)}</div>`:""}${e.signup&&e.signup!=="none"&&e.date>=TODAY?`<a class="sub" href="#events">${esc(label(SIGNUP_KINDS,e.signup))} on the Events page</a>`:""}</div><span class="chip ${esc(e.type)}">${label(EV_TYPES,e.type)}</span>${canAct()?`<button class="ib" data-act="edit-event" data-id="${e.id}" aria-label="Edit ${esc(e.title)}">✎</button>`:""}</li>`}
 function dueText(t,st){if(!t.due)return"No due date";const late=st.status!=="done"&&t.due<TODAY;return`<span class="${late?"overdue":""}">${late?"Overdue since ":"Due "}${esc(short(t.due))}</span>`}
 function statusChip(t,st){if(st.open)return`<span class="chip good">Open to accept</span>`;if(!st.accepted&&st.status==="todo")return`<span class="chip gold">Awaiting acceptance</span>`;if(st.status==="todo")return`<span class="chip accent">Accepted</span>`;return`<span class="chip">${label(TASK_STATUS,st.status)}</span>`}
 
@@ -505,7 +644,7 @@ function calendar(){
   const dues=S.tasks.filter(t=>t.due&&taskState(t).status!=="done");
   const monthKey=iso(m).slice(0,7);
   const monthEvents=evs.filter(e=>(e.date||"").startsWith(monthKey));
-  return head("Meetings, school events, deadlines and fundraisers. Task due dates show up here too.","Calendar",addBtn("add-event","Add event"))+
+  return head("Meetings, school events, dances, trips, competitions and deadlines.","Calendar",addBtn("add-event","Add event"))+
   `<div class="calbar"><button class="btn sm" data-act="cal-prev" aria-label="Previous month">←</button><h2>${m.toLocaleDateString(undefined,{month:"long",year:"numeric"})}</h2><button class="btn sm" data-act="cal-next" aria-label="Next month">→</button><button class="btn sm ghost" data-act="cal-today">Today</button><span class="sp"></span><div class="legend">${EV_TYPES.map(([k,l])=>`<span class="chip ${k}">${l}</span>`).join("")}</div></div>
   <div class="calscroll"><div class="cal">${["Sun","Mon","Tue","Wed","Thu","Fri","Sat"].map(d=>`<div class="dow">${d}</div>`).join("")}
   ${rows.map(d=>{const k=iso(d),de=evs.filter(e=>e.date===k),dt=dues.filter(t=>t.due===k);
@@ -517,8 +656,8 @@ function calendar(){
 /* tasks */
 function taskToggle(){return council()?`<div class="seg toggle" role="group" aria-label="Task layout"><button data-act="task-mode" data-to="people" aria-pressed="${taskLayout()==="people"}">By person</button><button data-act="task-mode" data-to="board" aria-pressed="${taskLayout()==="board"}">Board</button></div>`:""}
 const taskLayout=()=>council()?(taskMode||"board"):"people";
-function tasks(){
-  if(taskLayout()==="board")return taskBoard().replace('<div class="toolbar">','<div class="toolbar">'+taskToggle());
+function tasks(force){
+  if(!force&&taskLayout()==="board")return taskBoard().replace('<div class="toolbar">','<div class="toolbar">'+taskToggle());
   const all=S.tasks.map(t=>({t,st:taskState(t)}));
   const groups=new Map();
   for(const x of all){if(x.st.status==="done"&&x.t.due&&x.t.due<iso(addDays(new Date(),-14)))continue;const k=x.st.open?"_open":(x.st.owner||"_open");if(!groups.has(k))groups.set(k,[]);groups.get(k).push(x)}
@@ -528,7 +667,7 @@ function tasks(){
   const stateOf=st=>st.status==="doing"?["doing","Working on it"]:st.status==="done"?["done","Done"]:st.open?["todo","Open"]:!st.accepted?["wait","Assigned, not accepted yet"]:["todo","Up next"];
   const li=x=>{const[c,l]=stateOf(x.st);return`<li class="${x.st.status}"><span class="title">${esc(x.t.title)}</span><span class="state ${c}">${l}</span><span class="sub parts">${x.t.due?`<span>${dueText(x.t,x.st)}</span>`:""}${x.t.committee?`<span>${esc(x.t.committee)}</span>`:""}</span></li>`};
   const sortItems=a=>a.sort((p,q)=>rank[p.st.status]-rank[q.st.status]||(p.t.due||"9999").localeCompare(q.t.due||"9999"));
-  return head(`What everyone on Student Council is working on right now. ${active} task${active===1?"":"s"} in progress across ${people2} ${people2===1?"person":"people"}.`,"Who's working on what",taskToggle()+(isPres&&W()?`<button class="btn primary" data-act="add-task">+ Assign task</button>`:""))+
+  return head(`What everyone on Student Council is working on right now. ${active} task${active===1?"":"s"} in progress across ${people2} ${people2===1?"person":"people"}.`,"Who's working on what",(force?"":taskToggle())+(!force&&isPres&&W()?`<button class="btn primary" data-act="add-task">+ Assign task</button>`:""))+
   (people.length||groups.has("_open")?`<div>${people.map(id=>{const m=member(id);return`<section class="prow"><div class="person-id">${avatar(id,"lg")}<div class="grow"><div class="title">${esc(nameOf(id))}</div><div class="sub">${esc(m?m.role:"")}</div></div></div><ul class="ptasks">${sortItems(groups.get(id)).map(li).join("")}</ul></section>`}).join("")}${groups.has("_open")?`<section class="prow"><div class="person-id"><div class="grow"><div class="title">Not picked up yet</div><div class="sub">Any council member can accept these</div></div></div><ul class="ptasks">${sortItems(groups.get("_open")).map(li).join("")}</ul></section>`:""}</div>`
   :empty("No tasks yet",isPres?"Assign a task and it shows up here under the person doing it.":"When Student Council takes on work, you'll see who is doing what here.","add-task","Assign the first task",isPres&&W()));
 }
@@ -563,38 +702,225 @@ function taskCard(t,st,i){
 
 /* bulletin */
 function sortedPosts(){return[...S.bulletin].sort((a,b)=>(b.pinned?1:0)-(a.pinned?1:0)||(b.date||"").localeCompare(a.date||""))}
-function bulletin(){
-  const posts=sortedPosts();
-  return head("News for the whole school. Everyone who opens the hub can read it.","Bulletin",addBtn("add-post","New post"))+
-
-  (posts.length?`<div class="posts">${posts.map(p=>`<article class="post ${p.pinned?"pinned":""}"><div class="meta"><span class="chip ${({Event:"gold",Opportunity:"good",Reminder:"bad",Spirit:"accent"})[p.tag]||""}">${esc(p.tag||"Announcement")}</span><span>${esc(longd(p.date))}</span>${p.pinned?`<span class="chip gold">Pinned</span>`:""}</div><h3>${esc(p.title)}</h3><p>${esc(p.body)}</p><div class="meta">${p.author?`Posted by ${who(p.author,"")}`:"Posted by Student Council"}<span class="sp"></span>${canAct()?`<button class="btn sm ghost" data-act="edit-post" data-id="${p.id}">Edit</button>`:""}</div></article>`).join("")}</div>`
-  :empty("The bulletin is empty","Post announcements, spirit week themes, club fair dates and anything else the school should know.","add-post","Write the first post"));
-}
 
 /* ---------- suggestions ---------- */
 function allSuggestions(){const out=[];for(const d of S.suggestions)for(const[k,v]of Object.entries(d.items||{}))if(v&&v.title)out.push({...v,key:k,uid:d.id});return out.sort((a,b)=>(b.at||"").localeCompare(a.at||""))}
 function suggestions(){
   const all=allSuggestions(),formUrl=safeUrl(CFG.formUrl),can=canJoin();
-  let out=head(`Ideas for Student Council from anyone at ${SCHOOL}. Council reads every one and replies here.`,"Suggestion box",can?`<button class="btn primary" data-act="add-suggestion">+ Make a suggestion</button>`:"");
+  let out=head(`Ideas, vending machine requests and problems around school. Council reads every one and replies here.`,"Suggestions and reports",can?`<button class="btn" data-act="add-suggestion" data-cat="Report a problem">Report a problem</button><button class="btn" data-act="add-suggestion" data-cat="Vending machine">Request a vending item</button><button class="btn primary" data-act="add-suggestion">+ Make a suggestion</button>`:"");
   if(!can)out+=`<div class="banner">${formUrl?`Send your idea using the <a href="${esc(formUrl)}" target="_blank" rel="noopener">Student Council suggestion form</a>.`:`To send a suggestion, you need contributor access to this page. Ask any Student Council member.`}</div>`;
   else if(formUrl&&!council())out+=`<p class="sub" style="margin:0">You can also use the <a href="${esc(formUrl)}" target="_blank" rel="noopener">Student Council suggestion form</a>.</p>`;
   if(council()){
     resolveIds(all.map(x=>x.uid));
     const list=sugFilter==="all"?all:sugFilter==="open"?all.filter(x=>x.status==="new"||x.status==="review"):all.filter(x=>x.status===sugFilter);
     out+=`<div class="toolbar"><label for="sugFilter" class="sub">Show</label><select id="sugFilter">${[["open","New and under review"],["all","All suggestions"],...SUG_STATUS].map(([v,l])=>`<option value="${v}" ${v===sugFilter?"selected":""}>${l}</option>`).join("")}</select><span class="sub">${all.filter(x=>x.status==="new").length} new</span></div>`;
-    out+=list.length?`<ul class="sugs">${list.map(x=>`<li><div class="sug-head"><span class="title">${esc(x.title)}</span><span class="sub parts"><span>${esc(x.category||"Other")}</span><span>${esc(longd((x.at||"").slice(0,10)))}</span></span></div>${x.details?`<p>${esc(x.details)}</p>`:""}<div class="toolbar">${who(x.uid,"Someone")}<span class="sp"></span><label class="sub" for="st-${x.key}">Status</label><select id="st-${x.key}" data-sug="${esc(x.uid)}" data-key="${esc(x.key)}" ${canAct()?"":"disabled"}>${SUG_STATUS.map(([v,l])=>`<option value="${v}" ${v===(x.status||"new")?"selected":""}>${l}</option>`).join("")}</select></div>${x.reply?`<div class="reply"><b>Council reply:</b> ${esc(x.reply)}</div>`:""}${canAct()?`<div class="reply-form"><input id="rp-${x.key}" aria-label="Reply to this suggestion" placeholder="${x.reply?"Update the reply":"Write a reply the sender will see"}"><button class="btn sm" data-act="sug-reply" data-uid="${esc(x.uid)}" data-key="${esc(x.key)}">Send reply</button></div>`:""}</li>`).join("")}</ul>`:empty(sugFilter==="open"?"Nothing waiting":"No suggestions here",sugFilter==="open"?"Every suggestion has been looked at. Switch to All suggestions to see past ones.":"Suggestions people send show up here.");
+    out+=list.length?`<ul class="sugs">${list.map(x=>`<li><div class="sug-head"><span class="title">${esc(x.title)}</span><span class="sub parts"><span>${esc(x.category||"Other")}</span><span>${esc(longd((x.at||"").slice(0,10)))}</span></span></div>${x.details?`<p>${esc(x.details)}</p>`:""}${x.where?`<div class="sub">Where: ${esc(x.where)}</div>`:""}<div class="toolbar">${who(x.uid,"Someone")}<span class="sp"></span><label class="sub" for="st-${x.key}">Status</label><select id="st-${x.key}" data-sug="${esc(x.uid)}" data-key="${esc(x.key)}" ${canAct()?"":"disabled"}>${SUG_STATUS.map(([v,l])=>`<option value="${v}" ${v===(x.status||"new")?"selected":""}>${l}</option>`).join("")}</select></div>${x.reply?`<div class="reply"><b>Council reply:</b> ${esc(x.reply)}</div>`:""}${canAct()?`<div class="reply-form"><input id="rp-${x.key}" aria-label="Reply to this suggestion" placeholder="${x.reply?"Update the reply":"Write a reply the sender will see"}"><button class="btn sm" data-act="sug-reply" data-uid="${esc(x.uid)}" data-key="${esc(x.key)}">Send reply</button></div>`:""}</li>`).join("")}</ul>`:empty(sugFilter==="open"?"Nothing waiting":"No suggestions here",sugFilter==="open"?"Every suggestion has been looked at. Switch to All suggestions to see past ones.":"Suggestions people send show up here.");
   }else if(can){
-    out+=`<section class="panel"><h2>Your suggestions</h2>${all.length?`<ul class="sugs" style="border-top:0">${all.map(x=>`<li><div class="sug-head"><span class="title">${esc(x.title)}</span><span class="state ${x.status==="done"||x.status==="planned"?"done":x.status==="declined"?"wait":"todo"}">${label(SUG_STATUS,x.status||"new")}</span></div>${x.details?`<p>${esc(x.details)}</p>`:""}${x.reply?`<div class="reply"><b>Council reply:</b> ${esc(x.reply)}</div>`:`<span class="sub">Sent ${esc(longd((x.at||"").slice(0,10)))}. No reply yet.</span>`}</li>`).join("")}</ul>`:`<p class="sub" style="margin:10px 0 0">You haven't sent any suggestions yet. Your name is attached so council can follow up with you.</p>`}</section>`;
+    out+=`<section class="panel"><h2>Your suggestions</h2>${all.length?`<ul class="sugs" style="border-top:0">${all.map(x=>`<li><div class="sug-head"><span class="title">${esc(x.title)}</span><span class="state ${x.status==="done"||x.status==="planned"?"done":x.status==="declined"?"wait":"todo"}">${label(SUG_STATUS,x.status||"new")}</span></div>${x.details?`<p>${esc(x.details)}</p>`:""}${x.where?`<div class="sub">Where: ${esc(x.where)}</div>`:""}${x.reply?`<div class="reply"><b>Council reply:</b> ${esc(x.reply)}</div>`:`<span class="sub">Sent ${esc(longd((x.at||"").slice(0,10)))}. No reply yet.</span>`}</li>`).join("")}</ul>`:`<p class="sub" style="margin:10px 0 0">You haven't sent any suggestions yet. Your name is attached so council can follow up with you.</p>`}</section>`;
   }
   return out;
 }
-function suggestionForm(){
-  openForm({title:"Make a suggestion",submitLabel:"Send suggestion",note:"Student Council will see your name with this suggestion so they can follow up.",
-    fields:[{id:"title",label:"Your idea in one line",required:true,full:true},{id:"category",label:"Topic",type:"select",options:SUG_CATS.map(c=>[c,c])},{id:"details",label:"Details",type:"textarea",placeholder:"What should change, and why? Who would it help?"}],
-    values:{category:"Events"},
+function suggestionForm(cat){
+  const prob=cat==="Report a problem",vend=cat==="Vending machine";
+  openForm({title:prob?"Report a problem":vend?"Request a vending machine item":"Make a suggestion",submitLabel:prob?"Send report":"Send suggestion",note:"Student Council will see your name with this so they can follow up.",
+    fields:[{id:"title",label:prob?"What's wrong?":vend?"What should the vending machine stock?":"Your idea in one line",required:true,full:true},{id:"category",label:"Topic",type:"select",options:SUG_CATS.map(c=>[c,c])},...(prob?[{id:"where",label:"Where is it?"}]:[]),{id:"details",label:"Details",type:"textarea",placeholder:prob?"What happened, and since when?":vend?"Brand, flavor, why people would buy it":"What should change, and why? Who would it help?"}],
+    values:{category:cat||"Events"},
     submit:vals=>{const key=Date.now().toString(36)+Math.random().toString(36).slice(2,6),item={...vals,status:"new",at:new Date().toISOString()},ref=db.doc("suggestions/"+me.id);
-      return save(()=>S.suggestions.some(d=>d.id===me.id)?ref.update({items:{[key]:item}}):ref.set({items:{[key]:item}}),"Suggestion sent. Thank you!")}});
+      return save(()=>S.suggestions.some(d=>d.id===me.id)?ref.update({items:{[key]:item}}):ref.set({items:{[key]:item}}),prob?"Report sent. Thank you!":"Suggestion sent. Thank you!")}});
 }
+
+/* ---------- student side ---------- */
+function subnav(items){const cur=shownView();return`<div class="subnav" role="navigation" aria-label="In this section">${items.map(([k,l])=>`<a href="#${k}" ${k===cur?'aria-current="page"':""}>${l}</a>`).join("")}</div>`}
+function dueIn(d){const n=Math.round((parse(d)-parse(TODAY))/864e5);return n<=0?"Today":n===1?"Tomorrow":`In ${n} days`}
+function weekStart(s){const d=parse(s)||parse(TODAY);return iso(addDays(d,-((d.getDay()+6)%7)))}
+const blob=id=>"/_blob/"+encodeURIComponent(id);
+
+/* Student Hub */
+function hubView(){const cur=shownView();return subnav([["hub","This week"],["calendar","Calendar"],["bulletin","Weekly bulletin"]])+(cur==="calendar"?calendar():cur==="bulletin"?bulletin():weekView())}
+function weekView(){
+  const in14=iso(addDays(new Date(),14)),in30=iso(addDays(new Date(),30)),ago7=iso(addDays(new Date(),-7));
+  const changes=[...S.events.filter(e=>e.change&&e.date>=TODAY&&e.date<=in30).map(e=>({title:e.title,text:e.change,date:e.date})),...S.bulletin.filter(p=>p.tag==="Schedule change"&&(p.date||"")>=ago7).map(p=>({title:p.title,text:p.body,date:p.date}))];
+  const upcoming=S.events.filter(e=>e.date>=TODAY&&e.date<=in14).sort(byDate);
+  const deadlines=[...S.events.filter(e=>e.type==="deadline"&&e.date>=TODAY&&e.date<=in14).map(e=>({title:e.title,date:e.date,href:"#calendar"})),
+    ...S.events.filter(e=>e.signup&&e.signup!=="none"&&e.closes&&e.closes>=TODAY&&e.closes<=in14).map(e=>({title:`${label(SIGNUP_KINDS,e.signup)} for ${e.title}`,date:e.closes,href:"#events"})),
+    ...S.opps.filter(o=>o.deadline&&o.deadline>=TODAY&&o.deadline<=in14).map(o=>({title:`Apply: ${o.title}`,date:o.deadline,href:"#opportunities"}))].sort((a,b)=>a.date.localeCompare(b.date));
+  const posts=sortedPosts().slice(0,4);
+  return head(`What's happening at ${SCHOOL} over the next two weeks.`,"This week",canAct()?`<button class="btn" data-act="add-post">+ Post announcement</button><button class="btn primary" data-act="add-event">+ Add event</button>`:"")+
+  (changes.length?`<section class="changes"><h2>Changes to know about</h2><ul>${changes.map(c=>`<li><b>${esc(c.title)}</b><span>${esc(c.text)}</span><span class="sub">${esc(longd(c.date))}</span></li>`).join("")}</ul></section>`:"")+
+  `<div class="grid2"><section class="panel"><h2>Coming up <a href="#calendar">Full calendar</a></h2>${upcoming.length?`<ul class="list">${upcoming.slice(0,8).map(evRow).join("")}</ul>`:`<p class="sub" style="margin:10px 0 0">Nothing scheduled in the next two weeks.</p>`}</section>
+  <section class="panel"><h2>Deadlines and reminders</h2>${deadlines.length?`<ul class="list">${deadlines.map(d=>`<li>${datebox(d.date)}<div class="grow"><a class="title" href="${d.href}">${esc(d.title)}</a><div class="sub">${dueIn(d.date)}</div></div></li>`).join("")}</ul>`:`<p class="sub" style="margin:10px 0 0">No deadlines in the next two weeks.</p>`}</section></div>`+
+  `<section class="panel"><h2>Announcements <a href="#bulletin">Weekly bulletin</a></h2>${posts.length?`<div class="posts" style="margin-top:12px">${posts.map(postCard).join("")}</div>`:`<p class="sub" style="margin:10px 0 0">No announcements yet.</p>`}</section>`+
+  (allPhotos().length?`<section class="panel"><h2>Around Avenues <a href="#life">Student Life</a></h2><div style="margin-top:12px">${beltsHTML(1)}</div></section>`:"");
+}
+function postCard(p){return`<article class="post ${p.pinned?"pinned":""}"><div class="meta"><span class="chip ${({Event:"gold",Opportunity:"good",Reminder:"bad","Schedule change":"bad",Spirit:"accent"})[p.tag]||""}">${esc(p.tag||"Announcement")}</span><span>${esc(longd(p.date))}</span>${p.pinned?`<span class="chip gold">Pinned</span>`:""}</div><h3>${esc(p.title)}</h3><p>${esc(p.body)}</p><div class="meta">${p.author?`Posted by ${who(p.author,"")}`:"Posted by Student Council"}<span class="sp"></span>${canAct()?`<button class="btn sm ghost" data-act="edit-post" data-id="${p.id}">Edit</button>`:""}</div></article>`}
+function bulletin(){
+  const posts=sortedPosts(),pinned=posts.filter(p=>p.pinned),groups=[];
+  for(const p of posts.filter(p=>!p.pinned)){const k=weekStart(p.date);let g=groups.find(x=>x.k===k);if(!g)groups.push(g={k,items:[]});g.items.push(p)}
+  return head("Announcements for the whole school, collected week by week.","Weekly bulletin",addBtn("add-post","New post"))+
+  (posts.length?(pinned.length?`<div class="posts">${pinned.map(postCard).join("")}</div>`:"")+groups.map(g=>`<section class="panel"><h2>${g.k===weekStart(TODAY)?"This week":"Week of "+esc(fmt(g.k,{month:"long",day:"numeric"}))}</h2><div class="posts" style="margin-top:12px">${g.items.map(postCard).join("")}</div></section>`).join("")
+  :empty("The bulletin is empty","Post announcements, schedule changes, spirit week themes and anything else the school should know.","add-post","Write the first post"));
+}
+
+/* Events and sign-ups */
+const SIGNUP_KINDS=[["none","No sign-up"],["rsvp","RSVP"],["signup","Sign up"],["register","Register"],["tickets","Reserve a ticket"]];
+let openEvent=null,evFilter="all";
+function signupsFor(eid){const out=[];for(const d of S.signups){const x=(d.events||{})[eid];if(x)out.push({uid:d.id,...x})}return out.sort((a,b)=>(a.at||"").localeCompare(b.at||""))}
+const mySignups=()=>(S.signups.find(d=>d.id===me.id)||{}).events||{};
+function setSignup(eid,val){const mine={...mySignups()};if(val)mine[eid]=val;else delete mine[eid];return db.doc("signups/"+me.id).set({events:mine})}
+function eventsView(){
+  const up=S.events.filter(e=>e.type!=="meeting"&&e.type!=="deadline"&&e.date>=TODAY).sort(byDate);
+  const opts=[["all","All"],["open","Open for sign-up"],["dance","Dances"],["trip","Trips"],["competition","Competitions"],["event","School events"],["fundraiser","Fundraisers"]];
+  const list=up.filter(e=>evFilter==="all"||(evFilter==="open"?e.signup&&e.signup!=="none":e.type===evFilter));
+  return head("Dances, trips, tournaments and competitions. See the details and sign up in one place.","Events and sign-ups",addBtn("add-event","Add event"))+
+  `<div class="fchips">${opts.map(([k,l])=>`<button class="fchip" data-act="ev-filter" data-to="${k}" aria-pressed="${evFilter===k}">${l}</button>`).join("")}</div>`+
+  (list.length?`<div class="evlist">${list.map(eventCard).join("")}</div>`:empty(up.length?"Nothing in this category":"No upcoming events",up.length?"Try another filter.":canAct()?"Add a dance, trip or competition and turn on sign-ups.":"Check back soon.",up.length?null:"add-event","Add an event"));
+}
+function eventCard(e){
+  const sus=signupsFor(e.id),mine=mySignups()[e.id],has=e.signup&&e.signup!=="none",cap=Number(e.capacity)||0,full=cap&&sus.length>=cap,closed=e.closes&&e.closes<TODAY,x=openEvent===e.id;
+  const kind=label(SIGNUP_KINDS,e.signup);
+  let act="";
+  if(has){
+    if(mine)act=`<span class="chip good">${e.signup==="tickets"?"Ticket reserved":"You're signed up"}${mine.team?` as ${esc(mine.team)}`:""}</span>${!closed&&canJoin()?`<button class="btn sm ghost" data-act="ev-cancel" data-id="${e.id}">Cancel</button>`:""}`;
+    else if(closed)act=`<span class="sub">Sign-up closed</span>`;
+    else if(full)act=`<span class="chip bad">Full</span>`;
+    else if(canJoin())act=`<button class="btn sm primary" data-act="ev-join" data-id="${e.id}">${kind}</button>`;
+    else act=`<span class="sub">Signing up needs contributor access to this page.</span>`;
+  }
+  if(x&&council())resolveIds(sus.map(s=>s.uid));
+  return`<article class="event"><div>${datebox(e.date)}</div><div class="grow">
+    <div class="ev-top"><h3>${esc(e.title)}</h3><span class="chip ${esc(e.type)}">${label(EV_TYPES,e.type)}</span></div>
+    <div class="sub parts"><span>${esc(longd(e.date))}${e.time?", "+esc(fmtTime(e.time)):""}</span>${e.location?`<span>${esc(e.location)}</span>`:""}${e.price?`<span>${esc(e.price)}</span>`:""}</div>
+    ${e.change?`<div class="changenote">Changed: ${esc(e.change)}</div>`:""}
+    ${has?`<div class="sub parts"><span>${sus.length} signed up</span>${cap?`<span>${Math.max(0,cap-sus.length)} of ${cap} spots left</span>`:""}${e.closes?`<span>${closed?"Closed":"Closes"} ${esc(short(e.closes))}</span>`:""}</div>`:""}
+    ${x?`<div class="ev-more">${e.details||e.notes?`<div><b>Details</b><p>${esc(e.details||e.notes)}</p></div>`:""}${e.schedule?`<div><b>Schedule</b><p>${esc(e.schedule)}</p></div>`:""}${has&&sus.length?`<div><b>Who's going</b><div class="going">${council()?`<ul class="list" style="margin:0">${sus.map(s=>`<li>${who(s.uid,"Someone")}${s.team?`<span class="sub">${esc(s.team)}</span>`:""}</li>`).join("")}</ul>`:sus.slice(0,24).map(s=>avatar(s.uid)).join("")+(sus.length>24?`<span class="sub">and ${sus.length-24} more</span>`:"")}</div></div>`:""}</div>`:""}
+    <div class="toolbar">${act}${e.details||e.notes||e.schedule||(has&&sus.length)?`<button class="btn sm ghost" data-act="ev-toggle" data-id="${e.id}" aria-expanded="${x}">${x?"Hide details":"Details"}</button>`:""}${canAct()?`<button class="btn sm ghost" data-act="edit-event" data-id="${e.id}">Edit</button>`:""}</div>
+  </div></article>`;
+}
+
+/* Student Life */
+const STORY_KINDS=["Event recap","Spotlight","Achievement","Club highlight","Interview","Meme"];
+const VIBES=["Study","Hype","Chill","Gym","Road trip","Other"];
+let lifeFilter="all",gal=null;
+const sortedAlbums=()=>[...S.albums].filter(a=>(a.photos||[]).length).sort((a,b)=>(b.date||"").localeCompare(a.date||""));
+function allPhotos(){const out=[];for(const a of sortedAlbums())for(const id of a.photos)out.push({id,album:a.id});return out}
+function beltsHTML(maxRows=2){
+  const ph=allPhotos();if(!ph.length)return"";
+  const rows=maxRows===1||ph.length<8?[ph]:[ph.filter((_,i)=>i%2===0),ph.filter((_,i)=>i%2===1)];
+  return`<div class="belts">${rows.map((row,r)=>{let set=row.slice();while(set.length<8)set=set.concat(row);
+    const dur=Math.max(30,Math.round(set.length*250/35)),delay=-((performance.now()/1000)%dur);
+    const shot=(p,hidden)=>`<button class="shot" data-act="album" data-id="${p.album}" data-photo="${esc(p.id)}" ${hidden?'tabindex="-1"':`aria-label="Open the album ${esc((S.albums.find(a=>a.id===p.album)||{}).title||"")}"`}><img src="${blob(p.id)}" alt="" loading="lazy" decoding="async"></button>`;
+    return`<div class="belt${r?" belt--back":""}"><div class="belt__track" style="--dur:${dur}s;animation-delay:${delay.toFixed(2)}s"><div class="belt__set">${set.map(p=>shot(p)).join("")}</div><div class="belt__set" aria-hidden="true">${set.map(p=>shot(p,1)).join("")}</div></div></div>`}).join("")}</div>`;
+}
+function albumCard(a){return`<div class="album-wrap"><button class="album" data-act="album" data-id="${a.id}"><span class="album-img"><img src="${blob(a.photos[0])}" alt="" loading="lazy"></span><span class="title">${esc(a.title)}</span><span class="sub">${a.date?esc(short(a.date))+", ":""}${a.photos.length} photo${a.photos.length===1?"":"s"}</span></button>${canAct()?`<button class="btn sm edit" data-act="edit-album" data-id="${a.id}">Edit</button>`:""}</div>`}
+function storyCard(s){const alb=s.albumId&&S.albums.find(a=>a.id===s.albumId&&(a.photos||[]).length),link=safeUrl(s.link);
+  return`<article class="story ${s.kind==="Meme"?"meme":""}">${s.photo?`<div class="story-img"><img src="${blob(s.photo)}" alt="" loading="lazy"></div>`:""}<div class="story-body"><div class="sub parts"><span class="chip">${esc(s.kind||"Story")}</span><span>${esc(short(s.date))}</span></div><h3>${esc(s.title)}</h3>${s.body?`<p>${esc(s.body)}</p>`:""}${alb||link||canAct()?`<div class="toolbar">${alb?`<button class="btn sm" data-act="album" data-id="${alb.id}">See the photos</button>`:""}${link?`<a class="btn sm ghost" href="${esc(link)}" target="_blank" rel="noopener">Open link</a>`:""}${canAct()?`<button class="btn sm ghost" data-act="edit-story" data-id="${s.id}">Edit</button>`:""}</div>`:""}</div></article>`}
+function nextBday(b){const now=parse(TODAY);let d=new Date(now.getFullYear(),b.month-1,b.day);if(d<now)d=new Date(now.getFullYear()+1,b.month-1,b.day);return d}
+function allPlaylists(){const out=[];for(const d of S.playlists)for(const[k,v]of Object.entries(d.items||{}))if(v&&v.title&&safeUrl(v.url))out.push({...v,key:k,uid:d.id});return out.sort((a,b)=>(b.at||"").localeCompare(a.at||""))}
+function lifeView(){
+  const albums=sortedAlbums(),stories=[...S.stories].sort((a,b)=>(b.date||"").localeCompare(a.date||"")),shown=lifeFilter==="all"?stories:stories.filter(s=>s.kind===lifeFilter);
+  const bd=S.birthdays.filter(b=>b.show!==false&&b.name&&b.month&&b.day).map(b=>({...b,next:nextBday(b)})).filter(b=>(b.next-parse(TODAY))/864e5<=7).sort((a,b)=>a.next-b.next);
+  const mineB=S.birthdays.find(b=>b.id===me.id),pls=allPlaylists();
+  return head("Photos, recaps, spotlights, birthdays and playlists from the Avenues community.","Student Life",canAct()?`<button class="btn" data-act="add-story">+ Add a story</button><button class="btn primary" data-act="add-album">+ Add photo album</button>`:"")+
+  (albums.length?beltsHTML(2)+`<section class="panel"><h2>Photo albums</h2><div class="albums">${albums.map(albumCard).join("")}</div></section>`:empty("No photos yet",canAct()?"Add an album of photos from a dance, game or trip. The photos drift across the top of this page, and clicking one opens its album.":"Photos from events will show up here.","add-album","Add the first album"))+
+  `<section class="panel"><h2>Stories</h2><div class="fchips" style="margin-top:10px">${[["all","All"],...STORY_KINDS.map(k=>[k,k==="Meme"?"Memes":k+"s"])].map(([k,l])=>`<button class="fchip" data-act="life-filter" data-to="${k}" aria-pressed="${lifeFilter===k}">${l}</button>`).join("")}</div>${shown.length?`<div class="stories">${shown.map(storyCard).join("")}</div>`:`<p class="sub" style="margin:12px 0 0">${stories.length?"Nothing here yet.":"Recaps, student spotlights, interviews and memes will show up here."}</p>`}</section>`+
+  `<div class="grid2"><section class="panel"><h2>Birthdays this week</h2>${bd.length?bd.map(b=>{const today=iso(b.next)===TODAY;return`<div class="bday"><b>${esc(b.name)}</b><span class="sub">${today?"":esc(b.next.toLocaleDateString(undefined,{weekday:"long",month:"short",day:"numeric"}))}</span>${today?`<span class="chip gold">Today</span>`:""}${canAct()?`<span class="sp"></span><button class="btn sm ghost" data-act="bday-remove" data-id="${b.id}">Remove</button>`:""}</div>`}).join(""):`<p class="sub" style="margin:10px 0 0">No birthdays in the next 7 days.</p>`}${canJoin()?`<div style="margin-top:12px"><button class="btn sm" data-act="bday">${mineB?"Edit my birthday":"Add my birthday"}</button> <span class="sub">Optional. Only your name and the date are shown.</span></div>`:""}</section>
+  <section class="panel"><h2>Student playlists</h2>${pls.length?pls.slice(0,12).map(p=>`<div class="playlist"><div class="grow"><a class="title" href="${esc(safeUrl(p.url))}" target="_blank" rel="noopener">${esc(p.title)}</a><div class="sub parts">${p.vibe?`<span>${esc(p.vibe)}</span>`:""}${p.name?`<span>Shared by ${esc(p.name)}</span>`:""}</div></div>${p.uid===me.id||canAct()?`<button class="btn sm ghost" data-act="pl-remove" data-uid="${esc(p.uid)}" data-key="${esc(p.key)}">Remove</button>`:""}</div>`).join(""):`<p class="sub" style="margin:10px 0 0">No playlists yet. Share what you're listening to.</p>`}${canJoin()?`<div style="margin-top:12px"><button class="btn sm" data-act="add-playlist">+ Share a playlist</button></div>`:""}</section></div>`;
+}
+function openAlbum(aid,pid){const a=S.albums.find(x=>x.id===aid);if(!a||!(a.photos||[]).length){toast("This album has no photos yet.");return}
+  if(!gal)gal={ret:document.activeElement};gal.aid=aid;gal.idx=pid?Math.max(0,a.photos.indexOf(pid)):0;drawGallery();document.body.style.overflow="hidden";const c=$("#gallery [data-act=gal-close]");c&&c.focus()}
+function closeGallery(){const g=$("#gallery");g.hidden=true;g.innerHTML="";document.body.style.overflow="";const r=gal&&gal.ret;gal=null;if(r&&r.isConnected&&r.focus)r.focus()}
+function galStep(n){const a=S.albums.find(x=>x.id===gal.aid);if(!a)return;const len=a.photos.length;gal.idx=(gal.idx+n+len)%len;drawGallery()}
+function drawGallery(){
+  const a=S.albums.find(x=>x.id===gal.aid);if(!a){closeGallery();return}
+  const ph=a.photos||[],i=Math.min(gal.idx,ph.length-1),story=S.stories.find(s=>s.albumId===a.id),others=sortedAlbums().filter(x=>x.id!==a.id).slice(0,8);
+  const g=$("#gallery");g.hidden=false;
+  g.innerHTML=`<div class="gal" role="dialog" aria-modal="true" aria-labelledby="galt">
+    <div class="gal-head"><div><h2 id="galt">${esc(a.title)}</h2><div class="sub parts">${a.date?`<span>${esc(fulld(a.date))}</span>`:""}<span>${ph.length} photo${ph.length===1?"":"s"}</span></div></div><button class="btn" data-act="gal-close">Close</button></div>
+    ${a.caption?`<p class="gal-cap">${esc(a.caption)}</p>`:""}
+    <div class="stage">${ph.length>1?`<button class="stage-nav prev" data-act="gal-prev" aria-label="Previous photo">‹</button>`:""}<img src="${blob(ph[i])}" alt="Photo ${i+1} of ${ph.length} from ${esc(a.title)}">${ph.length>1?`<button class="stage-nav next" data-act="gal-next" aria-label="Next photo">›</button>`:""}<span class="stage-count">${i+1} of ${ph.length}</span></div>
+    ${ph.length>1?`<div class="thumbs-grid">${ph.map((id,j)=>`<button data-act="gal-go" data-i="${j}" aria-label="Show photo ${j+1}" aria-current="${j===i}"><img src="${blob(id)}" alt="" loading="lazy"></button>`).join("")}</div>`:""}
+    ${story?`<section class="gal-story"><h3>${esc(story.title)}</h3>${story.body?`<p>${esc(story.body)}</p>`:""}</section>`:""}
+    ${others.length?`<section><h3 class="gal-more">More albums</h3><div class="albums">${others.map(x=>albumCard(x).replace(/<button class="btn sm edit"[^>]*>Edit<\/button>/,"")).join("")}</div></section>`:""}
+  </div>`;
+}
+
+/* Opportunities */
+const OPP_CATS=["Volunteering","Community service","Internship","Competition","School trip","Club recruitment","Music","Art","Athletics","Other"];
+let oppQ="",oppCat="all",oppSavedOnly=false,oppPast=false,savedOpps=new Set();
+try{savedOpps=new Set(JSON.parse(localStorage.getItem("stuco-saved")||"[]"))}catch(e){}
+function oppsView(){
+  return head("Volunteering, internships, competitions, trips, clubs, and music, art and athletics. Search, filter, and save the ones you like.","Opportunities",addBtn("add-opp","Post opportunity"))+
+  `<div class="oppbar"><input id="oppQ" type="search" placeholder="Search by name, organization or keyword" aria-label="Search opportunities" value="${esc(oppQ)}"><div class="fchips">${[["all","All"],...OPP_CATS.map(c=>[c,c])].map(([k,l])=>`<button class="fchip" data-act="opp-cat" data-to="${esc(k)}" aria-pressed="${oppCat===k}">${esc(l)}</button>`).join("")}<button class="fchip" data-act="opp-saved" aria-pressed="${oppSavedOnly}">Saved (${savedOpps.size})</button></div></div><div id="oppList">${oppList()}</div>`;
+}
+function oppList(){
+  const q=oppQ.trim().toLowerCase();
+  const l=S.opps.filter(o=>(oppPast||!o.deadline||o.deadline>=TODAY)&&(oppCat==="all"||o.category===oppCat)&&(!oppSavedOnly||savedOpps.has(o.id))&&(!q||[o.title,o.org,o.details,o.category,o.who].join(" ").toLowerCase().includes(q))).sort((a,b)=>(a.deadline||"9999").localeCompare(b.deadline||"9999"));
+  const past=S.opps.filter(o=>o.deadline&&o.deadline<TODAY).length;
+  return(l.length?`<div class="opps">${l.map(oppCard).join("")}</div>`:empty(S.opps.length?"Nothing matches":"No opportunities yet",S.opps.length?"Try a different search or category.":canAct()?"Post volunteering, internships, competitions, trips and club recruitment here.":"Check back soon.",S.opps.length?null:"add-opp","Post the first one"))+(past?`<div style="margin-top:14px"><button class="btn sm ghost" data-act="opp-past">${oppPast?"Hide":"Show"} ${past} past opportunit${past===1?"y":"ies"}</button></div>`:"");
+}
+function oppCard(o){
+  const days=o.deadline?Math.round((parse(o.deadline)-parse(TODAY))/864e5):null,soon=days!=null&&days>=0&&days<=7,link=safeUrl(o.link),saved=savedOpps.has(o.id);
+  return`<article class="opp"><div class="opp-top"><span class="chip">${esc(o.category||"Other")}</span>${o.deadline?`<span class="${soon?"overdue":"sub"}">${days<0?"Closed":`Apply by ${esc(short(o.deadline))}${soon?`, ${days===0?"today":days===1?"tomorrow":days+" days left"}`:""}`}</span>`:`<span class="sub">No deadline</span>`}</div><h3>${esc(o.title)}</h3>${o.org?`<div class="sub">${esc(o.org)}</div>`:""}${o.details?`<p>${esc(o.details)}</p>`:""}${o.who?`<div class="sub">Who can apply: ${esc(o.who)}</div>`:""}<div class="toolbar">${link?`<a class="btn sm primary" href="${esc(link)}" target="_blank" rel="noopener">How to apply</a>`:""}<button class="btn sm" data-act="opp-save" data-id="${o.id}" aria-pressed="${saved}">${saved?"Saved":"Save"}</button>${canAct()?`<button class="btn sm ghost" data-act="edit-opp" data-id="${o.id}">Edit</button>`:""}</div></article>`;
+}
+
+/* Student Voice */
+function voiceView(){const cur=shownView();return subnav([["voice","Polls"],["suggestions","Suggestions and reports"],["working","What council is doing"]])+(cur==="suggestions"?suggestions():cur==="working"?tasks(true):pollsView())}
+const myVotes=()=>(S.votes.find(d=>d.id===me.id)||{}).polls||{};
+const pollOpen=p=>p.status!=="closed"&&(!p.closes||p.closes>=TODAY);
+function tallyPoll(p){const c=(p.options||[]).map(()=>0);for(const d of S.votes){const v=(d.polls||{})[p.id];if(Number.isInteger(v)&&v>=0&&v<c.length)c[v]++}return c}
+function pollsView(){
+  const ps=[...S.polls].sort((a,b)=>(b.created||"").localeCompare(a.created||"")),open=ps.filter(pollOpen),done=ps.filter(p=>!pollOpen(p));
+  return head("Vote on events, ideas and school decisions. Council posts the results here.","Polls",addBtn("add-poll","New poll"))+
+  (ps.length?(open.length?`<div class="polls">${open.map(pollCard).join("")}</div>`:`<p class="sub" style="margin:0">No polls are open right now.</p>`)+(done.length?`<section class="panel"><h2>Closed polls</h2><div class="polls" style="margin-top:12px">${done.map(pollCard).join("")}</div></section>`:"")
+  :empty("No polls yet",canAct()?"Ask the school what they think: dance themes, vending machine picks, spirit week ideas.":"When Student Council opens a poll, you can vote here.","add-poll","Start the first poll"));
+}
+function pollCard(p){
+  const opts=p.options||[],mv=myVotes()[p.id],mine=Number.isInteger(mv)?mv:null,open=pollOpen(p),live=council()?tallyPoll(p):null,res=live||p.results||null,total=res?res.reduce((a,b)=>a+b,0):0,canVote=open&&canJoin();
+  return`<article class="poll"><h3>${esc(p.question)}</h3><div class="sub parts"><span>${open?(p.closes?"Closes "+esc(short(p.closes)):"Open"):"Closed"}</span>${res?`<span>${total} vote${total===1?"":"s"}</span>`:""}${live&&!p.results?`<span>Only council sees these numbers until results are posted</span>`:""}</div>
+  <div class="opts">${opts.map((o,i)=>{const pct=res&&total?Math.round(res[i]/total*100):0;return`<button class="opt" data-act="poll-vote" data-id="${p.id}" data-i="${i}" aria-pressed="${mine===i}" ${canVote?"":"disabled"}>${res?`<span class="optbar" style="width:${pct}%"></span>`:""}<span class="optlabel">${esc(o)}</span>${res?`<span class="optpct">${pct}%</span>`:mine===i?`<span class="optpct">Your vote</span>`:""}</button>`}).join("")}</div>
+  <p class="sub" style="margin:0">${mine!=null?`You voted for ${esc(opts[mine]||"")}.${open?" You can change your vote until the poll closes.":""}`:open?(canJoin()?"Pick one option.":"Voting needs contributor access to this page."):""}${!res?" Results are posted when the poll closes.":""}</p>
+  ${canAct()?`<div class="toolbar">${open?`<button class="btn sm" data-act="poll-close" data-id="${p.id}">Close poll</button>`:""}<button class="btn sm primary" data-act="poll-post" data-id="${p.id}">${p.results?"Update posted results":"Post results"}</button><button class="btn sm ghost" data-act="edit-poll" data-id="${p.id}">Edit</button></div>`:""}</article>`;
+}
+
+/* student-side forms */
+function albumForm(id){const a=id&&S.albums.find(x=>x.id===id);
+  openForm({title:a?"Edit photo album":"New photo album",submitLabel:a?"Save album":"Add album",
+    fields:[{id:"title",label:"Album name",required:true,full:true},{id:"date",label:"Date",type:"date"},{id:"photos",label:"Photos",type:"photos",multiple:true,help:"The first photo is the cover. Click any photo to make it the cover."},{id:"caption",label:"Caption",type:"textarea",placeholder:"What happened, who was there"}],
+    values:a||{date:TODAY,photos:[]},
+    submit:vals=>{if(!vals.photos.length){$("#merr").textContent="Add at least one photo.";return false}return a?save(()=>col("albums").doc(id).update(vals),"Album saved",["edited","album",vals.title]):save(()=>col("albums").add({...vals,created:new Date().toISOString()}),"Album added",["added","album",vals.title])},
+    onDelete:a?()=>save(()=>col("albums").doc(id).delete(),"Album deleted",["deleted","album",a.title]):null});
+}
+function storyForm(id){const s=id&&S.stories.find(x=>x.id===id);
+  openForm({title:s?"Edit story":"New story",
+    fields:[{id:"kind",label:"Type",type:"select",options:STORY_KINDS.map(k=>[k,k])},{id:"date",label:"Date",type:"date"},{id:"title",label:"Headline",required:true,full:true},{id:"photo",label:"Photo",type:"photos",help:"Optional. For a meme, this is the meme."},{id:"albumId",label:"Link to a photo album",type:"select",full:true,options:[["","No album"],...sortedAlbums().map(a=>[a.id,a.title])]},{id:"link",label:"Link (optional)",full:true},{id:"body",label:"Story",type:"textarea",placeholder:"The recap, the spotlight, the interview questions and answers"}],
+    values:s||{kind:"Event recap",date:TODAY},
+    submit:vals=>{if(vals.link&&!safeUrl(vals.link)){$("#merr").textContent="Links need to start with https://";return false}return s?save(()=>col("stories").doc(id).update(vals),"Story saved",["edited","story",vals.title]):save(()=>col("stories").add({...vals,created:new Date().toISOString()}),"Story posted",["posted","story",vals.title])},
+    onDelete:s?()=>save(()=>col("stories").doc(id).delete(),"Story deleted",["deleted","story",s.title]):null});
+}
+function pollForm(id){const p=id&&S.polls.find(x=>x.id===id);
+  openForm({title:p?"Edit poll":"New poll",submitLabel:p?"Save poll":"Open poll",note:p?"Changing the order of options after people vote will mix up their votes.":"",
+    fields:[{id:"question",label:"Question",required:true,full:true},{id:"optionsText",label:"Options, one per line",type:"textarea",required:true},{id:"closes",label:"Closes on",type:"date"}],
+    values:p?{...p,optionsText:(p.options||[]).join("\n")}:{},
+    submit:vals=>{const options=vals.optionsText.split("\n").map(x=>x.trim()).filter(Boolean).slice(0,12);if(options.length<2){$("#merr").textContent="Add at least two options.";return false}
+      const data={question:vals.question,options,closes:vals.closes||""};
+      return p?save(()=>col("polls").doc(id).update(data),"Poll saved",["edited","poll",data.question]):save(()=>col("polls").add({...data,status:"open",created:new Date().toISOString()}),"Poll opened",["opened","poll",data.question])},
+    onDelete:p?()=>save(()=>col("polls").doc(id).delete(),"Poll deleted",["deleted","poll",p.question]):null});
+}
+function bdayForm(){const b=S.birthdays.find(x=>x.id===me.id);
+  openForm({title:b?"Edit my birthday":"Add my birthday",submitLabel:"Save",note:"Your name and birthday show on Student Life during your birthday week. Your birth year is never asked for.",
+    fields:[{id:"name",label:"Name to show",required:true,full:true},{id:"month",label:"Month",type:"select",options:Array.from({length:12},(_,i)=>[String(i+1),new Date(2000,i,1).toLocaleDateString(undefined,{month:"long"})])},{id:"day",label:"Day",type:"number"},{id:"show",label:"Show my birthday on Student Life",type:"checkbox"}],
+    values:b?{...b,month:String(b.month)}:{name:me.name||"",month:"1",show:true},
+    submit:v=>{const day=Math.round(Number(v.day));if(!(day>=1&&day<=31)){$("#merr").textContent="Enter a day between 1 and 31.";return false}return save(()=>db.doc("birthdays/"+me.id).set({name:v.name,month:Number(v.month),day,show:!!v.show}),"Birthday saved")},
+    onDelete:b?()=>save(()=>db.doc("birthdays/"+me.id).delete(),"Birthday removed"):null});
+}
+function playlistForm(){
+  openForm({title:"Share a playlist",submitLabel:"Share",note:"Paste a link from Spotify, Apple Music, YouTube Music or SoundCloud.",
+    fields:[{id:"title",label:"Playlist name",required:true,full:true},{id:"url",label:"Link",required:true,full:true},{id:"vibe",label:"Vibe",type:"select",options:VIBES.map(v=>[v,v])},{id:"name",label:"Your name, as you want it shown"}],
+    values:{vibe:"Study",name:me.name||""},
+    submit:v=>{if(!safeUrl(v.url)){$("#merr").textContent="Paste a full link that starts with https://";return false}const d=S.playlists.find(x=>x.id===me.id),items={...((d&&d.items)||{})};items[Date.now().toString(36)]={...v,at:new Date().toISOString()};return save(()=>db.doc("playlists/"+me.id).set({items}),"Playlist shared")}});
+}
+function resizeToBlob(file,max){return new Promise((res,rej)=>{const url=URL.createObjectURL(file),img=new Image();img.onload=()=>{const k=Math.min(1,max/Math.max(img.width,img.height)),c=document.createElement("canvas");c.width=Math.round(img.width*k);c.height=Math.round(img.height*k);c.getContext("2d").drawImage(img,0,0,c.width,c.height);URL.revokeObjectURL(url);c.toBlob(b=>b?res(b):rej(new Error("encode")),"image/jpeg",.85)};img.onerror=()=>{URL.revokeObjectURL(url);rej(new Error("decode"))};img.src=url})}
+
 
 /* ---------- proposals ---------- */
 function tally(p){const v=p.votes||{},t={aye:0,nay:0,abstain:0};for(const k in v)if(t[v[k]]!=null&&isApproved(S.members.find(m=>m.id===k)))t[v[k]]++;return t}
@@ -792,7 +1118,7 @@ async function saveEditor(){
   else{const ref=col("proposals").doc();ok=await save(()=>ref.set({...data,number:nextNumber(),status:"draft",votes:{},author:me.id||null,created:new Date().toISOString()}),"Proposal saved",["wrote","proposal",data.title]);if(ok)selProposal=ref.id}
   if(ok){editing=null;$("#main").innerHTML="";render()}
 }
-document.addEventListener("input",e=>{if(editing&&e.target.closest&&e.target.closest("#pform")){readEditor();const pv=$("#preview");if(pv)pv.innerHTML=docHTML(editing.d)}});
+document.addEventListener("input",e=>{if(e.target.id==="oppQ"){oppQ=e.target.value;const l=$("#oppList");if(l)l.innerHTML=oppList();return}if(editing&&e.target.closest&&e.target.closest("#pform")){readEditor();const pv=$("#preview");if(pv)pv.innerHTML=docHTML(editing.d)}});
 
 /* attendance */
 function quorum(m){const r=m.records||{},ms=roster(),total=ms.length;let here=0;for(const x of ms)if(r[x.id]==="present"||r[x.id]==="late")here++;return{here,total,met:total>0&&here>total/2,need:Math.floor(total/2)+1}}
@@ -871,11 +1197,12 @@ function historyView(){
 function fieldHTML(f,v){
   const id="f-"+f.id,full=f.full||f.type==="textarea"||f.type==="photo"?" full":"",req=f.required?" required":"";
   if(f.type==="checkbox")return`<div class="field check${full}"><input type="checkbox" id="${id}" ${v?"checked":""}><label for="${id}">${f.label}</label></div>`;
+  if(f.type==="photos")return`<div class="field full"><label for="${id}">${f.label}</label><div class="thumbs" id="${id}-list"></div><div class="photo-row"><input type="file" id="${id}" accept="image/*" ${f.multiple?"multiple":""}><span class="sub" id="${id}-status" role="status"></span></div>${f.help?`<span class="sub">${f.help}</span>`:""}</div>`;
   if(f.type==="photo")return`<div class="field full"><label for="${id}">${f.label}</label><div class="photo-row"><img id="${id}-prev" class="avatar xl" src="${esc(v||"")}" alt="" ${v?"":"hidden"}><input type="file" id="${id}" accept="image/*"><button type="button" class="btn sm ghost" id="${id}-clear" ${v?"":"hidden"}>Remove photo</button></div><span class="sub">Square photos look best. It's resized automatically.</span></div>`;
   let input;
   if(f.type==="textarea")input=`<textarea id="${id}"${req} placeholder="${esc(f.placeholder||"")}">${esc(v)}</textarea>`;
   else if(f.type==="select")input=`<select id="${id}">${f.options.map(([k,l])=>`<option value="${esc(k)}" ${String(v??"")===String(k)?"selected":""}>${esc(l)}</option>`).join("")}</select>`;
-  else input=`<input id="${id}" type="${f.type||"text"}" value="${esc(v)}"${req}${f.list?` list="${id}-l"`:""}${f.type==="number"?' min="0" step="any"':""}>${f.list?`<datalist id="${id}-l">${f.list.map(o=>`<option value="${esc(o)}">`).join("")}</datalist>`:""}`;
+  else input=`<input id="${id}" type="${f.type||"text"}" value="${esc(v)}"${f.placeholder?` placeholder="${esc(f.placeholder)}"`:""}${req}${f.list?` list="${id}-l"`:""}${f.type==="number"?' min="0" step="any"':""}>${f.list?`<datalist id="${id}-l">${f.list.map(o=>`<option value="${esc(o)}">`).join("")}</datalist>`:""}`;
   return`<div class="field${full}"><label for="${id}">${f.label}</label>${input}</div>`;
 }
 function resizeImage(file){return new Promise((res,rej)=>{const fr=new FileReader();fr.onload=()=>{const img=new Image();img.onload=()=>{const s=256,c=document.createElement("canvas");c.width=c.height=s;const k=Math.max(s/img.width,s/img.height),w=img.width*k,h=img.height*k;c.getContext("2d").drawImage(img,(s-w)/2,(s-h)/2,w,h);res(c.toDataURL("image/jpeg",.82))};img.onerror=rej;img.src=fr.result};fr.onerror=rej;fr.readAsDataURL(file)})}
@@ -890,11 +1217,26 @@ function openForm({title,fields,values={},submit,onDelete,submitLabel="Save",not
     inp.onchange=async()=>{const file=inp.files[0];if(!file)return;try{const url=await resizeImage(file);photoVals[f.id]=url;prev.src=url;prev.hidden=false;clr.hidden=false}catch{toast("That image couldn't be read. Try a JPG or PNG.")}};
     clr.onclick=()=>{photoVals[f.id]="";prev.hidden=true;clr.hidden=true;inp.value=""};
   });
+  const lists={};let uploading=0;
+  fields.filter(f=>f.type==="photos").forEach(f=>{
+    const v=values[f.id];lists[f.id]=Array.isArray(v)?[...v]:v?[v]:[];
+    const listEl=$("#f-"+f.id+"-list"),inp=$("#f-"+f.id),st=$("#f-"+f.id+"-status");
+    const draw=()=>{listEl.innerHTML=lists[f.id].map((pid,i)=>`<div class="thumb"><button type="button" class="thumb-img" data-i="${i}" aria-label="${f.multiple&&i?"Make this the cover":"Photo "+(i+1)}"><img src="${blob(pid)}" alt="">${f.multiple&&i===0?'<span class="cover-tag">Cover</span>':""}</button><button type="button" class="thumb-x" data-x="${i}" aria-label="Remove photo ${i+1}">×</button></div>`).join("")};
+    listEl.onclick=ev=>{const x=ev.target.closest("[data-x]"),c=ev.target.closest("[data-i]");if(x){lists[f.id].splice(+x.dataset.x,1);draw()}else if(c&&f.multiple){const[pick]=lists[f.id].splice(+c.dataset.i,1);lists[f.id].unshift(pick);draw()}};
+    inp.onchange=async()=>{const files=[...inp.files];if(!files.length)return;
+      const A=window.claude&&window.claude.use?await claude.use("assets"):null;
+      if(!A){toast("Uploading photos needs Editor access to this page.");inp.value="";return}
+      uploading++;let n=0;
+      for(const file of files){n++;st.textContent=`Uploading ${n} of ${files.length}…`;try{const b=await resizeToBlob(file,1800);const r=await A.upload(b);if(f.multiple)lists[f.id].push(r.id);else lists[f.id]=[r.id];draw()}catch(e){toast(`${file.name} couldn't be uploaded. Try a JPG or PNG.`)}}
+      uploading--;st.textContent="";inp.value=""};
+    draw();
+  });
   $("#mcancel").onclick=closeModal;
   if(onDelete){const d=$("#mdel");d.onclick=async()=>{if(d.dataset.armed){d.disabled=true;if(await onDelete()!==false)closeModal();else d.disabled=false}else{d.dataset.armed=1;d.textContent="Confirm delete"}}}
   $("#mform").onsubmit=async e=>{
     e.preventDefault();const vals={};
-    for(const f of fields){const el=$("#f-"+f.id);vals[f.id]=f.type==="photo"?photoVals[f.id]:f.type==="checkbox"?el.checked:f.type==="number"?(el.value===""?null:Number(el.value)):el.value.trim()}
+    if(uploading){$("#merr").textContent="Wait for the photos to finish uploading.";return}
+    for(const f of fields){const el=$("#f-"+f.id);vals[f.id]=f.type==="photos"?(f.multiple?lists[f.id]:(lists[f.id][0]||"")):f.type==="photo"?photoVals[f.id]:f.type==="checkbox"?el.checked:f.type==="number"?(el.value===""?null:Number(el.value)):el.value.trim()}
     const miss=fields.find(f=>f.required&&!vals[f.id]);if(miss){$("#merr").textContent=`Add ${miss.label.toLowerCase()} to continue.`;return}
     $("#msave").disabled=true;
     if(await submit(vals)!==false)closeModal();else $("#msave").disabled=false;
@@ -910,7 +1252,8 @@ function crud(colName,{title,fields,noun,kind,titleKey="title"}){
 }
 const PROFILE_FIELDS=[{id:"name",label:"Full name",required:true,full:true},{id:"grade",label:"Grade"},{id:"committee",label:"Committee",list:COMMITTEES},{id:"bio",label:"About you",type:"textarea",placeholder:"What you do on council, what you want to get done this year, a fun fact."},{id:"photo",label:"Photo",type:"photo"}];
 const forms={
-  event:()=>crud("events",{title:"Add to calendar",noun:"event",kind:"event",fields:[{id:"title",label:"Title",required:true,full:true},{id:"date",label:"Date",type:"date",required:true},{id:"time",label:"Time",type:"time"},{id:"type",label:"Type",type:"select",options:EV_TYPES},{id:"location",label:"Location"},{id:"notes",label:"Notes",type:"textarea"}]}),
+  event:()=>crud("events",{title:"Add event",noun:"event",kind:"event",fields:[{id:"title",label:"Title",required:true,full:true},{id:"date",label:"Date",type:"date",required:true},{id:"time",label:"Time",type:"time"},{id:"type",label:"Type",type:"select",options:EV_TYPES},{id:"location",label:"Location"},{id:"details",label:"Details",type:"textarea"},{id:"schedule",label:"Schedule, one line per item",type:"textarea"},{id:"signup",label:"Sign-up",type:"select",options:SIGNUP_KINDS},{id:"capacity",label:"Spots (blank for no limit)",type:"number"},{id:"price",label:"Price and how to pay",placeholder:"e.g. $25, pay at the front desk"},{id:"closes",label:"Sign-up closes",type:"date"},{id:"askTeam",label:"Ask for a team name",type:"checkbox"},{id:"change",label:"Schedule or location change",full:true,placeholder:"e.g. Moved to the gym. Shows as an alert on the Student Hub."}]}),
+  opp:()=>crud("opps",{title:"Post an opportunity",noun:"opportunity",kind:"opportunity",fields:[{id:"title",label:"Title",required:true,full:true},{id:"category",label:"Category",type:"select",options:OPP_CATS.map(c=>[c,c])},{id:"deadline",label:"Deadline",type:"date"},{id:"org",label:"Organization or club",full:true},{id:"who",label:"Who can apply",full:true,placeholder:"e.g. Grades 9 to 12"},{id:"link",label:"Link to apply or learn more",full:true,placeholder:"https://"},{id:"details",label:"Details",type:"textarea"}]}),
   task:()=>crud("tasks",{title:"Assign a task",noun:"task",kind:"task",fields:[{id:"title",label:"Task",required:true,full:true},{id:"assignee",label:"Assign to",type:"select",options:memberOpts("Open — any member can accept")},{id:"due",label:"Due date",type:"date"},{id:"priority",label:"Priority",type:"select",options:PRI},{id:"committee",label:"Committee",list:COMMITTEES},{id:"details",label:"Details",type:"textarea"}]}),
   post:()=>crud("bulletin",{title:"New bulletin post",noun:"post",kind:"post",fields:[{id:"title",label:"Headline",required:true,full:true},{id:"tag",label:"Category",type:"select",options:POST_TAGS},{id:"date",label:"Post date",type:"date"},{id:"author",label:"Posted by",type:"select",options:memberOpts("Student Council")},{id:"pinned",label:"Pin to top",type:"checkbox"},{id:"body",label:"Message",type:"textarea",required:true}]}),
   meeting:()=>crud("meetings",{title:"Start a meeting",noun:"meeting",kind:"meeting",fields:[{id:"title",label:"Meeting name",required:true,full:true},{id:"date",label:"Date",type:"date",required:true},{id:"notes",label:"Notes",full:true}]}),
@@ -954,7 +1297,39 @@ document.addEventListener("click",async e=>{
     case"decline":{const d=S.members.find(x=>x.id===id);return save(()=>db.doc("members/"+id).delete(),"Request declined",["declined","member",d&&d.name])}
     case"save-emails":{const list=[...new Set($("#emails").value.split(/[\s,;]+/).map(s=>s.trim().toLowerCase()).filter(s=>s.includes("@")))];const ok=await save(()=>db.doc("admin/access").set({emails:list}),`Saved ${list.length} approved email${list.length===1?"":"s"}`,["updated the approved email list","settings",""]);if(ok){autoTried.clear()}return}
     case"save-form":{const raw=$("#formurl").value.trim(),v=safeUrl(raw);if(raw&&!v){toast("Paste a full link that starts with https://");return}return save(()=>cfgSet(c=>{c.formUrl=v;delete c.school}),v?"Suggestion form link saved":"Suggestion form link removed",["updated the suggestion form link","settings",""])}
-    case"add-suggestion":return suggestionForm();
+    case"add-suggestion":return suggestionForm(b.dataset.cat);
+    case"mode":preview=b.dataset.to==="student";try{localStorage.setItem("stuco-view",preview?"student":"council")}catch(err){}view=null;if(location.hash)try{history.replaceState(null,"",location.pathname+location.search)}catch(err){location.hash=""}window.scrollTo(0,0);return render();
+    case"ev-toggle":openEvent=openEvent===id?null:id;return render();
+    case"ev-filter":evFilter=b.dataset.to;return render();
+    case"ev-join":{const ev=S.events.find(x=>x.id===id);if(!ev)return;const ok=ev.signup==="tickets"?"Ticket reserved":"You're signed up";
+      if(ev.askTeam)return openForm({title:`${label(SIGNUP_KINDS,ev.signup)}: ${ev.title}`,submitLabel:label(SIGNUP_KINDS,ev.signup),fields:[{id:"team",label:"Team name",required:true,full:true}],submit:v=>save(()=>setSignup(id,{at:new Date().toISOString(),team:v.team}),ok)});
+      return save(()=>setSignup(id,{at:new Date().toISOString()}),ok)}
+    case"ev-cancel":return save(()=>setSignup(id,null),"Sign-up cancelled");
+    case"album":return openAlbum(id,b.dataset.photo);
+    case"gal-close":return closeGallery();
+    case"gal-prev":return galStep(-1);
+    case"gal-next":return galStep(1);
+    case"gal-go":gal.idx=+b.dataset.i;return drawGallery();
+    case"add-album":return albumForm(null);
+    case"edit-album":return albumForm(id);
+    case"add-story":return storyForm(null);
+    case"edit-story":return storyForm(id);
+    case"life-filter":lifeFilter=b.dataset.to;return render();
+    case"bday":return bdayForm();
+    case"bday-remove":return save(()=>db.doc("birthdays/"+id).delete(),"Birthday removed");
+    case"add-playlist":return playlistForm();
+    case"pl-remove":{const d=S.playlists.find(x=>x.id===b.dataset.uid);if(!d)return;const items={...d.items};delete items[b.dataset.key];return save(()=>db.doc("playlists/"+d.id).set({items}),"Playlist removed")}
+    case"add-opp":return forms.opp()(null,{category:"Volunteering"});
+    case"edit-opp":return forms.opp()(id);
+    case"opp-cat":oppCat=b.dataset.to;return render();
+    case"opp-saved":oppSavedOnly=!oppSavedOnly;return render();
+    case"opp-past":oppPast=!oppPast;return render();
+    case"opp-save":savedOpps.has(id)?savedOpps.delete(id):savedOpps.add(id);try{localStorage.setItem("stuco-saved",JSON.stringify([...savedOpps]))}catch(err){}return render();
+    case"add-poll":return pollForm(null);
+    case"edit-poll":return pollForm(id);
+    case"poll-vote":return save(()=>db.doc("votes/"+me.id).set({polls:{...myVotes(),[id]:+b.dataset.i}}),"Vote saved");
+    case"poll-close":{const pl=S.polls.find(x=>x.id===id);return save(()=>col("polls").doc(id).update({status:"closed"}),"Poll closed",["closed","poll",pl&&pl.question])}
+    case"poll-post":{const pl=S.polls.find(x=>x.id===id);if(!pl)return;return save(()=>col("polls").doc(id).update({results:tallyPoll(pl),resultsAt:new Date().toISOString()}),"Results posted",["posted results for","poll",pl.question])}
     case"sug-reply":{const inp=$("#rp-"+b.dataset.key),v=inp.value.trim();if(!v){inp.focus();return}const x=allSuggestions().find(s=>s.key===b.dataset.key);return save(()=>db.doc("suggestions/"+b.dataset.uid).update({items:{[b.dataset.key]:{reply:v,repliedBy:me.id,repliedAt:new Date().toISOString(),...(x&&x.status==="new"?{status:"review"}:{})}}}),"Reply sent",["replied to","suggestion",x&&x.title])}
     case"task-mode":taskMode=b.dataset.to;return render();
     case"add-event":return go("event",{date:TODAY,type:"meeting"});
@@ -993,7 +1368,8 @@ document.addEventListener("click",async e=>{
 document.addEventListener("change",e=>{if(e.target.id==="sugFilter"){sugFilter=e.target.value;render()}
   if(e.target.dataset&&e.target.dataset.sug){const t=e.target,x=allSuggestions().find(s=>s.key===t.dataset.key);save(()=>db.doc("suggestions/"+t.dataset.sug).update({items:{[t.dataset.key]:{status:t.value,reviewedBy:me.id,reviewedAt:new Date().toISOString()}}}),"Status updated",["marked as "+label(SUG_STATUS,t.value).toLowerCase()+":","suggestion",x&&x.title])}
   if(e.target.id==="taskFilter"){taskFilter=e.target.value;render()}if(e.target.id==="histFilter"){histFilter=e.target.value;render()}});
-document.addEventListener("keydown",e=>{if(e.key==="Escape"&&!$("#modal").hidden)closeModal()});
+document.addEventListener("keydown",e=>{if(!$("#modal").hidden){if(e.key==="Escape")closeModal();return}if(gal){if(e.key==="Escape")closeGallery();else if(e.key==="ArrowLeft")galStep(-1);else if(e.key==="ArrowRight")galStep(1)}});
+document.addEventListener("click",e=>{if(e.target.id==="gallery")closeGallery()});
 
 /* ---------- sample council (president only; example data marked sample:true) ---------- */
 async function loadSample(){

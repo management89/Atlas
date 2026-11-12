@@ -4,18 +4,18 @@ The Student Council workspace for Avenues The World School. One page covers the 
 
 ## What's in it
 
-**For everyone at Avenues**
-- **Bulletin:** announcements, spirit week themes, events and opportunities, with pinned posts at the top.
-- **Calendar:** council meetings, school events, deadlines and fundraisers.
-- **Who's working on what:** every council member's current tasks and their status (working on it, up next, done).
-- **Suggestion box:** send an idea to council and see its status and council's reply.
+**For students (five tabs)**
+- **Student Hub:** this week at a glance (schedule and location changes, what's coming up, deadlines and reminders, announcements), a full calendar, and the weekly bulletin.
+- **Events:** dances, trips, tournaments and competitions with details, schedules, prices and spots left. Students RSVP, sign up, register a team or reserve a ticket in one click.
+- **Student Life:** event photos drifting across the page in two rows. Click any photo to open its full album. Also recaps, spotlights, achievements, club highlights, interviews, memes, opt-in birthdays and student playlists.
+- **Opportunities:** a searchable board of volunteering, internships, competitions, trips, club recruitment, and music, art and athletics opportunities, with deadlines and a Save list.
+- **Student Voice:** school-wide polls (council posts the results), suggestions, vending machine requests, problem reports, and a view of what each council member is working on.
 
 **For council members**
+- A Student view / Council view switch, so the president can see exactly what students see.
 - **Tasks:** the president assigns tasks or leaves them open. Members accept their tasks and mark them started or done.
-- **Proposals:** written in a built-in template (summary, background, proposed action, budget, timeline, impact, resolution) that formats itself as you type. Proposals export as a PDF to send and as a .docx that opens in Google Docs. They move through Draft, Moved, Seconded and Vote open, then Passed or Failed, with roll-call votes.
-- **Attendance:** roll call at each meeting with an automatic quorum check (more than half of members present).
-- **Members:** profiles with a photo and short description. The president approves members by email address.
-- **History:** a log of every change, with who made it and when.
+- **Proposals:** written in a built-in template that formats itself as you type. They export as a PDF and as a .docx that opens in Google Docs, and move from Draft to a roll-call vote.
+- **Attendance** with an automatic quorum check, **member profiles** approved by email, and a **history** log of every change.
 
 ## How it runs today
 
@@ -27,10 +27,10 @@ Access is set by the page's share level on claude.ai:
 |---|---|---|
 | President | Owner | Everything, including assigning tasks and approving members |
 | Council members | Editor | Edit the calendar, bulletin, proposals and attendance; accept tasks |
-| Anyone given Contributor access | Contributor | Send suggestions; ask to join council |
-| The rest of the school | Viewer | Read the bulletin, calendar and tasks |
+| Students | Contributor | Sign up for events, vote in polls, send suggestions, share playlists and birthdays |
+| Anyone else | Viewer | Read the student side only |
 
-The database rules enforce this on the server. Proposals, attendance and history can't be read below Editor, and only the president can create tasks or change approvals.
+The database rules enforce this on the server. Proposals, attendance, history, poll votes and suggestions can't be read below Editor (students only see their own), and only the president can create tasks or change approvals.
 
 ## Next step
 
