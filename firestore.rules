@@ -1,0 +1,66 @@
+rules_version = '2';
+
+// Security rules for Avenues Student Hub.
+// Paste this whole file into Firebase console → Firestore Database → Rules, then click Publish.
+//
+// Who can do what:
+//   Anyone (no sign-in) ... reads the bulletin, calendar/events and opportunities
+//   Signed-in students .... read the rest of the student side; sign up, vote, suggest,
+//                           share playlists and birthdays (only their own entries)
+//   Council members ....... approved by the president; edit the school site and council pages
+//   President ............. everything, including tasks and approvals
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // 1. Replace PASTE_PRESIDENT_UID with your user ID (the site shows it after you sign in).
+    function isOwner() { return signedIn() && request.auth.uid == 'PASTE_PRESIDENT_UID'; }
+
+    // 2. Optional: only allow school accounts to sign up, vote and suggest.
+    //    Change `return true;` to, for example:
+    //    return request.auth.token.email.matches('.*@avenues[.]org$');
+    function allowedEmail() { return true; }
+
+    function signedIn() { return request.auth != null; }
+    function student() { return signedIn() && allowedEmail(); }
+    function isSelf(uid) { return student() && request.auth.uid == uid; }
+    function isCouncil() {
+      return isOwner() || (signedIn() &&
+        get(/databases/$(database)/documents/config/access).data.get('approved', {}).get(request.auth.uid, false) == true);
+    }
+
+    // Public school information
+    match /bulletin/{id} { allow read: if true; allow write: if isCouncil(); }
+    match /events/{id}   { allow read: if true; allow write: if isCouncil(); }
+    match /opps/{id}     { allow read: if true; allow write: if isCouncil(); }
+    match /config/{id}   { allow read: if true; allow write: if isOwner(); }
+
+    // Student side, signed in
+    match /albums/{id}  { allow read: if signedIn(); allow write: if isCouncil(); }
+    match /stories/{id} { allow read: if signedIn(); allow write: if isCouncil(); }
+    match /polls/{id}   { allow read: if signedIn(); allow write: if isCouncil(); }
+    match /photos/{id}  {
+      allow read: if signedIn();
+      allow create: if isCouncil() && request.resource.data.data is string && request.resource.data.data.size() < 1000000;
+      allow delete: if isCouncil();
+    }
+    match /members/{uid} { allow read: if signedIn(); allow write: if isOwner() || isSelf(uid); }
+    match /tasks/{id}    { allow read: if signedIn(); allow write: if isOwner(); }
+    match /claims/{uid}  { allow read: if signedIn(); allow write: if isOwner() || (isSelf(uid) && isCouncil()); }
+
+    // Each person's own entries
+    match /signups/{uid}     { allow read: if signedIn(); allow write: if isSelf(uid) || isCouncil(); }
+    match /birthdays/{uid}   { allow read: if signedIn(); allow write: if isSelf(uid) || isCouncil(); }
+    match /playlists/{uid}   { allow read: if signedIn(); allow write: if isSelf(uid) || isCouncil(); }
+    match /votes/{uid}       { allow read: if isSelf(uid) || isCouncil(); allow write: if isSelf(uid); }
+    match /suggestions/{uid} { allow read, write: if isSelf(uid) || isCouncil(); }
+    match /profiles/{uid}    { allow read: if signedIn(); allow write: if signedIn() && request.auth.uid == uid; }
+    match /private/{uid}     { allow read: if isOwner() || (signedIn() && request.auth.uid == uid); allow write: if signedIn() && request.auth.uid == uid; }
+
+    // Council only
+    match /proposals/{id} { allow read, write: if isCouncil(); }
+    match /meetings/{id}  { allow read, write: if isCouncil(); }
+    match /history/{id}   { allow read, write: if isCouncil(); }
+    match /admin/{id}     { allow read, write: if isOwner(); }
+  }
+}

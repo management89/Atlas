@@ -36,7 +36,7 @@ button,input,select,textarea{font:inherit;color:inherit}
 .top-row{display:flex;flex-direction:column;gap:18px}
 .brand b{display:block;font-size:30px;font-weight:800;letter-spacing:-.025em;line-height:.95}
 .brand small{display:block;font-size:14px;color:var(--rail-dim);margin-top:4px}
-.me{display:flex;align-items:center;gap:10px;min-width:0;padding-top:14px;border-top:2px solid var(--rail-ink)}
+.me{display:flex;flex-wrap:wrap;align-items:center;gap:10px;min-width:0;padding-top:14px;border-top:2px solid var(--rail-ink)}
 .me .grow div{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .me .title{font-weight:700}
 .me .sub{color:var(--rail-dim)}
@@ -546,7 +546,7 @@ addEventListener("hashchange",()=>{view=current();if(view!=="proposals")editing=
 
 function setStatus(s){
   dbState=s;const el=$("#status"),t=$("#statusText");el.className="status";
-  const msg={connecting:"Connecting to council records…",ok:"Changes save automatically and sync live.",slow:"Can't reach saved records yet. What you see may be out of date.",err:"Lost connection to saved records. Reload to reconnect.",nodb:"Saving is off in this view.",offline:"Open this page on claude.ai to load council records."}[s];
+  const msg={connecting:"Connecting to council records…",ok:"Changes save automatically and sync live.",slow:"Can't reach saved records yet. What you see may be out of date.",err:"Lost connection to saved records. Reload to reconnect.",nodb:"Saving is off in this view.",offline:window.__setupMsg||"Open this page on claude.ai to load council records."}[s];
   if(s==="ok")el.classList.add("ok");if(s==="err"||s==="slow")el.classList.add("err");
   t.textContent=msg;
 }
@@ -564,16 +564,16 @@ function renderNav(){
 }
 function renderMe(){
   const b=$("#meBox");
-  if(!me.id){b.innerHTML=`<span class="avatar lg" style="background:var(--muted)">?</span><div class="grow"><div class="title">Not signed in</div><div class="sub">Viewing as a visitor</div></div>`;return}
+  if(!me.id){b.innerHTML=`<span class="avatar lg" style="background:var(--muted)">?</span><div class="grow"><div class="title">Not signed in</div><div class="sub">Viewing as a visitor</div></div>${window.__signIn?`<button class="btn sm" data-act="signin">Sign in with Google</button>`:""}`;return}
   const d=myDoc(),role=isPres?"President":d&&isApproved(d)?(member(me.id).role):d?"Waiting for approval":"Visitor";
   const img=d&&d.photo?avatar(me.id,"lg"):`<img class="avatar lg" src="${esc(me.avatarUrl)}" alt="">`;
-  b.innerHTML=`${img}<div class="grow"><div class="title">${esc((d&&d.name)||me.name||"You")}</div><div class="sub">${esc(role)}</div></div>`;
+  b.innerHTML=`${img}<div class="grow"><div class="title">${esc((d&&d.name)||me.name||"You")}</div><div class="sub">${esc(role)}</div></div>${window.__signOut?`<button class="btn sm ghost" data-act="signout">Sign out</button>`:""}`;
 }
 function render(){
   renderNav();renderMe();
   if(editing&&shownView()==="proposals"&&$("#editor"))return;
   let banner="";
-  if(!db&&dbState!=="connecting")banner=`<div class="banner">Saving is off in this view, so nothing you add here will be kept. Open the page on claude.ai while signed in to use the council's shared records.</div>`;
+  if(!db&&dbState!=="connecting")banner=window.__setupMsg?`<div class="banner">${esc(window.__setupMsg)}</div>`:`<div class="banner">Saving is off in this view, so nothing you add here will be kept. Open the page on claude.ai while signed in to use the council's shared records.</div>`;
   else if(db&&dbState!=="connecting"&&me.id&&!council()){const d=myDoc();
     if(d&&!isApproved(d))banner=`<div class="banner">Your council profile is waiting for the president's approval.</div>`;
     else if(d&&isApproved(d)&&!isEditor)banner=`<div class="banner">You're an approved council member. Ask the president to give you Editor access to this page so you can make changes.</div>`;}
@@ -708,7 +708,7 @@ function allSuggestions(){const out=[];for(const d of S.suggestions)for(const[k,
 function suggestions(){
   const all=allSuggestions(),formUrl=safeUrl(CFG.formUrl),can=canJoin();
   let out=head(`Ideas, vending machine requests and problems around school. Council reads every one and replies here.`,"Suggestions and reports",can?`<button class="btn" data-act="add-suggestion" data-cat="Report a problem">Report a problem</button><button class="btn" data-act="add-suggestion" data-cat="Vending machine">Request a vending item</button><button class="btn primary" data-act="add-suggestion">+ Make a suggestion</button>`:"");
-  if(!can)out+=`<div class="banner">${formUrl?`Send your idea using the <a href="${esc(formUrl)}" target="_blank" rel="noopener">Student Council suggestion form</a>.`:`To send a suggestion, you need contributor access to this page. Ask any Student Council member.`}</div>`;
+  if(!can)out+=`<div class="banner">${formUrl?`Send your idea using the <a href="${esc(formUrl)}" target="_blank" rel="noopener">Student Council suggestion form</a>.`:needAccess("send a suggestion")}</div>`;
   else if(formUrl&&!council())out+=`<p class="sub" style="margin:0">You can also use the <a href="${esc(formUrl)}" target="_blank" rel="noopener">Student Council suggestion form</a>.</p>`;
   if(council()){
     resolveIds(all.map(x=>x.uid));
@@ -733,7 +733,9 @@ function suggestionForm(cat){
 function subnav(items){const cur=shownView();return`<div class="subnav" role="navigation" aria-label="In this section">${items.map(([k,l])=>`<a href="#${k}" ${k===cur?'aria-current="page"':""}>${l}</a>`).join("")}</div>`}
 function dueIn(d){const n=Math.round((parse(d)-parse(TODAY))/864e5);return n<=0?"Today":n===1?"Tomorrow":`In ${n} days`}
 function weekStart(s){const d=parse(s)||parse(TODAY);return iso(addDays(d,-((d.getDay()+6)%7)))}
-const blob=id=>"/_blob/"+encodeURIComponent(id);
+const blob=id=>window.__assetUrl?window.__assetUrl(id):"/_blob/"+encodeURIComponent(id);
+const HOSTED=!!window.__signIn;
+const needAccess=what=>HOSTED?`<button class="btn sm" data-act="signin">Sign in</button> to ${what}.`:`To ${what}, you need contributor access to this page. Ask any Student Council member.`;
 
 /* Student Hub */
 function hubView(){const cur=shownView();return subnav([["hub","This week"],["calendar","Calendar"],["bulletin","Weekly bulletin"]])+(cur==="calendar"?calendar():cur==="bulletin"?bulletin():weekView())}
@@ -784,7 +786,7 @@ function eventCard(e){
     else if(closed)act=`<span class="sub">Sign-up closed</span>`;
     else if(full)act=`<span class="chip bad">Full</span>`;
     else if(canJoin())act=`<button class="btn sm primary" data-act="ev-join" data-id="${e.id}">${kind}</button>`;
-    else act=`<span class="sub">Signing up needs contributor access to this page.</span>`;
+    else act=`<span class="sub">${needAccess("sign up")}</span>`;
   }
   if(x&&council())resolveIds(sus.map(s=>s.uid));
   return`<article class="event"><div>${datebox(e.date)}</div><div class="grow">
@@ -878,7 +880,7 @@ function pollCard(p){
   const opts=p.options||[],mv=myVotes()[p.id],mine=Number.isInteger(mv)?mv:null,open=pollOpen(p),live=council()?tallyPoll(p):null,res=live||p.results||null,total=res?res.reduce((a,b)=>a+b,0):0,canVote=open&&canJoin();
   return`<article class="poll"><h3>${esc(p.question)}</h3><div class="sub parts"><span>${open?(p.closes?"Closes "+esc(short(p.closes)):"Open"):"Closed"}</span>${res?`<span>${total} vote${total===1?"":"s"}</span>`:""}${live&&!p.results?`<span>Only council sees these numbers until results are posted</span>`:""}</div>
   <div class="opts">${opts.map((o,i)=>{const pct=res&&total?Math.round(res[i]/total*100):0;return`<button class="opt" data-act="poll-vote" data-id="${p.id}" data-i="${i}" aria-pressed="${mine===i}" ${canVote?"":"disabled"}>${res?`<span class="optbar" style="width:${pct}%"></span>`:""}<span class="optlabel">${esc(o)}</span>${res?`<span class="optpct">${pct}%</span>`:mine===i?`<span class="optpct">Your vote</span>`:""}</button>`}).join("")}</div>
-  <p class="sub" style="margin:0">${mine!=null?`You voted for ${esc(opts[mine]||"")}.${open?" You can change your vote until the poll closes.":""}`:open?(canJoin()?"Pick one option.":"Voting needs contributor access to this page."):""}${!res?" Results are posted when the poll closes.":""}</p>
+  <p class="sub" style="margin:0">${mine!=null?`You voted for ${esc(opts[mine]||"")}.${open?" You can change your vote until the poll closes.":""}`:open?(canJoin()?"Pick one option.":needAccess("vote")):""}${!res?" Results are posted when the poll closes.":""}</p>
   ${canAct()?`<div class="toolbar">${open?`<button class="btn sm" data-act="poll-close" data-id="${p.id}">Close poll</button>`:""}<button class="btn sm primary" data-act="poll-post" data-id="${p.id}">${p.results?"Update posted results":"Post results"}</button><button class="btn sm ghost" data-act="edit-poll" data-id="${p.id}">Edit</button></div>`:""}</article>`;
 }
 
@@ -1159,10 +1161,10 @@ function members(){
 function presPanel(){
   const pend=S.members.filter(d=>!isApproved(d));resolveIds(pend.map(d=>d.id));
   return`<section class="panel" style="display:flex;flex-direction:column;gap:14px"><h2>President controls <span class="sub" style="font-weight:500">Only you see this section</span></h2>
-    <div class="banner" style="max-width:none">How to share this page: give council members <b>Editor</b> access so they can make changes. Give everyone else at Avenues <b>Viewer</b> access. They see the bulletin, calendar and tasks, and nothing else. People you add as <b>Contributor</b> can also use the suggestion box.</div>
+    ${HOSTED?`<div class="banner" style="max-width:none">Anyone can read the bulletin, calendar, events and opportunities. Students sign in with Google to sign up, vote and send suggestions. Approving someone below makes them a council member who can edit.</div>`:`<div class="banner" style="max-width:none">How to share this page: give council members <b>Editor</b> access so they can make changes. Give everyone else at Avenues <b>Viewer</b> access. They see the bulletin, calendar and tasks, and nothing else. People you add as <b>Contributor</b> can also use the suggestion box.</div>`}
     <div class="grid2">
       <div class="field"><label for="emails">Approved member emails</label><textarea id="emails" rows="5" placeholder="one email per line">${esc((ADMIN.emails||[]).join("\n"))}</textarea><span class="sub">People who join with one of these addresses are approved automatically. This list is private to you.</span><div><button class="btn sm primary" data-act="save-emails">Save list</button></div></div>
-      <div class="field"><label for="formurl">Outside suggestion form (optional)</label><input id="formurl" value="${esc(CFG.formUrl||"")}" placeholder="https://forms.gle/…"><span class="sub">If students can't sign in to claude.ai, paste a link to a school Google Form. The Suggestions page links to it.</span><div><button class="btn sm" data-act="save-form">Save link</button></div>
+      <div class="field"><label for="formurl">Outside suggestion form (optional)</label><input id="formurl" value="${esc(CFG.formUrl||"")}" placeholder="https://forms.gle/…"><span class="sub">${HOSTED?"Optional: a school Google Form for students who can't sign in here.":"If students can't sign in to claude.ai, paste a link to a school Google Form."} The Suggestions page links to it.</span><div><button class="btn sm" data-act="save-form">Save link</button></div>
         <label style="margin-top:12px">Join requests</label>
         ${pend.length?`<ul class="list" style="margin:0">${pend.map(d=>{const em=PROF[d.id]&&PROF[d.id].email;return`<li>${avatar(d.id,"lg")}<div class="grow"><div class="title">${esc(d.name||"Unnamed")}</div><div class="sub">${em?esc(em):"Email not shared"}${em&&(ADMIN.emails||[]).includes(em.toLowerCase())?", on your approved list":""}</div></div><button class="btn sm good" data-act="approve" data-id="${d.id}">Approve</button><button class="btn sm ghost danger" data-act="decline" data-id="${d.id}">Decline</button></li>`}).join("")}</ul>`:`<span class="sub">No one is waiting for approval.</span>`}
       </div>
@@ -1297,6 +1299,8 @@ document.addEventListener("click",async e=>{
     case"decline":{const d=S.members.find(x=>x.id===id);return save(()=>db.doc("members/"+id).delete(),"Request declined",["declined","member",d&&d.name])}
     case"save-emails":{const list=[...new Set($("#emails").value.split(/[\s,;]+/).map(s=>s.trim().toLowerCase()).filter(s=>s.includes("@")))];const ok=await save(()=>db.doc("admin/access").set({emails:list}),`Saved ${list.length} approved email${list.length===1?"":"s"}`,["updated the approved email list","settings",""]);if(ok){autoTried.clear()}return}
     case"save-form":{const raw=$("#formurl").value.trim(),v=safeUrl(raw);if(raw&&!v){toast("Paste a full link that starts with https://");return}return save(()=>cfgSet(c=>{c.formUrl=v;delete c.school}),v?"Suggestion form link saved":"Suggestion form link removed",["updated the suggestion form link","settings",""])}
+    case"signin":return window.__signIn&&window.__signIn();
+    case"signout":return window.__signOut&&window.__signOut();
     case"add-suggestion":return suggestionForm(b.dataset.cat);
     case"mode":preview=b.dataset.to==="student";try{localStorage.setItem("stuco-view",preview?"student":"council")}catch(err){}view=null;if(location.hash)try{history.replaceState(null,"",location.pathname+location.search)}catch(err){location.hash=""}window.scrollTo(0,0);return render();
     case"ev-toggle":openEvent=openEvent===id?null:id;return render();

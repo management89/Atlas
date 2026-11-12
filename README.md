@@ -1,6 +1,8 @@
 # Avenues Student Hub
 
-The Student Council workspace for Avenues The World School. One page covers the council's calendar, tasks, the school bulletin, a suggestion box, proposals, attendance and member profiles.
+The student hub and Student Council workspace for Avenues The World School.
+
+**Website:** https://alexanderhuang.codeberg.page/Atlas/
 
 ## What's in it
 
@@ -15,27 +17,61 @@ The Student Council workspace for Avenues The World School. One page covers the 
 - A Student view / Council view switch, so the president can see exactly what students see.
 - **Tasks:** the president assigns tasks or leaves them open. Members accept their tasks and mark them started or done.
 - **Proposals:** written in a built-in template that formats itself as you type. They export as a PDF and as a .docx that opens in Google Docs, and move from Draft to a roll-call vote.
-- **Attendance** with an automatic quorum check, **member profiles** approved by email, and a **history** log of every change.
+- **Attendance** with an automatic quorum check, **member profiles** approved by the president, and a **history** log of every change.
 
-## How it runs today
+## Who can do what
 
-`stuco-hub.html` is published as a Claude artifact. On claude.ai it gets sign-in, a shared database and file downloads from the artifact platform. Opened anywhere else, such as GitHub Pages, it loads the layout but shows a notice and saves nothing.
-
-Access is set by the page's share level on claude.ai:
-
-| Who | Share level | What they can do |
+| Who | How | What they can do |
 |---|---|---|
-| President | Owner | Everything, including assigning tasks and approving members |
-| Council members | Editor | Edit the calendar, bulletin, proposals and attendance; accept tasks |
-| Students | Contributor | Sign up for events, vote in polls, send suggestions, share playlists and birthdays |
-| Anyone else | Viewer | Read the student side only |
+| Anyone | Just open the site | Read the bulletin, calendar, events and opportunities |
+| Students | Sign in with Google | Everything on the student side; sign up for events, vote, suggest, share playlists and birthdays |
+| Council members | Sign in, create a profile, get approved by the president | Edit the school site; council pages |
+| President | The user ID set in `firebase-config.js` and `firestore.rules` | Everything, including assigning tasks and approving members |
 
-The database rules enforce this on the server. Proposals, attendance, history, poll votes and suggestions can't be read below Editor (students only see their own), and only the president can create tasks or change approvals.
-
-## Next step
-
-The plan is to run the hub as a normal website, hosted on GitHub Pages with Firebase for Google sign-in and the database, so anyone at Avenues can use it with their school account. The page already saves data in a Firestore-like way, so most of the work is swapping the artifact calls for the Firebase SDK and writing matching Firestore security rules.
+The rules in `firestore.rules` enforce this on Firebase's servers, not just in the page.
 
 ## Files
 
-- `stuco-hub.html`: the whole app (HTML, CSS and JavaScript in one file). It loads Libre Franklin from Google Fonts, plus jsPDF and JSZip from cdnjs for exports.
+| File | What it is |
+|---|---|
+| `stuco-hub.html` | The whole app. The single source for both the claude.ai artifact and the website. |
+| `site/` | The website, served by Codeberg Pages from the `pages` branch. |
+| `site/index.html` | Built from `stuco-hub.html` by `tools/build_site.py`. Don't edit it by hand. |
+| `site/firebase-config.js` | Your Firebase project settings and the president's user ID. |
+| `site/firebase-adapter.js` | Connects the app to Firebase (Google sign-in, database, photos, downloads). |
+| `firestore.rules` | Database security rules. Paste into the Firebase console. |
+| `tools/build_site.py` | Rebuilds `site/` after the app changes. |
+
+## Setting up Firebase (one time, free)
+
+1. Go to https://console.firebase.google.com and click **Create a project**. Use a Google account made for Student Council, not a personal one. Google Analytics isn't needed.
+2. **Authentication → Get started → Google → Enable**, then save.
+3. **Authentication → Settings → Authorized domains → Add domain:** `alexanderhuang.codeberg.page`
+4. **Firestore Database → Create database.** Pick a location near you and start in **production mode**.
+5. **Project settings (gear icon) → General → Your apps → Web (`</>`)**. Register an app called "Student Hub" (no Firebase Hosting), then copy the `firebaseConfig` values into `site/firebase-config.js`.
+6. Open the site and sign in with Google. A box at the bottom shows your user ID. Paste it into `site/firebase-config.js` (`OWNER_UID`) and into `firestore.rules` (replace `PASTE_PRESIDENT_UID`).
+7. **Firestore Database → Rules:** replace everything with the contents of `firestore.rules` and click **Publish**.
+8. Push the updated `site/firebase-config.js` and refresh the site. You're the president.
+
+Optional: to let only school accounts sign up, vote and suggest, edit `allowedEmail()` in `firestore.rules`.
+
+### Photos
+
+Firebase's file storage now needs a paid plan, so photos are shrunk and stored in Firestore instead, around 100 to 500 KB each. The free plan holds about 1 GB, a few thousand photos. If the site outgrows that, move photos to Firebase Storage on the Blaze plan.
+
+## Updating the website
+
+```bash
+python3 tools/build_site.py
+git add -A && git commit -m "Update site"
+git push codeberg main
+git subtree split --prefix site -b pages && git push -f codeberg pages
+```
+
+## Getting listed on Google
+
+1. Go to https://search.google.com/search-console and add the property `https://alexanderhuang.codeberg.page/Atlas/` using the **URL prefix** option.
+2. To verify, pick **HTML tag**, copy the `<meta name="google-site-verification" ...>` tag, and add it to the head in `tools/build_site.py`. Rebuild, push, then click **Verify**.
+3. Under **Sitemaps**, submit `sitemap.xml`. Then use **URL inspection → Request indexing**.
+
+Google usually lists a new site within a few days to two weeks.
