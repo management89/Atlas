@@ -1,0 +1,1034 @@
+<title>StuCo Hub</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Libre+Franklin:ital,wght@0,400;0,500;0,600;0,700;0,800;0,900;1,400&display=swap">
+<style>
+/* Hall pass. One bold move: a pennant-gold rail with heavy Franklin Gothic navigation. The work area stays quiet: white ground, navy ink, sections marked by a thick ink rule, cards only for real objects. Everything left-aligned. */
+:root{
+  --ground:#F1F3F5; --surface:#FFFFFF; --ink:#14202E; --muted:#56606C; --rule:#CCD2D9; --rule-strong:#14202E;
+  --rail:#F4B400; --rail-ink:#14202E; --rail-dim:rgba(20,32,46,.72); --rail-hover:rgba(20,32,46,.1);
+  --info:#2650B8; --info-soft:#E3E9F8; --good:#1D7A45; --good-soft:#DFF0E5; --bad:#B3261E; --bad-soft:#F8E1DF; --warn:#8A5A00; --warn-soft:#FBEFC9;
+  --paper:#FFFFFF; --paper-ink:#14202E; --paper-muted:#5E6873; --paper-line:#D5DAE0; --paper-gold:#F4B400;
+  --scrim:rgba(20,32,46,.55);
+  --f:"Libre Franklin","Franklin Gothic","Franklin Gothic Book","ITC Franklin Gothic","Helvetica Neue",Arial,sans-serif;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --ground:#0F151C; --surface:#18212B; --ink:#E8ECF0; --muted:#9BA6B2; --rule:#2B3642; --rule-strong:#E8ECF0;
+  --rail:#E9AC00; --info:#8EA9FF; --info-soft:#1E2B4D; --good:#5CC98A; --good-soft:#15301F; --bad:#FF8A80; --bad-soft:#3A1B19; --warn:#F0C24A; --warn-soft:#3A2E10;
+  --scrim:rgba(0,0,0,.6); color-scheme:dark}}
+:root[data-theme="dark"]{
+  --ground:#0F151C; --surface:#18212B; --ink:#E8ECF0; --muted:#9BA6B2; --rule:#2B3642; --rule-strong:#E8ECF0;
+  --rail:#E9AC00; --info:#8EA9FF; --info-soft:#1E2B4D; --good:#5CC98A; --good-soft:#15301F; --bad:#FF8A80; --bad-soft:#3A1B19; --warn:#F0C24A; --warn-soft:#3A2E10;
+  --scrim:rgba(0,0,0,.6); color-scheme:dark}
+
+*{box-sizing:border-box}
+body{background:var(--ground);color:var(--ink);font-family:var(--f);font-size:16px;line-height:1.55;font-variant-numeric:tabular-nums}
+h1,h2,h3{font-family:var(--f);text-wrap:balance;margin:0;line-height:1.1}
+button,input,select,textarea{font:inherit;color:inherit}
+:focus-visible{outline:3px solid var(--info);outline-offset:2px}
+.mono{font-variant-numeric:tabular-nums}
+.muted{color:var(--muted)}
+.app{display:grid;grid-template-columns:248px minmax(0,1fr);min-height:100vh}
+
+/* the rail: the one loud element */
+.rail{position:sticky;top:env(safe-area-inset-top,0px);align-self:start;height:100vh;padding:28px 18px;padding-left:max(18px,env(safe-area-inset-left,0px));background:var(--rail);color:var(--rail-ink);display:flex;flex-direction:column;gap:22px;overflow-y:auto}
+.top-row{display:flex;flex-direction:column;gap:18px}
+.brand b{display:block;font-size:30px;font-weight:800;letter-spacing:-.025em;line-height:.95}
+.brand small{display:block;font-size:14px;color:var(--rail-dim);margin-top:4px}
+.me{display:flex;align-items:center;gap:10px;min-width:0;padding-top:14px;border-top:2px solid var(--rail-ink)}
+.me .grow div{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.me .title{font-weight:700}
+.me .sub{color:var(--rail-dim)}
+nav{display:flex;flex-direction:column;gap:2px;margin-inline:-8px}
+nav a{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:7px 10px;border-radius:3px;color:var(--rail-ink);text-decoration:none;font-weight:700;font-size:18px;letter-spacing:-.01em;white-space:nowrap}
+nav a:hover{background:var(--rail-hover)}
+nav a[aria-current="page"]{background:var(--rail-ink);color:var(--rail)}
+nav a .count{font-size:13px;font-weight:700;min-width:22px;text-align:center;padding:0 6px;border-radius:3px;background:var(--rail-ink);color:var(--rail)}
+nav a[aria-current="page"] .count{background:var(--rail);color:var(--rail-ink)}
+.status{margin-top:auto;font-size:13px;color:var(--rail-dim);display:flex;gap:8px;align-items:flex-start}
+.dot{width:9px;height:9px;border-radius:50%;background:var(--rail-dim);margin-top:6px;flex:none}
+.status.ok .dot{background:#1D7A45} .status.err .dot{background:#B3261E}
+
+/* work area */
+main{padding-block:40px 72px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));min-width:0}
+.wrap{max-width:1080px;margin:0 auto;display:flex;flex-direction:column;gap:28px;padding-inline:8px}
+.head{display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:space-between;gap:14px}
+.head h1{font-size:46px;font-weight:800;letter-spacing:-.03em;line-height:1}
+.context{margin:8px 0 0;color:var(--muted);font-size:17px;max-width:62ch}
+.btn{border:1.5px solid var(--rule-strong);background:transparent;border-radius:3px;padding:8px 14px;cursor:pointer;font-weight:600;display:inline-flex;align-items:center;gap:6px;white-space:nowrap;text-decoration:none;color:var(--ink)}
+.btn:hover{background:var(--surface)}
+.btn.primary{background:var(--ink);color:var(--ground);border-color:var(--ink)}
+.btn.primary:hover{background:var(--ink);opacity:.88}
+.btn.ghost{border-color:transparent}
+.btn.ghost:hover{border-color:var(--rule)}
+.btn.danger{color:var(--bad)}
+.btn.good{background:var(--good);color:var(--surface);border-color:var(--good)}
+.btn.sm{padding:4px 10px;font-size:14px}
+.btn[disabled]{opacity:.45;cursor:not-allowed}
+.banner{border-left:4px solid var(--rail);background:var(--surface);padding:12px 16px;font-size:15px;max-width:80ch}
+.banner a{color:var(--info);font-weight:600}
+.panel{border-top:3px solid var(--rule-strong);padding-top:12px;min-width:0}
+.panel h2{font-size:22px;font-weight:800;letter-spacing:-.015em;display:flex;justify-content:space-between;align-items:baseline;gap:8px;flex-wrap:wrap}
+.panel h2 a{font-size:15px;font-weight:600;color:var(--info);text-decoration:none}
+.panel h2 a:hover{text-decoration:underline}
+.grid2{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:36px 40px}
+.list{list-style:none;margin:10px 0 0;padding:0;display:flex;flex-direction:column}
+.list li{padding:12px 0;border-top:1px solid var(--rule);display:flex;gap:14px;align-items:flex-start;min-width:0}
+.list li:first-child{border-top:0}
+.datebox{width:46px;flex:none;text-align:center;line-height:1}
+.datebox .m{font-size:13px;color:var(--muted);font-weight:600}
+.datebox .d{font-weight:800;font-size:26px;letter-spacing:-.02em;margin-top:2px}
+.grow{flex:1;min-width:0}
+.title{font-weight:700;overflow-wrap:anywhere}
+.sub{font-size:14px;color:var(--muted)}
+.parts{display:flex;flex-wrap:wrap;align-items:center;gap:2px 14px}
+.chip{display:inline-flex;align-items:center;gap:5px;font-size:13px;font-weight:600;padding:1px 7px;border-radius:3px;background:var(--ground);color:var(--muted);white-space:nowrap;border:1px solid var(--rule)}
+.chip.meeting,.chip.accent{background:var(--info-soft);color:var(--info);border-color:transparent}
+.chip.event,.chip.gold{background:var(--warn-soft);color:var(--warn);border-color:transparent}
+.chip.deadline,.chip.bad{background:var(--bad-soft);color:var(--bad);border-color:transparent}
+.chip.fundraiser,.chip.good{background:var(--good-soft);color:var(--good);border-color:transparent}
+.avatar{width:26px;height:26px;border-radius:50%;display:inline-grid;place-items:center;font-size:11px;font-weight:700;color:#fff;flex:none;object-fit:cover}
+.avatar.lg{width:38px;height:38px;font-size:14px}
+.avatar.xl{width:76px;height:76px;font-size:24px}
+.who{display:inline-flex;align-items:center;gap:7px;font-size:14px;min-width:0}
+.summary{display:flex;flex-wrap:wrap;gap:6px 26px;font-size:16px;color:var(--muted)}
+.summary b{color:var(--ink);font-weight:800}
+.empty{padding:24px 0 8px;color:var(--muted);font-size:15px;display:flex;flex-direction:column;align-items:flex-start;gap:10px;max-width:60ch}
+.empty strong{color:var(--ink);font-size:18px;font-weight:700}
+.start{display:grid;grid-template-columns:minmax(0,1.4fr) minmax(0,1fr);gap:24px;align-items:end;background:var(--surface);border-left:6px solid var(--rail);padding:24px 26px}
+.start h2{font-size:28px;font-weight:800;letter-spacing:-.02em}
+.start ol{margin:12px 0 0;padding-left:22px;color:var(--muted)}
+.start .acts{display:flex;flex-wrap:wrap;gap:8px;justify-content:flex-end}
+
+/* calendar */
+.calbar{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.calbar h2{font-size:28px;font-weight:800;letter-spacing:-.02em;min-width:200px}
+.calscroll{overflow-x:auto}
+.cal{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));border-top:3px solid var(--rule-strong);min-width:320px}
+.cal .dow{font-size:14px;color:var(--muted);font-weight:600;padding:8px 6px;border-bottom:1px solid var(--rule)}
+.cal .day{background:transparent;min-height:104px;padding:6px;display:flex;flex-direction:column;gap:3px;cursor:pointer;border:0;border-bottom:1px solid var(--rule);border-right:1px solid var(--rule);text-align:left;align-items:stretch;min-width:0}
+.cal .day:nth-child(7n){border-right:0}
+.cal .day:hover{background:var(--surface)}
+.cal .day.out{color:var(--muted);opacity:.55}
+.cal .num{font-size:15px;font-weight:700}
+.cal .day.today .num{background:var(--rail);color:var(--rail-ink);border-radius:3px;padding:0 6px;align-self:flex-start}
+.cal .ev{font-size:12px;font-weight:600;padding:1px 5px;border-radius:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;display:block;border:0}
+.cal .ev.task{background:transparent;color:var(--muted);font-weight:500;padding-left:1px}
+.legend{display:flex;flex-wrap:wrap;gap:6px}
+
+/* tasks */
+.toolbar{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.toolbar select,.toolbar input{border:1.5px solid var(--rule);background:var(--surface);border-radius:3px;padding:7px 10px}
+.board{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:22px;align-items:start}
+.col{border-top:3px solid var(--rule-strong);padding-top:10px;display:flex;flex-direction:column;gap:10px;min-width:0}
+.col h3{font-size:19px;font-weight:800;display:flex;justify-content:space-between}
+.col h3 .mono{color:var(--muted);font-weight:600}
+.card{background:var(--surface);border:1px solid var(--rule);border-radius:6px;padding:14px;display:flex;flex-direction:column;gap:9px;min-width:0}
+.card.mine{border-left:5px solid var(--rail)}
+.card .row{display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap}
+.card .detail{font-size:14px;color:var(--muted);overflow-wrap:anywhere}
+.pri{width:9px;height:9px;border-radius:50%;display:inline-block;flex:none}
+.pri.high{background:var(--bad)} .pri.normal{background:var(--warn)} .pri.low{background:var(--rule)}
+.iconbtns{display:flex;gap:4px;flex-wrap:wrap}
+.ib{border:1.5px solid var(--rule);background:transparent;border-radius:3px;width:30px;height:30px;cursor:pointer;display:grid;place-items:center;color:var(--muted);font-weight:700}
+.ib:hover{color:var(--ink);border-color:var(--ink)}
+.overdue{color:var(--bad);font-weight:700}
+
+/* bulletin */
+.posts{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:20px}
+.post{background:var(--surface);border:1px solid var(--rule);border-radius:6px;padding:20px 22px;display:flex;flex-direction:column;gap:10px;min-width:0}
+.post.pinned{grid-column:1/-1;border:0;border-top:6px solid var(--rail);border-radius:0 0 6px 6px}
+.post.pinned h3{font-size:30px}
+.post h3{font-size:23px;font-weight:800;letter-spacing:-.015em}
+.post p{margin:0;white-space:pre-wrap;overflow-wrap:anywhere;max-width:68ch;font-size:16px}
+.post .meta{display:flex;align-items:center;gap:6px 14px;flex-wrap:wrap;font-size:14px;color:var(--muted)}
+
+/* split views */
+.split{display:grid;grid-template-columns:280px minmax(0,1fr);gap:28px;align-items:start}
+.pick{display:flex;flex-direction:column;border-top:3px solid var(--rule-strong)}
+.pick button{text-align:left;background:transparent;border:0;border-bottom:1px solid var(--rule);padding:12px 10px;cursor:pointer;display:flex;flex-direction:column;gap:3px}
+.pick button:hover{background:var(--surface)}
+.pick button[aria-pressed="true"]{background:var(--surface);box-shadow:inset 5px 0 0 var(--rail)}
+.steps{display:flex;flex-wrap:wrap;gap:0}
+.steps span{font-size:14px;padding:5px 12px;color:var(--muted);font-weight:600;border:1.5px solid var(--rule);margin-left:-1.5px}
+.steps span:first-child{margin-left:0;border-radius:3px 0 0 3px}
+.steps span:last-child{border-radius:0 3px 3px 0}
+.steps span.on{background:var(--ink);color:var(--ground);border-color:var(--ink);position:relative}
+.steps span.done{color:var(--ink)}
+.tablewrap{overflow-x:auto}
+table{width:100%;border-collapse:collapse;font-size:15px}
+th{text-align:left;font-size:14px;color:var(--muted);font-weight:600;padding:8px;border-bottom:1.5px solid var(--rule-strong)}
+td{padding:9px 8px;border-bottom:1px solid var(--rule);vertical-align:middle}
+.seg{display:inline-flex;border:1.5px solid var(--rule);border-radius:3px;overflow:hidden}
+.seg button{border:0;border-left:1.5px solid var(--rule);background:transparent;padding:5px 11px;font-size:14px;cursor:pointer;color:var(--muted);font-weight:500}
+.seg button:first-child{border-left:0}
+.seg button:not(:disabled):hover{color:var(--ink)}
+.seg button[aria-pressed="true"].present,.seg button[aria-pressed="true"].aye{background:var(--good);color:var(--surface);font-weight:700}
+.seg button[aria-pressed="true"].late,.seg button[aria-pressed="true"].abstain{background:var(--warn-soft);color:var(--warn);font-weight:700}
+.seg button[aria-pressed="true"].excused{background:var(--info-soft);color:var(--info);font-weight:700}
+.seg button[aria-pressed="true"].absent,.seg button[aria-pressed="true"].nay{background:var(--bad);color:var(--surface);font-weight:700}
+.seg button:disabled{cursor:default}
+.tally{display:flex;gap:30px;flex-wrap:wrap}
+.tally div{display:flex;flex-direction:column}
+.tally b{font-size:40px;font-weight:800;letter-spacing:-.03em;line-height:1}
+.bar{height:10px;border-radius:2px;background:var(--rule);overflow:hidden;display:flex}
+.bar i{display:block;height:100%}
+
+/* proposal document */
+.paperwrap{background:var(--rule);padding:22px;overflow-x:auto;border-radius:4px}
+.paper{background:var(--paper);color:var(--paper-ink);font-family:var(--f);max-width:720px;margin:0 auto;padding:52px 56px;position:relative;font-size:15.5px;line-height:1.6;min-width:0;border-top:10px solid var(--paper-gold)}
+.paper .org{font-size:14px;color:var(--paper-muted);font-weight:500}
+.paper .kicker{font-size:15px;font-weight:700;color:var(--paper-ink);margin-top:22px}
+.paper .dtitle{font-size:34px;font-weight:800;letter-spacing:-.025em;line-height:1.05;margin:4px 0 20px;overflow-wrap:anywhere}
+.paper .meta{display:grid;grid-template-columns:max-content 1fr;gap:4px 22px;font-size:14px;padding-bottom:18px;border-bottom:3px solid var(--paper-ink)}
+.paper .meta dt{color:var(--paper-muted);font-weight:600}
+.paper .meta dd{margin:0;overflow-wrap:anywhere}
+.paper h4{font-size:18px;font-weight:800;letter-spacing:-.01em;color:var(--paper-ink);margin:26px 0 6px}
+.paper p{margin:0 0 8px;white-space:pre-wrap;overflow-wrap:anywhere}
+.paper .hint{color:var(--paper-muted);font-style:italic}
+.paper table{font-size:14.5px}
+.paper td,.paper th{border-bottom:1px solid var(--paper-line);color:var(--paper-ink)}
+.paper th{color:var(--paper-muted);border-bottom:1.5px solid var(--paper-ink)}
+.paper td.amt,.paper th.amt{text-align:right}
+.paper tr.total td{font-weight:800;border-bottom:0}
+.paper .res{border-left:5px solid var(--paper-gold);padding-left:16px;font-weight:500}
+.paper .res.hint{font-weight:400}
+.paper .sigs{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:26px;margin-top:48px;font-size:13px;color:var(--paper-muted)}
+.paper .sigs div{border-top:1.5px solid var(--paper-ink);padding-top:6px}
+.paper .wm{position:absolute;top:36%;left:0;right:0;text-align:center;font-size:96px;font-weight:900;color:var(--paper-ink);opacity:.045;transform:rotate(-28deg);pointer-events:none;letter-spacing:.04em}
+.edgrid{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.1fr);gap:28px;align-items:start}
+.edform{display:flex;flex-direction:column;gap:16px}
+.edform .hint-text{font-size:14px;color:var(--muted)}
+.brow{display:grid;grid-template-columns:minmax(0,1fr) 112px 32px;gap:6px}
+.sticky{position:sticky;top:calc(env(safe-area-inset-top,0px) + 16px)}
+
+/* members */
+.people{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:20px}
+.person{background:var(--surface);border:1px solid var(--rule);border-radius:6px;padding:18px;display:flex;flex-direction:column;gap:10px;min-width:0}
+.person.me-card{border-top:6px solid var(--rail)}
+.person .top{display:flex;gap:14px;align-items:center}
+.person p{margin:0;font-size:15px;color:var(--muted);overflow-wrap:anywhere;white-space:pre-wrap}
+.stats{display:flex;gap:16px;font-size:14px;color:var(--muted);flex-wrap:wrap}
+.stats b{color:var(--ink);font-weight:800}
+.photo-row{display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+
+/* who's working on what */
+.seg.toggle button[aria-pressed="true"]{background:var(--ink);color:var(--ground);font-weight:700}
+.prow{display:grid;grid-template-columns:230px minmax(0,1fr);gap:22px;padding:18px 0;border-bottom:1px solid var(--rule);align-items:start}
+.prow:first-child{border-top:3px solid var(--rule-strong)}
+.prow .person-id{display:flex;gap:12px;align-items:center;min-width:0}
+.prow .person-id .title{font-size:18px;font-weight:800;letter-spacing:-.01em}
+.ptasks{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:8px}
+.ptasks li{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:4px 14px;align-items:baseline;padding-left:14px;border-left:4px solid var(--rule)}
+.ptasks li.doing{border-left-color:var(--rail)}
+.ptasks li.done{border-left-color:var(--good);opacity:.7}
+.ptasks li .title{font-size:16px}
+.ptasks li .sub{grid-column:1/-1}
+.state{font-size:14px;font-weight:700;white-space:nowrap}
+.state.doing{color:var(--ink)} .state.todo{color:var(--muted)} .state.wait{color:var(--warn)} .state.done{color:var(--good)}
+
+/* suggestions */
+.sugs{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;border-top:3px solid var(--rule-strong)}
+.sugs>li{padding:16px 0;border-bottom:1px solid var(--rule);display:flex;flex-direction:column;gap:8px}
+.sugs .sug-head{display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;align-items:baseline}
+.sugs .sug-head .title{font-size:18px}
+.sugs p{margin:0;max-width:70ch;white-space:pre-wrap;overflow-wrap:anywhere}
+.reply{border-left:4px solid var(--rail);padding:6px 0 6px 12px;background:var(--surface);max-width:70ch}
+.reply-form{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:8px;max-width:70ch}
+.reply-form input,.sugs select{border:1.5px solid var(--rule);background:var(--surface);border-radius:3px;padding:6px 10px;width:100%}
+.sugs select{width:auto}
+@media (max-width:860px){.prow{grid-template-columns:minmax(0,1fr);gap:10px}}
+
+/* history */
+.hday{font-size:17px;font-weight:800;margin-top:14px}
+.hday:first-child{margin-top:0}
+.hlist{list-style:none;margin:4px 0 0;padding:0;display:flex;flex-direction:column}
+.hlist li{padding:8px 0;border-bottom:1px solid var(--rule);display:grid;grid-template-columns:76px minmax(0,1fr);gap:12px;align-items:baseline}
+.hlist time{font-size:14px;color:var(--muted)}
+
+/* modal */
+#modal{position:fixed;inset:0;background:var(--scrim);display:grid;place-items:center;padding:16px;z-index:50}
+.sheet{background:var(--surface);border-top:8px solid var(--rail);border-radius:0 0 6px 6px;width:min(580px,100%);max-height:calc(100vh - 32px);overflow:auto;padding:24px}
+.sheet h2{font-size:26px;font-weight:800;letter-spacing:-.02em;margin-bottom:16px}
+.fields{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.field{display:flex;flex-direction:column;gap:5px;min-width:0}
+.field.full{grid-column:1/-1}
+.field label{font-size:15px;font-weight:700}
+.field input:not([type=checkbox]):not([type=file]),.field select,.field textarea,.edform input,.edform select,.edform textarea{border:1.5px solid var(--rule);background:var(--surface);border-radius:3px;padding:8px 10px;width:100%}
+.field input:focus,.field select:focus,.field textarea:focus{border-color:var(--ink);outline:none}
+.field textarea,.edform textarea{min-height:100px;resize:vertical;line-height:1.5}
+.field.check{flex-direction:row;align-items:center;gap:8px}
+.mactions{display:flex;gap:8px;margin-top:20px;align-items:center}
+.sp{flex:1}
+.err{color:var(--bad);font-size:14px;font-weight:600}
+#toast{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(22px + env(safe-area-inset-bottom,0px));background:var(--rail);color:var(--rail-ink);font-weight:700;padding:11px 18px;border-radius:3px;font-size:15px;z-index:60;max-width:calc(100% - 32px)}
+
+@media (max-width:1000px){.edgrid{grid-template-columns:minmax(0,1fr)}.sticky{position:static}}
+@media (max-width:860px){
+  .app{grid-template-columns:1fr}
+  body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:10;background:var(--rail)}
+  .rail{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;height:auto;overflow:visible;gap:10px;padding:14px max(16px,env(safe-area-inset-right,0px)) 0 max(16px,env(safe-area-inset-left,0px))}
+  .rail .top-row{flex-direction:row;justify-content:space-between;gap:10px;align-items:center}
+  .brand b{font-size:24px} .brand small{display:none}
+  .me{border-top:0;padding-top:0}
+  .me .grow{display:none}
+  nav{flex-direction:row;overflow-x:auto;padding-bottom:10px;margin-inline:-6px;scrollbar-width:none}
+  nav a{font-size:16px}
+  .status{display:none}
+  main{padding-top:28px}
+  .grid2,.posts,.split,.start{grid-template-columns:minmax(0,1fr)}
+  .start .acts{justify-content:flex-start}
+  .board{grid-template-columns:minmax(0,1fr)}
+  .cal .day{min-height:58px}
+  .cal .ev{font-size:0;height:6px;padding:0;border-radius:99px}
+  .cal .ev.task{display:none}
+  .head h1{font-size:36px}
+  .paper{padding:30px 22px}
+  .paper .dtitle{font-size:27px}
+  .paper .sigs{grid-template-columns:minmax(0,1fr)}
+  .paperwrap{padding:8px}
+}
+@media (max-width:520px){.fields{grid-template-columns:1fr}.tally b{font-size:32px}}
+</style>
+
+<div class="app">
+  <aside class="rail">
+    <div class="top-row">
+      <div class="brand"><b>StuCo Hub</b><small>Student Council</small></div>
+      <div class="me" id="meBox"><span class="avatar lg" style="background:var(--muted)">?</span><div class="grow"><div class="title">Checking sign-in…</div></div></div>
+    </div>
+    <nav id="nav" aria-label="Sections"></nav>
+    <div class="status" id="status"><span class="dot"></span><span id="statusText">Connecting to council records…</span></div>
+  </aside>
+  <main><div class="wrap" id="main"></div></main>
+</div>
+<div id="modal" hidden></div>
+<div id="toast" hidden role="status"></div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+<script>
+const VIEWS=[["overview","Overview"],["bulletin","Bulletin"],["calendar","Calendar"],["tasks","Tasks"],["suggestions","Suggestions"],["proposals","Proposals"],["attendance","Attendance"],["members","Members"],["history","History"]];
+const COLS=["members","events","tasks","claims","bulletin","suggestions","proposals","meetings","history"];
+const COUNCIL_ONLY=["proposals","meetings","history"];
+const SCHOOL="Avenues The World School";
+const SUG_CATS=["Events","Spirit","Facilities","Food","Clubs","School policy","Other"];
+const SUG_STATUS=[["new","New"],["review","Under review"],["planned","Planned"],["done","Done"],["declined","Not this time"]];
+const S={members:[],events:[],tasks:[],claims:[],bulletin:[],suggestions:[],proposals:[],meetings:[],history:[]};
+let CFG={approved:{},roles:{},school:"",president:null}, cfgExists=false, ADMIN={emails:[]}, adminExists=false;
+const EV_TYPES=[["meeting","Meeting"],["event","School event"],["deadline","Deadline"],["fundraiser","Fundraiser"]];
+const TASK_STATUS=[["todo","To do"],["doing","In progress"],["done","Done"]];
+const PRI=[["high","High"],["normal","Normal"],["low","Low"]];
+const POST_TAGS=[["Announcement","Announcement"],["Event","Event"],["Reminder","Reminder"],["Opportunity","Opportunity"],["Spirit","Spirit"]];
+const P_STAGES=[["draft","Draft"],["moved","Moved"],["seconded","Seconded"],["voting","Vote open"],["passed","Passed"],["failed","Failed"]];
+const ROLES=["President","Vice President","Secretary","Treasurer","Historian","Class Representative","Committee Chair","Member","Advisor"];
+const COMMITTEES=["Events","Spirit","Fundraising","Communications","Service"];
+const ATT=[["present","Present"],["late","Late"],["excused","Excused"],["absent","Absent"]];
+const VOTES=[["aye","Aye"],["nay","Nay"],["abstain","Abstain"]];
+const PALETTE=["#2446C7","#B4442F","#1C8250","#8A4FBF","#9A6500","#0F7C8C","#C2407A","#5A6B2E"];
+const KINDS=[["all","Everything"],["task","Tasks"],["proposal","Proposals"],["event","Calendar"],["post","Bulletin"],["meeting","Attendance"],["member","Members"],["suggestion","Suggestions"]];
+const KIND_NOUN={task:"task",proposal:"proposal",event:"event",post:"bulletin post",meeting:"meeting",member:"member",settings:"settings",suggestion:"suggestion"};
+const HINT={
+  summary:"One or two sentences: what you want the council to approve.",
+  background:"What problem does this solve? Who asked for it? Include any facts, such as survey results or how many students it affects.",
+  action:"Exactly what will happen, who is responsible, and where. Be specific enough that someone else could carry it out.",
+  timeline:"Key dates. Example: Dec 1 — order supplies; Dec 15 — install; Jan 10 — report back to council.",
+  impact:"How students benefit, and how the council will know it worked.",
+  resolution:"BE IT RESOLVED that the Student Council approves …"
+};
+
+let db=null,U=null,canWrite=true,isEditor=false,taskMode=null,sugFilter="open",dbState="connecting",loaded=new Set();
+let me={id:null,name:"",email:null,avatarUrl:"",color:"#586179"},isPres=false;
+let calCursor=firstOfMonth(new Date()),taskFilter="all",histFilter="all",selMeeting=null,selProposal=null,editing=null;
+const PROF={},asked=new Set(),autoTried=new Set();
+
+const $=s=>document.querySelector(s);
+const esc=s=>String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+function pad(n){return String(n).padStart(2,"0")}
+function iso(d){return d.getFullYear()+"-"+pad(d.getMonth()+1)+"-"+pad(d.getDate())}
+function parse(s){if(!s)return null;const[y,m,d]=s.split("-").map(Number);return new Date(y,m-1,d)}
+function firstOfMonth(d){return new Date(d.getFullYear(),d.getMonth(),1)}
+function addDays(d,n){const x=new Date(d);x.setDate(x.getDate()+n);return x}
+const TODAY=iso(new Date());
+const fmt=(s,o)=>{const d=parse(s);return d?d.toLocaleDateString(undefined,o):""};
+const short=s=>fmt(s,{month:"short",day:"numeric"});
+const longd=s=>fmt(s,{weekday:"short",month:"short",day:"numeric"});
+const fulld=s=>fmt(s,{year:"numeric",month:"long",day:"numeric"});
+const money=n=>"$"+Number(n||0).toLocaleString(undefined,{minimumFractionDigits:2,maximumFractionDigits:2});
+function fmtTime(t){if(!t)return"";const[h,m]=t.split(":").map(Number);const d=new Date();d.setHours(h,m);return d.toLocaleTimeString(undefined,{hour:"numeric",minute:"2-digit"})}
+function label(list,v){return(list.find(x=>x[0]===v)||[v,v])[1]}
+function initials(n){return(n||"?").split(/\s+/).filter(Boolean).map(w=>w[0]).slice(0,2).join("").toUpperCase()||"?"}
+function colorFor(id){let h=0;for(const c of String(id))h=(h*31+c.charCodeAt(0))>>>0;return PALETTE[h%PALETTE.length]}
+const byDate=(a,b)=>(a.date||"9999").localeCompare(b.date||"9999")||(a.time||"").localeCompare(b.time||"");
+function toast(msg){const t=$("#toast");t.textContent=msg;t.hidden=false;clearTimeout(toast.t);toast.t=setTimeout(()=>t.hidden=true,3400)}
+
+/* ---------- people & permissions ---------- */
+const isApproved=d=>!!(d&&(d.manual||d.sample||CFG.approved[d.id]||d.id===CFG.president));
+const full=d=>d&&({...d,role:CFG.roles[d.id]||d.role||"Member"});
+function member(id){return full(S.members.find(m=>m.id===id))}
+function roster(){const r=S.members.filter(isApproved).map(full);return r.sort((a,b)=>((ROLES.indexOf(a.role)+99)%99)-((ROLES.indexOf(b.role)+99)%99)||(a.name||"").localeCompare(b.name||""))}
+const myDoc=()=>me.id?S.members.find(m=>m.id===me.id):null;
+const amMember=()=>isPres||isApproved(myDoc());
+const W=()=>canWrite&&!!db;
+const council=()=>isPres||(amMember()&&isEditor);
+const canAct=()=>W()&&council();
+const canJoin=()=>W()&&!!me.id;
+const PUBLIC_VIEWS=["bulletin","calendar","tasks","suggestions"];
+const allowed=v=>council()||PUBLIC_VIEWS.includes(v)||(v==="members"&&canJoin());
+const shownView=()=>allowed(view)?view:(council()?"overview":"bulletin");
+const navViews=()=>VIEWS.filter(([k])=>allowed(k));
+const safeUrl=u=>/^https:\/\/[^\s"'<>]+$/i.test(u||"")?u:"";
+function nameOf(id){if(!id)return"";const m=S.members.find(x=>x.id===id);if(m&&m.name)return m.name;if(PROF[id]&&PROF[id].name)return PROF[id].name;if(id===me.id)return me.name||"You";return"Someone"}
+function resolveIds(ids){if(!U)return;const need=[...new Set(ids)].filter(i=>i&&!asked.has(i));if(!need.length)return;need.forEach(i=>asked.add(i));U.profiles(need).then(ps=>{Object.assign(PROF,ps);render()}).catch(()=>{})}
+function avatar(id,size=""){const m=S.members.find(x=>x.id===id);const photo=m&&typeof m.photo==="string"&&m.photo.startsWith("data:image/")?m.photo:null;
+  if(photo)return`<img class="avatar ${size}" src="${esc(photo)}" alt="">`;
+  if(!m&&PROF[id]&&PROF[id].avatarUrl)return`<img class="avatar ${size}" src="${esc(PROF[id].avatarUrl)}" alt="">`;
+  return`<span class="avatar ${size}" style="background:${colorFor(id||"x")}">${esc(initials(nameOf(id)))}</span>`}
+function who(id,fallback="Unassigned"){if(!id)return`<span class="who muted">${esc(fallback)}</span>`;return`<span class="who">${avatar(id)}${esc(nameOf(id))}${id===me.id?' <span class="muted">(you)</span>':""}</span>`}
+function datebox(s){const d=parse(s);if(!d)return`<div class="datebox"><div class="m">TBD</div><div class="d">–</div></div>`;return`<div class="datebox"><div class="m">${d.toLocaleDateString(undefined,{month:"short"})}</div><div class="d">${d.getDate()}</div></div>`}
+const memberOpts=(none="Unassigned")=>[["",none],...roster().map(m=>[m.id,m.name])];
+
+/* ---------- writes + history ---------- */
+let logQ=Promise.resolve();
+function log(a,k,title){
+  if(!db)return;
+  const now=new Date(),mk=iso(now).slice(0,7),key=now.getTime().toString(36)+Math.random().toString(36).slice(2,6);
+  const entry={t:now.toISOString(),by:me.id||null,a,k,title:String(title||"").slice(0,160)};
+  logQ=logQ.then(async()=>{const ref=db.doc("history/"+mk);try{if(S.history.some(h=>h.id===mk))await ref.update({entries:{[key]:entry}});else await ref.set({entries:{[key]:entry}})}catch(e){}});
+}
+async function save(fn,okMsg,entry){
+  if(!db){toast("Saving isn't available in this view.");return false}
+  try{await fn();if(okMsg)toast(okMsg);if(entry)log(...entry);return true}
+  catch(e){
+    if(e&&e.code==="invalid_argument")toast("You don't have permission to make that change.");
+    else if(e&&e.code==="quota_exceeded")toast("The council's storage is full. Delete old items, then try again.");
+    else toast("Couldn't save that change. Check your connection and try again.");
+    return false
+  }
+}
+const col=c=>db.collection(c);
+function cfgSet(mut){if(!loaded.has("config"))return Promise.reject({code:"unavailable"});const next=JSON.parse(JSON.stringify({approved:{},roles:{},...CFG}));mut(next);return db.doc("config/access").set(next)}
+
+/* ---------- routing ---------- */
+function current(){const h=location.hash.slice(1);return VIEWS.some(v=>v[0]===h)?h:null}
+let view=current()||"overview";
+addEventListener("hashchange",()=>{view=current()||"overview";if(view!=="proposals")editing=null;render();window.scrollTo(0,0)});
+
+function setStatus(s){
+  dbState=s;const el=$("#status"),t=$("#statusText");el.className="status";
+  const msg={connecting:"Connecting to council records…",ok:"Changes save automatically and sync live.",slow:"Can't reach saved records yet. What you see may be out of date.",err:"Lost connection to saved records. Reload to reconnect.",nodb:"Saving is off in this view.",offline:"Open this page on claude.ai to load council records."}[s];
+  if(s==="ok")el.classList.add("ok");if(s==="err"||s==="slow")el.classList.add("err");
+  t.textContent=msg;
+}
+
+/* ---------- render ---------- */
+function renderNav(){
+  const counts={tasks:S.tasks.filter(t=>taskState(t).status!=="done").length,proposals:S.proposals.filter(p=>p.status==="voting").length,members:isPres?S.members.filter(d=>!isApproved(d)).length:0};
+  const cur=shownView();counts.suggestions=council()?allSuggestions().filter(x=>x.status==="new").length:0;
+  $("#nav").innerHTML=navViews().map(([k,l])=>`<a href="#${k}" ${k===cur?'aria-current="page"':""}>${l}${counts[k]?`<span class="count">${counts[k]}</span>`:""}</a>`).join("");
+}
+function renderMe(){
+  const b=$("#meBox");
+  if(!me.id){b.innerHTML=`<span class="avatar lg" style="background:var(--muted)">?</span><div class="grow"><div class="title">Not signed in</div><div class="sub">Viewing as a visitor</div></div>`;return}
+  const d=myDoc(),role=isPres?"President":d&&isApproved(d)?(member(me.id).role):d?"Waiting for approval":"Visitor";
+  const img=d&&d.photo?avatar(me.id,"lg"):`<img class="avatar lg" src="${esc(me.avatarUrl)}" alt="">`;
+  b.innerHTML=`${img}<div class="grow"><div class="title">${esc((d&&d.name)||me.name||"You")}</div><div class="sub">${esc(role)}</div></div>`;
+}
+function render(){
+  renderNav();renderMe();
+  if(editing&&shownView()==="proposals"&&$("#editor"))return;
+  let banner="";
+  if(!db&&dbState!=="connecting")banner=`<div class="banner">Saving is off in this view, so nothing you add here will be kept. Open the page on claude.ai while signed in to use the council's shared records.</div>`;
+  else if(db&&dbState!=="connecting"&&me.id&&!council()){const d=myDoc();
+    if(d&&!isApproved(d))banner=`<div class="banner">Your council profile is waiting for the president's approval.</div>`;
+    else if(d&&isApproved(d)&&!isEditor)banner=`<div class="banner">You're an approved council member. Ask the president to give you Editor access to this page so you can make changes.</div>`;}
+  $("#main").innerHTML=banner+({overview,calendar,tasks,bulletin,suggestions,proposals,attendance,members,history:historyView}[shownView()])();
+}
+function head(context,title,actions=""){return`<div class="head"><div><h1>${title}</h1>${context?`<p class="context">${context}</p>`:""}</div><div class="toolbar">${actions}</div></div>`}
+const addBtn=(act,txt,ok=canAct())=>ok?`<button class="btn primary" data-act="${act}">+ ${txt}</button>`:"";
+function empty(title,text,act,btn,ok=canAct()){return`<div class="empty"><strong>${title}</strong><span>${text}</span>${act&&ok?`<button class="btn" data-act="${act}">${btn}</button>`:""}</div>`}
+
+/* ---------- tasks model ---------- */
+const claimsOf=uid=>(S.claims.find(c=>c.id===uid)||{}).tasks||{};
+function taskState(t){
+  let owner=t.assignee||null,claim=null;
+  if(owner)claim=claimsOf(owner)[t.id]||null;
+  else{let best=null;for(const c of S.claims){const x=(c.tasks||{})[t.id];if(x&&(!best||x.at<best.x.at))best={uid:c.id,x}}if(best){owner=best.uid;claim=best.x}}
+  let status="todo",at="";
+  if(claim){status=claim.status==="accepted"?"todo":claim.status;at=claim.at||""}
+  if(t.statusAt&&t.statusAt>at)status=t.status||"todo";
+  return{owner,accepted:!!claim,status,open:!t.assignee&&!claim}
+}
+function setClaim(tid,status){const mine={...claimsOf(me.id)};if(status)mine[tid]={status,at:new Date().toISOString()};else delete mine[tid];return db.doc("claims/"+me.id).set({tasks:mine})}
+
+/* overview */
+function overview(){
+  const today=new Date();
+  const upcoming=S.events.filter(e=>e.date>=TODAY).sort(byDate);
+  const nextMeeting=upcoming.find(e=>e.type==="meeting");
+  const withSt=S.tasks.map(t=>({t,st:taskState(t)}));
+  const open=withSt.filter(x=>x.st.status!=="done");
+  const overdue=open.filter(x=>x.t.due&&x.t.due<TODAY);
+  const mine=open.filter(x=>x.st.owner===me.id&&me.id);
+  const voting=S.proposals.filter(p=>p.status==="voting");
+  const lastMeet=[...S.meetings].sort((a,b)=>b.date.localeCompare(a.date))[0];
+  const nothing=["members","events","tasks","bulletin","proposals","meetings"].every(c=>!S[c].length);
+  let start="";
+  if(isPres&&W()&&dbState!=="connecting"&&(!myDoc()||nothing))start=`<section class="start"><div><h2>Set up your council, President</h2><ol><li>${myDoc()?"✓ Your profile is set up.":"Create your president profile."}</li><li>On Members, list the email addresses of approved council members.</li><li>Share this page with council members as Editors, and with the rest of the school as Viewers.</li></ol></div><div class="acts">${nothing?`<button class="btn" data-act="sample">Load a sample council</button>`:""}${myDoc()?`<a class="btn primary" href="#members">Manage members</a>`:`<button class="btn primary" data-act="join">Create my profile</button>`}</div></section>`;
+  const soon=open.filter(x=>x.t.due).sort((a,b)=>a.t.due.localeCompare(b.t.due)).concat(open.filter(x=>!x.t.due)).slice(0,5);
+  const posts=sortedPosts().slice(0,3);
+  const q=lastMeet?quorum(lastMeet):null;
+  const taskLi=x=>`<li><span class="pri ${x.t.priority||"normal"}" style="margin-top:8px"></span><div class="grow"><div class="title">${esc(x.t.title)}</div><div class="sub parts">${who(x.st.owner,"Open to anyone")}${dueText(x.t,x.st)}</div></div>${statusChip(x.t,x.st)}</li>`;
+  return head(today.toLocaleDateString(undefined,{weekday:"long",month:"long",day:"numeric"}),me.id&&amMember()?`Welcome back, ${esc((nameOf(me.id)||"").split(" ")[0]||"friend")}`:"This week in council")+
+  `<div class="summary"><span>Next meeting <b>${nextMeeting?esc(longd(nextMeeting.date)):"not scheduled"}</b></span><span><b>${open.length}</b> open tasks</span><span><b>${overdue.length}</b> overdue</span><span><b>${voting.length}</b> ${voting.length===1?"proposal":"proposals"} open for vote</span><span><b>${roster().length}</b> members</span></div>`+start+
+  (mine.length?`<section class="panel"><h2>Your tasks <a href="#tasks">Open the board</a></h2><ul class="list">${mine.map(taskLi).join("")}</ul></section>`:"")+
+  `<div class="grid2">
+    <section class="panel"><h2>Coming up <a href="#calendar">Open calendar</a></h2>${upcoming.length?`<ul class="list">${upcoming.slice(0,5).map(evRow).join("")}</ul>`:`<div style="margin-top:12px">${empty("Nothing on the calendar","Add meetings, school events and deadlines.","add-event","Add an event")}</div>`}</section>
+    <section class="panel"><h2>Tasks due soon <a href="#tasks">See all tasks</a></h2>${soon.length?`<ul class="list">${soon.map(taskLi).join("")}</ul>`:`<div style="margin-top:12px">${empty("No open tasks",isPres?"Assign work to council members to track it here.":"The president hasn't assigned any tasks yet.","add-task","Assign a task",isPres&&W())}</div>`}</section>
+    <section class="panel"><h2>Latest on the bulletin <a href="#bulletin">Read the bulletin</a></h2>${posts.length?`<ul class="list">${posts.map(p=>`<li><div class="grow"><div class="title">${esc(p.title)}</div><div class="sub parts"><span>${esc(p.tag||"Announcement")}</span><span>${esc(short(p.date))}</span></div></div></li>`).join("")}</ul>`:`<div style="margin-top:12px">${empty("No posts yet","Share announcements with the school.","add-post","Write a post")}</div>`}</section>
+    <section class="panel"><h2>Proposals and attendance <a href="#proposals">See proposals</a></h2>
+      ${voting.length?`<ul class="list">${voting.map(p=>{const t=tally(p);return`<li><div class="grow"><div class="title">${esc(p.title)}</div><div class="sub">Aye ${t.aye}, nay ${t.nay}, abstain ${t.abstain}</div></div><span class="chip accent">Vote open</span></li>`}).join("")}</ul>`:`<p class="sub" style="margin:10px 0 0">No proposals are open for a vote.</p>`}
+      ${lastMeet?`<div style="border-top:1px solid var(--line);margin-top:12px;padding-top:12px"><div class="sub">Last roll call, ${esc(longd(lastMeet.date))}</div><div style="display:flex;gap:8px;align-items:center;margin-top:6px;flex-wrap:wrap"><span class="title">${q.here} of ${q.total} present</span><span class="chip ${q.met?"good":"bad"}">${q.met?"Quorum met":"No quorum"}</span></div></div>`:""}
+    </section>
+  </div>`;
+}
+function evRow(e){return`<li>${datebox(e.date)}<div class="grow"><div class="title">${esc(e.title)}</div><div class="sub">${[fmtTime(e.time),e.location].filter(Boolean).map(esc).join(", ")||"&nbsp;"}</div></div><span class="chip ${esc(e.type)}">${label(EV_TYPES,e.type)}</span>${canAct()?`<button class="ib" data-act="edit-event" data-id="${e.id}" aria-label="Edit ${esc(e.title)}">✎</button>`:""}</li>`}
+function dueText(t,st){if(!t.due)return"No due date";const late=st.status!=="done"&&t.due<TODAY;return`<span class="${late?"overdue":""}">${late?"Overdue since ":"Due "}${esc(short(t.due))}</span>`}
+function statusChip(t,st){if(st.open)return`<span class="chip good">Open to accept</span>`;if(!st.accepted&&st.status==="todo")return`<span class="chip gold">Awaiting acceptance</span>`;if(st.status==="todo")return`<span class="chip accent">Accepted</span>`;return`<span class="chip">${label(TASK_STATUS,st.status)}</span>`}
+
+/* calendar */
+function calendar(){
+  const m=calCursor,start=addDays(m,-m.getDay());
+  const days=[];for(let i=0;i<42;i++)days.push(addDays(start,i));
+  const rows=days[35].getMonth()!==m.getMonth()?days.slice(0,35):days;
+  const evs=S.events.slice().sort(byDate);
+  const dues=S.tasks.filter(t=>t.due&&taskState(t).status!=="done");
+  const monthKey=iso(m).slice(0,7);
+  const monthEvents=evs.filter(e=>(e.date||"").startsWith(monthKey));
+  return head("Meetings, school events, deadlines and fundraisers. Task due dates show up here too.","Calendar",addBtn("add-event","Add event"))+
+  `<div class="calbar"><button class="btn sm" data-act="cal-prev" aria-label="Previous month">←</button><h2>${m.toLocaleDateString(undefined,{month:"long",year:"numeric"})}</h2><button class="btn sm" data-act="cal-next" aria-label="Next month">→</button><button class="btn sm ghost" data-act="cal-today">Today</button><span class="sp"></span><div class="legend">${EV_TYPES.map(([k,l])=>`<span class="chip ${k}">${l}</span>`).join("")}</div></div>
+  <div class="calscroll"><div class="cal">${["Sun","Mon","Tue","Wed","Thu","Fri","Sat"].map(d=>`<div class="dow">${d}</div>`).join("")}
+  ${rows.map(d=>{const k=iso(d),de=evs.filter(e=>e.date===k),dt=dues.filter(t=>t.due===k);
+    return`<button class="day ${d.getMonth()!==m.getMonth()?"out":""} ${k===TODAY?"today":""}" data-act="day" data-date="${k}" aria-label="${d.toDateString()}, ${de.length} events"><span class="num">${d.getDate()}</span>${de.map(e=>`<span class="ev chip ${esc(e.type)}" title="${esc(e.title)}">${esc(e.title)}</span>`).join("")}${dt.map(t=>`<span class="ev task" title="Task due: ${esc(t.title)}">☐ ${esc(t.title)}</span>`).join("")}</button>`}).join("")}
+  </div></div>
+  <section class="panel"><h2>This month</h2>${monthEvents.length?`<ul class="list">${monthEvents.map(evRow).join("")}</ul>`:`<p class="sub" style="margin:10px 0 0">Nothing scheduled this month.${canAct()?" Click a day to add something.":""}</p>`}</section>`;
+}
+
+/* tasks */
+function taskToggle(){return council()?`<div class="seg toggle" role="group" aria-label="Task layout"><button data-act="task-mode" data-to="people" aria-pressed="${taskLayout()==="people"}">By person</button><button data-act="task-mode" data-to="board" aria-pressed="${taskLayout()==="board"}">Board</button></div>`:""}
+const taskLayout=()=>council()?(taskMode||"board"):"people";
+function tasks(){
+  if(taskLayout()==="board")return taskBoard().replace('<div class="toolbar">','<div class="toolbar">'+taskToggle());
+  const all=S.tasks.map(t=>({t,st:taskState(t)}));
+  const groups=new Map();
+  for(const x of all){if(x.st.status==="done"&&x.t.due&&x.t.due<iso(addDays(new Date(),-14)))continue;const k=x.st.open?"_open":(x.st.owner||"_open");if(!groups.has(k))groups.set(k,[]);groups.get(k).push(x)}
+  const rank={doing:0,todo:1,done:2};
+  const people=[...roster().map(m=>m.id).filter(id=>groups.has(id)),...[...groups.keys()].filter(k=>k!=="_open"&&!roster().some(m=>m.id===k))];
+  const active=all.filter(x=>x.st.status==="doing").length,people2=new Set(all.filter(x=>x.st.status!=="done"&&x.st.owner).map(x=>x.st.owner)).size;
+  const stateOf=st=>st.status==="doing"?["doing","Working on it"]:st.status==="done"?["done","Done"]:st.open?["todo","Open"]:!st.accepted?["wait","Assigned, not accepted yet"]:["todo","Up next"];
+  const li=x=>{const[c,l]=stateOf(x.st);return`<li class="${x.st.status}"><span class="title">${esc(x.t.title)}</span><span class="state ${c}">${l}</span><span class="sub parts">${x.t.due?`<span>${dueText(x.t,x.st)}</span>`:""}${x.t.committee?`<span>${esc(x.t.committee)}</span>`:""}</span></li>`};
+  const sortItems=a=>a.sort((p,q)=>rank[p.st.status]-rank[q.st.status]||(p.t.due||"9999").localeCompare(q.t.due||"9999"));
+  return head(`What everyone on Student Council is working on right now. ${active} task${active===1?"":"s"} in progress across ${people2} ${people2===1?"person":"people"}.`,"Who's working on what",taskToggle()+(isPres&&W()?`<button class="btn primary" data-act="add-task">+ Assign task</button>`:""))+
+  (people.length||groups.has("_open")?`<div>${people.map(id=>{const m=member(id);return`<section class="prow"><div class="person-id">${avatar(id,"lg")}<div class="grow"><div class="title">${esc(nameOf(id))}</div><div class="sub">${esc(m?m.role:"")}</div></div></div><ul class="ptasks">${sortItems(groups.get(id)).map(li).join("")}</ul></section>`}).join("")}${groups.has("_open")?`<section class="prow"><div class="person-id"><div class="grow"><div class="title">Not picked up yet</div><div class="sub">Any council member can accept these</div></div></div><ul class="ptasks">${sortItems(groups.get("_open")).map(li).join("")}</ul></section>`:""}</div>`
+  :empty("No tasks yet",isPres?"Assign a task and it shows up here under the person doing it.":"When Student Council takes on work, you'll see who is doing what here.","add-task","Assign the first task",isPres&&W()));
+}
+function taskBoard(){
+  let list=S.tasks.map(t=>({t,st:taskState(t)}));
+  if(taskFilter==="mine")list=list.filter(x=>x.st.owner===me.id);
+  else if(taskFilter==="open")list=list.filter(x=>x.st.open);
+  else if(taskFilter!=="all")list=list.filter(x=>x.st.owner===taskFilter);
+  const sorter=(a,b)=>(a.t.due||"9999").localeCompare(b.t.due||"9999");
+  const opts=[["all","Everyone"],...(me.id&&amMember()?[["mine","My tasks"]]:[]),["open","Open to accept"],...roster().map(m=>[m.id,m.name])];
+  return head("","Tasks",isPres&&W()?`<button class="btn primary" data-act="add-task">+ Assign task</button>`:"")+
+  `<div class="toolbar"><label for="taskFilter" class="sub">Show</label><select id="taskFilter">${opts.map(([v,l])=>`<option value="${esc(v)}" ${v===taskFilter?"selected":""}>${esc(l)}</option>`).join("")}</select><span class="sub">${isPres?"As president, you assign and move tasks. Members accept the tasks given to them, or pick up open ones.":"The president assigns tasks. Accept the ones given to you, or pick up an open task."}</span></div>`+
+  (S.tasks.length?`<div class="board">${TASK_STATUS.map(([k,l],i)=>{const items=list.filter(x=>x.st.status===k).sort(sorter);
+    return`<div class="col"><h3>${l}<span class="mono muted">${items.length}</span></h3>${items.map(x=>taskCard(x.t,x.st,i)).join("")||`<p class="sub" style="padding:0 6px">Nothing here.</p>`}</div>`}).join("")}</div>`
+  :empty("No tasks yet",isPres?"Assign a task to a member, or leave it open so anyone can accept it. Due dates show on the calendar.":"When the president assigns tasks, they show up here.","add-task","Assign the first task",isPres&&W()));
+}
+function taskCard(t,st,i){
+  const mine=me.id&&st.owner===me.id,acts=[];
+  if(canAct()&&me.id){
+    if(st.open)acts.push(`<button class="btn sm good" data-act="t-accept" data-id="${t.id}">Accept task</button>`);
+    else if(mine&&!st.accepted)acts.push(`<button class="btn sm good" data-act="t-accept" data-id="${t.id}">Accept</button>`);
+    else if(mine&&st.accepted){
+      if(st.status==="todo")acts.push(`<button class="btn sm" data-act="t-claim" data-id="${t.id}" data-to="doing">Start</button>`);
+      if(st.status==="doing")acts.push(`<button class="btn sm good" data-act="t-claim" data-id="${t.id}" data-to="done">Mark done</button>`);
+      if(st.status==="done")acts.push(`<button class="btn sm ghost" data-act="t-claim" data-id="${t.id}" data-to="doing">Reopen</button>`);
+      if(!t.assignee&&st.status!=="done")acts.push(`<button class="btn sm ghost" data-act="t-drop" data-id="${t.id}">Drop</button>`);
+    }
+  }
+  const pres=isPres&&W()?`<div class="iconbtns">${i>0?`<button class="ib" data-act="task-move" data-id="${t.id}" data-to="${TASK_STATUS[i-1][0]}" aria-label="Move to ${TASK_STATUS[i-1][1]}">←</button>`:""}${i<2?`<button class="ib" data-act="task-move" data-id="${t.id}" data-to="${TASK_STATUS[i+1][0]}" aria-label="Move to ${TASK_STATUS[i+1][1]}">→</button>`:""}<button class="ib" data-act="edit-task" data-id="${t.id}" aria-label="Edit task">✎</button></div>`:"";
+  return`<article class="card ${mine?"mine":""}"><div class="row"><span class="title">${esc(t.title)}</span><span class="pri ${esc(t.priority||"normal")}" title="${label(PRI,t.priority||"normal")} priority"></span></div>${t.details?`<div class="detail">${esc(t.details)}</div>`:""}<div class="row">${who(st.owner,"Open to anyone")}<span class="sub">${dueText(t,st)}</span></div><div class="row">${statusChip(t,st)}${t.committee?`<span class="chip">${esc(t.committee)}</span>`:""}</div>${acts.length||pres?`<div class="row"><div class="iconbtns">${acts.join("")}</div>${pres}</div>`:""}</article>`;
+}
+
+/* bulletin */
+function sortedPosts(){return[...S.bulletin].sort((a,b)=>(b.pinned?1:0)-(a.pinned?1:0)||(b.date||"").localeCompare(a.date||""))}
+function bulletin(){
+  const posts=sortedPosts();
+  return head("News for the whole school. Everyone who opens the hub can read it.","Bulletin",addBtn("add-post","New post"))+
+
+  (posts.length?`<div class="posts">${posts.map(p=>`<article class="post ${p.pinned?"pinned":""}"><div class="meta"><span class="chip ${({Event:"gold",Opportunity:"good",Reminder:"bad",Spirit:"accent"})[p.tag]||""}">${esc(p.tag||"Announcement")}</span><span>${esc(longd(p.date))}</span>${p.pinned?`<span class="chip gold">Pinned</span>`:""}</div><h3>${esc(p.title)}</h3><p>${esc(p.body)}</p><div class="meta">${p.author?`Posted by ${who(p.author,"")}`:"Posted by Student Council"}<span class="sp"></span>${canAct()?`<button class="btn sm ghost" data-act="edit-post" data-id="${p.id}">Edit</button>`:""}</div></article>`).join("")}</div>`
+  :empty("The bulletin is empty","Post announcements, spirit week themes, club fair dates and anything else the school should know.","add-post","Write the first post"));
+}
+
+/* ---------- suggestions ---------- */
+function allSuggestions(){const out=[];for(const d of S.suggestions)for(const[k,v]of Object.entries(d.items||{}))if(v&&v.title)out.push({...v,key:k,uid:d.id});return out.sort((a,b)=>(b.at||"").localeCompare(a.at||""))}
+function suggestions(){
+  const all=allSuggestions(),formUrl=safeUrl(CFG.formUrl),can=canJoin();
+  let out=head(`Ideas for Student Council from anyone at ${SCHOOL}. Council reads every one and replies here.`,"Suggestion box",can?`<button class="btn primary" data-act="add-suggestion">+ Make a suggestion</button>`:"");
+  if(!can)out+=`<div class="banner">${formUrl?`Send your idea using the <a href="${esc(formUrl)}" target="_blank" rel="noopener">Student Council suggestion form</a>.`:`To send a suggestion, you need contributor access to this page. Ask any Student Council member.`}</div>`;
+  else if(formUrl&&!council())out+=`<p class="sub" style="margin:0">You can also use the <a href="${esc(formUrl)}" target="_blank" rel="noopener">Student Council suggestion form</a>.</p>`;
+  if(council()){
+    resolveIds(all.map(x=>x.uid));
+    const list=sugFilter==="all"?all:sugFilter==="open"?all.filter(x=>x.status==="new"||x.status==="review"):all.filter(x=>x.status===sugFilter);
+    out+=`<div class="toolbar"><label for="sugFilter" class="sub">Show</label><select id="sugFilter">${[["open","New and under review"],["all","All suggestions"],...SUG_STATUS].map(([v,l])=>`<option value="${v}" ${v===sugFilter?"selected":""}>${l}</option>`).join("")}</select><span class="sub">${all.filter(x=>x.status==="new").length} new</span></div>`;
+    out+=list.length?`<ul class="sugs">${list.map(x=>`<li><div class="sug-head"><span class="title">${esc(x.title)}</span><span class="sub parts"><span>${esc(x.category||"Other")}</span><span>${esc(longd((x.at||"").slice(0,10)))}</span></span></div>${x.details?`<p>${esc(x.details)}</p>`:""}<div class="toolbar">${who(x.uid,"Someone")}<span class="sp"></span><label class="sub" for="st-${x.key}">Status</label><select id="st-${x.key}" data-sug="${esc(x.uid)}" data-key="${esc(x.key)}" ${canAct()?"":"disabled"}>${SUG_STATUS.map(([v,l])=>`<option value="${v}" ${v===(x.status||"new")?"selected":""}>${l}</option>`).join("")}</select></div>${x.reply?`<div class="reply"><b>Council reply:</b> ${esc(x.reply)}</div>`:""}${canAct()?`<div class="reply-form"><input id="rp-${x.key}" aria-label="Reply to this suggestion" placeholder="${x.reply?"Update the reply":"Write a reply the sender will see"}"><button class="btn sm" data-act="sug-reply" data-uid="${esc(x.uid)}" data-key="${esc(x.key)}">Send reply</button></div>`:""}</li>`).join("")}</ul>`:empty(sugFilter==="open"?"Nothing waiting":"No suggestions here",sugFilter==="open"?"Every suggestion has been looked at. Switch to All suggestions to see past ones.":"Suggestions people send show up here.");
+  }else if(can){
+    out+=`<section class="panel"><h2>Your suggestions</h2>${all.length?`<ul class="sugs" style="border-top:0">${all.map(x=>`<li><div class="sug-head"><span class="title">${esc(x.title)}</span><span class="state ${x.status==="done"||x.status==="planned"?"done":x.status==="declined"?"wait":"todo"}">${label(SUG_STATUS,x.status||"new")}</span></div>${x.details?`<p>${esc(x.details)}</p>`:""}${x.reply?`<div class="reply"><b>Council reply:</b> ${esc(x.reply)}</div>`:`<span class="sub">Sent ${esc(longd((x.at||"").slice(0,10)))}. No reply yet.</span>`}</li>`).join("")}</ul>`:`<p class="sub" style="margin:10px 0 0">You haven't sent any suggestions yet. Your name is attached so council can follow up with you.</p>`}</section>`;
+  }
+  return out;
+}
+function suggestionForm(){
+  openForm({title:"Make a suggestion",submitLabel:"Send suggestion",note:"Student Council will see your name with this suggestion so they can follow up.",
+    fields:[{id:"title",label:"Your idea in one line",required:true,full:true},{id:"category",label:"Topic",type:"select",options:SUG_CATS.map(c=>[c,c])},{id:"details",label:"Details",type:"textarea",placeholder:"What should change, and why? Who would it help?"}],
+    values:{category:"Events"},
+    submit:vals=>{const key=Date.now().toString(36)+Math.random().toString(36).slice(2,6),item={...vals,status:"new",at:new Date().toISOString()},ref=db.doc("suggestions/"+me.id);
+      return save(()=>S.suggestions.some(d=>d.id===me.id)?ref.update({items:{[key]:item}}):ref.set({items:{[key]:item}}),"Suggestion sent. Thank you!")}});
+}
+
+/* ---------- proposals ---------- */
+function tally(p){const v=p.votes||{},t={aye:0,nay:0,abstain:0};for(const k in v)if(t[v[k]]!=null&&isApproved(S.members.find(m=>m.id===k)))t[v[k]]++;return t}
+function nextNumber(){const yy=String(new Date().getFullYear()).slice(2);const n=S.proposals.filter(p=>(p.number||"").startsWith("P-"+yy)).length+1;return`P-${yy}-${pad(n)}`}
+function blankProposal(){return{title:"",sponsor:me.id&&amMember()?me.id:"",cosponsors:"",committee:"",date:TODAY,summary:"",background:"",action:"",budget:[{item:"",cost:null}],timeline:"",impact:"",resolution:"",status:"draft"}}
+function docModel(p,template=false){
+  const B=[],t=tally(p),st=p.status||"draft";
+  B.push({k:"org",text:SCHOOL+" Student Council"});
+  B.push({k:"kicker",text:"Proposal "+(p.number||(template?"P-YY-NN":"(number assigned on save)"))});
+  B.push({k:"title",text:p.title||(template?"Proposal title":"Untitled proposal"),empty:!p.title});
+  B.push({k:"meta",rows:[["Sponsor",p.sponsor?nameOf(p.sponsor):template?"Your name":"—"],["Co-sponsors",p.cosponsors||(template?"Members supporting this proposal":"—")],["Committee",p.committee||(template?"Events / Spirit / Fundraising / …":"—")],["Date introduced",p.date?fulld(p.date):template?"Date":"—"],["Status",template?"Draft":label(P_STAGES,st)]]});
+  const sec=(key,title)=>{const has=!!(p[key]&&String(p[key]).trim());B.push({k:"h",text:title,empty:!has});B.push({k:"p",text:has?p[key]:HINT[key],empty:!has})};
+  sec("summary","Summary");sec("background","Background");sec("action","Proposed action");
+  const rows=(p.budget||[]).filter(r=>r&&(r.item||r.cost));
+  B.push({k:"h",text:"Budget"});
+  if(rows.length)B.push({k:"budget",rows,total:rows.reduce((s,r)=>s+(Number(r.cost)||0),0)});
+  else if(template)B.push({k:"budget",rows:[{item:"Item description",cost:0},{item:"Item description",cost:0}],total:0});
+  else B.push({k:"p",text:"No funds requested."});
+  sec("timeline","Timeline");sec("impact","Expected impact");
+  B.push({k:"h",text:"Resolution"});B.push({k:"res",text:p.resolution&&p.resolution.trim()?p.resolution:HINT.resolution,empty:!(p.resolution&&p.resolution.trim())});
+  if(!template&&["voting","passed","failed"].includes(st)){B.push({k:"h",text:"Vote record"});B.push({k:"p",text:`Aye ${t.aye}, nay ${t.nay}, abstain ${t.abstain}. ${st==="voting"?"The vote is still open.":st==="passed"?"The motion passed.":"The motion failed."}`})}
+  B.push({k:"sig",names:["Student Council President","Secretary","Faculty Advisor"]});
+  return{blocks:B,watermark:template?"TEMPLATE":st==="passed"?"":st==="failed"?"NOT ADOPTED":"DRAFT"};
+}
+function docHTML(p,template=false){
+  const{blocks,watermark}=docModel(p,template);
+  return(watermark?`<div class="wm" aria-hidden="true">${watermark}</div>`:"")+blocks.map(b=>{
+    switch(b.k){
+      case"org":return`<div class="org">${esc(b.text)}</div>`;
+      case"kicker":return`<div class="kicker">${esc(b.text)}</div>`;
+      case"title":return`<div class="dtitle ${b.empty?"hint":""}">${esc(b.text)}</div>`;
+      case"meta":return`<dl class="meta">${b.rows.map(([k,v])=>`<dt>${esc(k)}</dt><dd>${esc(v)}</dd>`).join("")}</dl>`;
+      case"h":return`<h4>${esc(b.text)}</h4>`;
+      case"p":return`<p class="${b.empty?"hint":""}">${esc(b.text)}</p>`;
+      case"res":return`<p class="res ${b.empty?"hint":""}">${esc(b.text)}</p>`;
+      case"budget":return`<table><thead><tr><th>Item</th><th class="amt">Cost</th></tr></thead><tbody>${b.rows.map(r=>`<tr><td>${esc(r.item||"—")}</td><td class="amt">${money(r.cost)}</td></tr>`).join("")}<tr class="total"><td>Total request</td><td class="amt">${money(b.total)}</td></tr></tbody></table>`;
+      case"sig":return`<div class="sigs">${b.names.map(n=>`<div>${esc(n)}<br>Signature / Date</div>`).join("")}</div>`;
+    }
+  }).join("");
+}
+function exportable(p,template){const m=docModel(p,template);if(!template)m.blocks=m.blocks.filter(b=>!b.empty||b.k==="title"||b.k==="res");return m}
+
+/* PDF via jsPDF */
+function buildPDF(p,template=false){
+  const{jsPDF}=window.jspdf;const doc=new jsPDF({unit:"pt",format:"letter"});
+  const PW=612,PH=792,M=64,CW=PW-2*M;let y=M;
+  const INK=[20,32,46],MUT=[94,104,115],ACC=[20,32,46],GOLD=[244,180,0],LINE=[213,218,224];
+  const ensure=h=>{if(y+h>PH-M){doc.addPage();y=M}};
+  const text=(s,{size=11,style="normal",color=INK,font="helvetica",lh=1.4,after=6,indent=0}={})=>{doc.setFont(font,style);doc.setFontSize(size);doc.setTextColor(...color);
+    for(const para of String(s).split("\n")){const lines=doc.splitTextToSize(para||" ",CW-indent);for(const l of lines){ensure(size*lh);doc.text(l,M+indent,y+size);y+=size*lh}}y+=after};
+  const{blocks,watermark}=exportable(p,template);
+  for(const b of blocks){
+    if(b.k==="org")text(b.text,{size:10,color:MUT,after:12});
+    else if(b.k==="kicker")text(b.text,{size:11.5,style:"bold",color:INK,after:2});
+    else if(b.k==="title")text(b.text,{size:22,font:"helvetica",style:"bold",color:template&&b.empty?MUT:INK,lh:1.2,after:12});
+    else if(b.k==="meta"){for(const[k,v]of b.rows){doc.setFont("helvetica","bold");doc.setFontSize(9);doc.setTextColor(...MUT);ensure(14);doc.text(k,M,y+9);doc.setFont("helvetica","normal");doc.setTextColor(...INK);const lines=doc.splitTextToSize(String(v),CW-110);lines.forEach((l,i)=>{if(i)ensure(13);doc.text(l,M+110,y+9);y+=13})}y+=6;doc.setDrawColor(...INK);doc.setLineWidth(2.2);doc.line(M,y,PW-M,y);y+=14}
+    else if(b.k==="h"){ensure(40);y+=8;text(b.text,{size:13.5,style:"bold",color:INK,after:3})}
+    else if(b.k==="p")text(b.text,{size:11.5,style:b.empty?"italic":"normal",color:b.empty?MUT:INK});
+    else if(b.k==="res"){const y0=y;text(b.text,{size:11.5,style:"italic",color:b.empty?MUT:INK,indent:14});doc.setDrawColor(...GOLD);doc.setLineWidth(3.5);if(y>y0)doc.line(M+2,y0+2,M+2,y-8)}
+    else if(b.k==="budget"){doc.setFontSize(10);const row=(a,c,bold,line=true)=>{ensure(20);doc.setFont("helvetica",bold?"bold":"normal");doc.setTextColor(...INK);const ls=doc.splitTextToSize(String(a),CW-120);ls.forEach((l,i)=>doc.text(l,M,y+12+i*12));doc.text(c,PW-M,y+12,{align:"right"});y+=Math.max(1,ls.length)*12+6;if(line){doc.setDrawColor(...LINE);doc.setLineWidth(.6);doc.line(M,y,PW-M,y)}y+=2};
+      doc.setFont("helvetica","bold");doc.setFontSize(8.5);doc.setTextColor(...MUT);ensure(16);doc.text("Item",M,y+9);doc.text("Cost",PW-M,y+9,{align:"right"});y+=14;doc.setDrawColor(...LINE);doc.line(M,y,PW-M,y);y+=2;
+      b.rows.forEach(r=>row(r.item||"—",money(r.cost),false));row("Total request",money(b.total),true,false);y+=6}
+    else if(b.k==="sig"){ensure(80);y+=44;const w=(CW-40)/3;b.names.forEach((n,i)=>{const x=M+i*(w+20);doc.setDrawColor(...INK);doc.setLineWidth(.7);doc.line(x,y,x+w,y);doc.setFont("helvetica","normal");doc.setFontSize(8);doc.setTextColor(...MUT);doc.text(n,x,y+12);doc.text("Signature / Date",x,y+23)});y+=30}
+  }
+  const n=doc.getNumberOfPages();
+  for(let i=1;i<=n;i++){doc.setPage(i);doc.setFillColor(...GOLD);doc.rect(0,0,PW,12,"F");
+    if(watermark){doc.saveGraphicsState();doc.setGState(new doc.GState({opacity:.07}));doc.setFont("helvetica","bold");doc.setFontSize(96);doc.setTextColor(...INK);doc.text(watermark,PW/2,PH/2+40,{align:"center",angle:30});doc.restoreGraphicsState()}
+    doc.setFont("helvetica","normal");doc.setFontSize(8);doc.setTextColor(...MUT);doc.text(`${p.number||"Proposal template"}${p.title?": "+p.title:""}`.slice(0,90),M,PH-36);doc.text(`Page ${i} of ${n}`,PW-M,PH-36,{align:"right"})}
+  return doc.output("blob");
+}
+
+/* DOCX via JSZip (opens in Word, and converts to a Google Doc when uploaded to Drive) */
+async function buildDOCX(p,template=false){
+  const x=s=>String(s??"").replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+  const run=(t,o={})=>`<w:r><w:rPr><w:rFonts w:ascii="Libre Franklin" w:hAnsi="Libre Franklin"/>${o.b?"<w:b/>":""}${o.i?"<w:i/>":""}${o.caps?"<w:caps/>":""}${o.color?`<w:color w:val="${o.color}"/>`:""}${o.sp?`<w:spacing w:val="${o.sp}"/>`:""}<w:sz w:val="${(o.sz||11)*2}"/></w:rPr><w:t xml:space="preserve">${x(t)}</w:t></w:r>`;
+  const para=(runs,o={})=>`<w:p><w:pPr>${o.keep?"<w:keepNext/>":""}${o.left?`<w:pBdr><w:left w:val="single" w:sz="18" w:space="8" w:color="F4B400"/></w:pBdr>`:""}<w:spacing w:before="${o.before||0}" w:after="${o.after??120}"/>${o.left?`<w:ind w:left="240"/>`:""}</w:pPr>${runs}</w:p>`;
+  const lines=(t,o,po)=>String(t).split("\n").map(l=>para(run(l,o),po)).join("");
+  const cell=(content,w,right)=>`<w:tc><w:tcPr><w:tcW w:w="${w}" w:type="dxa"/></w:tcPr><w:p><w:pPr><w:spacing w:before="60" w:after="60"/>${right?'<w:jc w:val="right"/>':""}</w:pPr>${content}</w:p></w:tc>`;
+  const{blocks}=exportable(p,template);let body="";
+  for(const b of blocks){
+    if(b.k==="org")body+=para(run(b.text,{sz:8.5,color:"6B7285",sp:20}),{after:200});
+    else if(b.k==="kicker")body+=para(run(b.text,{sz:10,b:true,color:"14202E",sp:20}),{after:40});
+    else if(b.k==="title")body+=para(run(b.text,{sz:22,b:true,color:template&&b.empty?"6B7285":"1A1F2E"}),{after:200});
+    else if(b.k==="meta"){body+=`<w:tbl><w:tblPr><w:tblW w:w="9360" w:type="dxa"/><w:tblBorders><w:bottom w:val="single" w:sz="16" w:color="14202E"/></w:tblBorders></w:tblPr><w:tblGrid><w:gridCol w:w="2200"/><w:gridCol w:w="7160"/></w:tblGrid>${b.rows.map(([k,v])=>`<w:tr>${cell(run(k,{sz:9,b:true,color:"6B7285"}),2200)}${cell(run(v,{sz:10}),7160)}</w:tr>`).join("")}</w:tbl>`+para("",{after:120})}
+    else if(b.k==="h")body+=para(run(b.text,{sz:9.5,b:true,color:"14202E",sp:20}),{before:240,after:60,keep:true});
+    else if(b.k==="p")body+=lines(b.text,{sz:11.5,i:b.empty,color:b.empty?"6B7285":"1A1F2E"});
+    else if(b.k==="res")body+=lines(b.text,{sz:11.5,i:true,color:b.empty?"6B7285":"1A1F2E"},{left:true});
+    else if(b.k==="budget"){const tr=(a,c,bold)=>`<w:tr>${cell(run(a,{sz:10,b:bold}),7160)}${cell(run(c,{sz:10,b:bold}),2200,true)}</w:tr>`;
+      body+=`<w:tbl><w:tblPr><w:tblW w:w="9360" w:type="dxa"/><w:tblBorders><w:top w:val="single" w:sz="4" w:color="D9DDE6"/><w:bottom w:val="single" w:sz="4" w:color="D9DDE6"/><w:insideH w:val="single" w:sz="4" w:color="D9DDE6"/></w:tblBorders></w:tblPr><w:tblGrid><w:gridCol w:w="7160"/><w:gridCol w:w="2200"/></w:tblGrid>${tr("Item","Cost",true)}${b.rows.map(r=>tr(r.item||"—",money(r.cost))).join("")}${tr("Total request",money(b.total),true)}</w:tbl>`+para("",{after:60})}
+    else if(b.k==="sig"){body+=para("",{after:600})+`<w:tbl><w:tblPr><w:tblW w:w="9360" w:type="dxa"/></w:tblPr><w:tblGrid><w:gridCol w:w="2960"/><w:gridCol w:w="240"/><w:gridCol w:w="2960"/><w:gridCol w:w="240"/><w:gridCol w:w="2960"/></w:tblGrid><w:tr>${b.names.map((n,i)=>(i?cell("",240):"")+`<w:tc><w:tcPr><w:tcW w:w="2960" w:type="dxa"/><w:tcBorders><w:top w:val="single" w:sz="6" w:color="1A1F2E"/></w:tcBorders></w:tcPr>${para(run(n,{sz:8,color:"6B7285"}),{after:0})}${para(run("Signature / Date",{sz:8,color:"6B7285"}),{after:0})}</w:tc>`).join("")}</w:tr></w:tbl>`}
+  }
+  const docXml=`<?xml version="1.0" encoding="UTF-8" standalone="yes"?><w:document xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main"><w:body>${body}<w:sectPr><w:pgSz w:w="12240" w:h="15840"/><w:pgMar w:top="1300" w:right="1440" w:bottom="1300" w:left="1440" w:header="720" w:footer="720" w:gutter="0"/></w:sectPr></w:body></w:document>`;
+  const z=new JSZip();
+  z.file("[Content_Types].xml",`<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types"><Default Extension="rels" ContentType="application/vnd.openxmlformats-package.relationships+xml"/><Default Extension="xml" ContentType="application/xml"/><Override PartName="/word/document.xml" ContentType="application/vnd.openxmlformats-officedocument.wordprocessingml.document.main+xml"/></Types>`);
+  z.file("_rels/.rels",`<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument" Target="word/document.xml"/></Relationships>`);
+  z.file("word/document.xml",docXml);
+  return z.generateAsync({type:"blob",mimeType:"application/vnd.openxmlformats-officedocument.wordprocessingml.document"});
+}
+async function offer(filename,data){
+  const dl=window.claude&&window.claude.use?await claude.use("downloads"):null;
+  if(!dl){toast("Downloads aren't available in this view.");return false}
+  try{await dl.save({filename,data});toast("Saved "+filename);return true}
+  catch(e){if(!e||e.code!=="declined")toast("Couldn't save the file. Try again in a moment.");return false}
+}
+const fileBase=p=>((p.number?p.number+" ":"")+(p.title||"Proposal")).replace(/[\\/:*?"<>|]+/g,"").slice(0,80);
+async function exportProposal(id,kind){
+  const tpl=id==="template",p=tpl?blankProposal():S.proposals.find(x=>x.id===id);if(!p)return;
+  if(tpl){p.sponsor="";p.budget=[]}
+  if(kind==="pdf"&&!window.jspdf){toast("The PDF tool didn't load. Reload the page and try again.");return}
+  if(kind==="docx"&&!window.JSZip){toast("The document tool didn't load. Reload the page and try again.");return}
+  const data=kind==="pdf"?buildPDF(p,tpl):await buildDOCX(p,tpl);
+  const ok=await offer((tpl?"StuCo proposal template":fileBase(p))+"."+kind,data);
+  if(ok&&!tpl&&canAct())log(kind==="pdf"?"exported a PDF of":"exported a Google Docs / Word copy of","proposal",p.title);
+}
+
+function proposals(){
+  const list=[...S.proposals].sort((a,b)=>(b.date||"").localeCompare(a.date||"")||(b.number||"").localeCompare(a.number||""));
+  if(!list.find(p=>p.id===selProposal))selProposal=list[0]?.id||null;
+  const p=list.find(x=>x.id===selProposal);
+  if(editing)return editorHTML();
+  return head("Write a proposal, move it at a meeting, and record the roll-call vote.","Proposals",`<button class="btn" data-act="export" data-id="template" data-kind="docx">Template (.docx)</button><button class="btn" data-act="export" data-id="template" data-kind="pdf">Template (PDF)</button>${addBtn("new-proposal","Write a proposal")}`)+
+  (list.length?`<div class="split"><div class="pick">${list.map(x=>`<button data-act="pick-proposal" data-id="${x.id}" aria-pressed="${x.id===selProposal}"><span class="sub">${esc(x.number||"")}</span><span class="title">${esc(x.title||"Untitled")}</span><span class="sub parts"><span>${label(P_STAGES,x.status||"draft")}</span>${x.sponsor?`<span>${esc(nameOf(x.sponsor))}</span>`:""}</span></button>`).join("")}</div>${p?proposalDetail(p):""}</div>`
+  :empty("No proposals yet","Write one with the built-in template. It formats itself as you type, and you can download it as a PDF to send or as a .docx to keep in Google Docs.","new-proposal","Write the first proposal"));
+}
+function proposalDetail(p){
+  const st=p.status||"draft",idx=P_STAGES.findIndex(s=>s[0]===st),t=tally(p),cast=t.aye+t.nay+t.abstain,ms=roster();
+  const stages=P_STAGES.filter(s=>s[0]!=="failed"||st==="failed").filter(s=>s[0]!=="passed"||st!=="failed");
+  let next="";
+  if(canAct()){
+    if(["draft","moved","seconded"].includes(st)){const n=P_STAGES[idx+1];next=`<button class="btn primary" data-act="p-stage" data-id="${p.id}" data-to="${n[0]}">Mark as ${n[1].toLowerCase()}</button>`}
+    else if(st==="voting")next=`<button class="btn primary" data-act="p-close" data-id="${p.id}">Close vote (${t.aye>t.nay?"passes":"fails"})</button>`;
+    else next=`<button class="btn" data-act="p-stage" data-id="${p.id}" data-to="voting">Reopen vote</button>`;
+  }
+  const v=p.votes||{};
+  return`<div style="display:flex;flex-direction:column;gap:14px;min-width:0">
+    <section class="panel" style="display:flex;flex-direction:column;gap:12px">
+      <div class="steps">${stages.map(s=>{const i=P_STAGES.findIndex(x=>x[0]===s[0]);const cls=s[0]===st?"on":(i<idx&&s[0]!=="passed")?"done":"";return`<span class="${cls}">${s[1]}</span>`}).join("")}</div>
+      <div class="toolbar">${next}${canAct()?`<button class="btn" data-act="edit-proposal" data-id="${p.id}">Edit</button>`:""}<span class="sp"></span><button class="btn" data-act="export" data-id="${p.id}" data-kind="pdf">Download PDF</button><button class="btn" data-act="export" data-id="${p.id}" data-kind="docx">Google Docs copy (.docx)</button></div>
+      ${st==="passed"?`<div class="sub">This proposal passed, so the PDF prints as a final copy with no draft watermark.</div>`:""}
+    </section>
+    <div class="paperwrap"><article class="paper">${docHTML(p)}</article></div>
+    ${["voting","passed","failed"].includes(st)?`<section class="panel" style="display:flex;flex-direction:column;gap:12px">
+      <h2>Roll-call vote</h2>
+      <div class="tally"><div><span class="sub">Aye</span><b style="color:var(--good)">${t.aye}</b></div><div><span class="sub">Nay</span><b style="color:var(--bad)">${t.nay}</b></div><div><span class="sub">Abstain</span><b style="color:var(--gold)">${t.abstain}</b></div><div><span class="sub">Not voted</span><b>${Math.max(0,ms.length-cast)}</b></div></div>
+      ${cast?`<div class="bar" aria-hidden="true"><i style="width:${t.aye/cast*100}%;background:var(--good)"></i><i style="width:${t.nay/cast*100}%;background:var(--bad)"></i><i style="width:${t.abstain/cast*100}%;background:var(--gold)"></i></div>`:""}
+      ${ms.length?`<div class="tablewrap"><table><thead><tr><th>Member</th><th>Role</th><th>Vote</th></tr></thead><tbody>${ms.map(m=>`<tr><td>${who(m.id)}</td><td class="sub">${esc(m.role||"")}</td><td><div class="seg">${VOTES.map(([k,l])=>`<button class="${k}" aria-pressed="${v[m.id]===k}" data-act="vote" data-id="${p.id}" data-m="${m.id}" data-v="${k}" ${canAct()&&st==="voting"?"":"disabled"}>${l}</button>`).join("")}</div></td></tr>`).join("")}</tbody></table></div>`:`<p class="sub">Add members to record votes.</p>`}
+    </section>`:`<p class="sub" style="margin:0">Voting opens once the proposal is moved and seconded.</p>`}
+  </div>`;
+}
+
+/* proposal editor */
+const ED_FIELDS=[["title","Title"],["cosponsors","Co-sponsors"],["summary","Summary"],["background","Background"],["action","Proposed action"],["timeline","Timeline"],["impact","Expected impact"],["resolution","Resolution"]];
+function editorHTML(){
+  const d=editing.d,area=(k,l,rows=4)=>`<div class="field"><label for="p-${k}">${l}</label><textarea id="p-${k}" rows="${rows}" placeholder="${esc(HINT[k]||"")}">${esc(d[k]||"")}</textarea></div>`;
+  return`<div id="editor" style="display:flex;flex-direction:column;gap:18px">`+head(editing.id?"Editing "+esc(d.number||"proposal"):"New proposal",editing.id?esc(d.title||"Untitled"):"Write a proposal",`<button class="btn ghost" data-act="ed-cancel">Cancel</button><button class="btn primary" data-act="ed-save">${editing.id?"Save changes":"Save proposal"}</button>`)+
+  `<div class="sub">Fill in each section of the council template. The formatted document on the right updates as you type, and it's what the PDF and Google Docs copy will look like.</div>
+  <div class="edgrid">
+    <form class="panel edform" id="pform" novalidate>
+      <div class="field"><label for="p-title">Title</label><input id="p-title" value="${esc(d.title)}" placeholder="Short and specific, e.g. Water bottle filling station by the gym"></div>
+      <div class="fields">
+        <div class="field"><label for="p-sponsor">Sponsor</label><select id="p-sponsor">${memberOpts("Choose a sponsor").map(([k,l])=>`<option value="${esc(k)}" ${k===(d.sponsor||"")?"selected":""}>${esc(l)}</option>`).join("")}</select></div>
+        <div class="field"><label for="p-committee">Committee</label><input id="p-committee" list="p-committee-l" value="${esc(d.committee)}"><datalist id="p-committee-l">${COMMITTEES.map(c=>`<option value="${c}">`).join("")}</datalist></div>
+        <div class="field"><label for="p-date">Date introduced</label><input id="p-date" type="date" value="${esc(d.date)}"></div>
+        <div class="field"><label for="p-cosponsors">Co-sponsors</label><input id="p-cosponsors" value="${esc(d.cosponsors)}" placeholder="Names, separated by commas"></div>
+      </div>
+      ${area("summary","Summary",3)}${area("background","Background",5)}${area("action","Proposed action",5)}
+      <div class="field"><label>Budget</label><div id="budget" style="display:flex;flex-direction:column;gap:6px">${budgetRows(d.budget)}</div><button type="button" class="btn sm" data-act="b-add" style="align-self:flex-start">+ Add line</button><span class="hint-text">Leave the budget empty if no money is needed.</span></div>
+      ${area("timeline","Timeline",3)}${area("impact","Expected impact",3)}${area("resolution","Resolution",3)}
+      <div class="toolbar"><span class="sp"></span><button type="button" class="btn ghost" data-act="ed-cancel">Cancel</button><button type="button" class="btn primary" data-act="ed-save">${editing.id?"Save changes":"Save proposal"}</button></div>
+    </form>
+    <div class="paperwrap sticky"><article class="paper" id="preview">${docHTML(d)}</article></div>
+  </div></div>`;
+}
+function budgetRows(rows){return(rows&&rows.length?rows:[{item:"",cost:null}]).map((r,i)=>`<div class="brow"><input aria-label="Budget item ${i+1}" class="b-item" value="${esc(r.item||"")}" placeholder="Item"><input aria-label="Cost of item ${i+1}" class="b-cost" type="number" min="0" step="0.01" value="${r.cost??""}" placeholder="$0.00"><button type="button" class="ib" data-act="b-del" data-i="${i}" aria-label="Remove line">×</button></div>`).join("")}
+function readEditor(){
+  const d=editing.d;
+  d.title=$("#p-title").value;d.sponsor=$("#p-sponsor").value;d.committee=$("#p-committee").value;d.date=$("#p-date").value;d.cosponsors=$("#p-cosponsors").value;
+  ["summary","background","action","timeline","impact","resolution"].forEach(k=>d[k]=$("#p-"+k).value);
+  d.budget=[...document.querySelectorAll("#budget .brow")].map(r=>({item:r.querySelector(".b-item").value,cost:r.querySelector(".b-cost").value===""?null:Number(r.querySelector(".b-cost").value)}));
+  return d;
+}
+function openEditor(id){
+  const p=id?S.proposals.find(x=>x.id===id):null;
+  editing={id:id||null,d:p?JSON.parse(JSON.stringify(p)):blankProposal()};
+  if(!editing.d.budget||!editing.d.budget.length)editing.d.budget=[{item:"",cost:null}];
+  if(location.hash!=="#proposals"){location.hash="proposals";return}
+  view="proposals";$("#main").innerHTML="";render();window.scrollTo(0,0);
+}
+async function saveEditor(){
+  const d=readEditor();
+  if(!d.title.trim()){toast("Give the proposal a title before saving.");$("#p-title").focus();return}
+  const data={title:d.title.trim(),sponsor:d.sponsor,committee:d.committee,date:d.date||TODAY,cosponsors:d.cosponsors,summary:d.summary,background:d.background,action:d.action,timeline:d.timeline,impact:d.impact,resolution:d.resolution,budget:d.budget.filter(r=>r.item||r.cost),updated:new Date().toISOString(),updatedBy:me.id||null};
+  let ok;
+  if(editing.id)ok=await save(()=>col("proposals").doc(editing.id).update(data),"Proposal saved",["edited","proposal",data.title]);
+  else{const ref=col("proposals").doc();ok=await save(()=>ref.set({...data,number:nextNumber(),status:"draft",votes:{},author:me.id||null,created:new Date().toISOString()}),"Proposal saved",["wrote","proposal",data.title]);if(ok)selProposal=ref.id}
+  if(ok){editing=null;$("#main").innerHTML="";render()}
+}
+document.addEventListener("input",e=>{if(editing&&e.target.closest&&e.target.closest("#pform")){readEditor();const pv=$("#preview");if(pv)pv.innerHTML=docHTML(editing.d)}});
+
+/* attendance */
+function quorum(m){const r=m.records||{},ms=roster(),total=ms.length;let here=0;for(const x of ms)if(r[x.id]==="present"||r[x.id]==="late")here++;return{here,total,met:total>0&&here>total/2,need:Math.floor(total/2)+1}}
+function attendance(){
+  const list=[...S.meetings].sort((a,b)=>b.date.localeCompare(a.date));
+  if(!list.find(m=>m.id===selMeeting))selMeeting=list[0]?.id||null;
+  const m=list.find(x=>x.id===selMeeting);
+  return head("Take roll at each meeting. Quorum is more than half of members present.","Attendance",addBtn("add-meeting","New meeting"))+
+  (list.length?`<div class="split"><div class="pick">${list.map(x=>{const q=quorum(x);return`<button data-act="pick-meeting" data-id="${x.id}" aria-pressed="${x.id===selMeeting}"><span class="title">${esc(x.title||"Council meeting")}</span><span class="sub parts"><span>${esc(longd(x.date))}</span><span>${q.here} of ${q.total} present</span></span></button>`}).join("")}</div>${m?meetingDetail(m):""}</div>`
+  :empty("No meetings recorded","Start a meeting to take roll. The page checks quorum (more than half of members present) as you go.","add-meeting","Start a meeting"));
+}
+function meetingDetail(m){
+  const q=quorum(m),r=m.records||{},ms=roster();
+  const counts=Object.fromEntries(ATT.map(([k])=>[k,ms.filter(x=>r[x.id]===k).length]));
+  return`<section class="panel" style="display:flex;flex-direction:column;gap:14px">
+    <div style="display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap"><div><h2 style="font-size:22px">${esc(m.title||"Council meeting")}</h2><div class="sub" style="margin-top:4px">${esc(longd(m.date))}${m.notes?`. ${esc(m.notes)}`:""}</div></div><div class="toolbar">${canAct()?`<button class="btn sm" data-act="all-present" data-id="${m.id}">Mark everyone present</button><button class="btn sm ghost" data-act="edit-meeting" data-id="${m.id}">Edit</button>`:""}</div></div>
+    <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap"><span class="chip ${q.met?"good":"bad"}">${q.met?"Quorum met":"No quorum"}</span><span class="sub">${q.here} of ${q.total} here. ${q.need} needed for quorum.</span></div>
+    <div class="summary">${ATT.map(([k,l])=>`<span>${l} <b>${counts[k]}</b></span>`).join("")}<span>Not marked <b>${ms.length-Object.values(counts).reduce((a,b)=>a+b,0)}</b></span></div>
+    ${ms.length?`<div class="tablewrap"><table><thead><tr><th>Member</th><th>Role</th><th>Status</th></tr></thead><tbody>${ms.map(x=>`<tr><td>${who(x.id)}</td><td class="sub">${esc(x.role||"")}${x.grade?`, grade ${esc(x.grade)}`:""}</td><td><div class="seg">${ATT.map(([k,l])=>`<button class="${k}" aria-pressed="${r[x.id]===k}" data-act="mark" data-id="${m.id}" data-m="${x.id}" data-v="${k}" ${canAct()?"":"disabled"}>${l}</button>`).join("")}</div></td></tr>`).join("")}</tbody></table></div>`:`<p class="sub">Add members first, then take roll here.</p>`}
+  </section>`;
+}
+
+/* members */
+function attRate(id){let rec=0,here=0;for(const m of S.meetings){const v=(m.records||{})[id];if(v){rec++;if(v==="present"||v==="late")here++}}return rec?Math.round(here/rec*100)+"%":"—"}
+function members(){
+  const ms=roster(),mine=myDoc();
+  let joinCard="";
+  if(db&&W()&&!isPres){
+    if(!me.id)joinCard=`<div class="banner">Sign in to claude.ai to join the council here.</div>`;
+    else if(!mine)joinCard=`<section class="start"><div><h2>Join the council</h2><p class="sub" style="margin:8px 0 0">Create your member profile with a photo and a short description. If the president has approved your email address, you're approved automatically. Otherwise the president approves you by hand.</p></div><div class="acts"><button class="btn primary" data-act="join">Create my profile</button></div></section>`;
+    else if(!isApproved(mine))joinCard=`<div class="banner">Your profile is waiting for approval. If your email is on the president's approved list, it goes through automatically the next time the president opens StuCo Hub.</div>`;
+  }
+  return head("","Members",(mine&&amMember()?`<button class="btn" data-act="edit-profile">Edit my profile</button>`:"")+(isPres&&W()?`${mine?"":`<button class="btn" data-act="join">Create my profile</button>`}<button class="btn primary" data-act="add-member">+ Add member without an account</button>`:""))+
+  joinCard+(isPres&&W()?presPanel():"")+
+  (ms.length?`<div class="people">${ms.map(m=>`<article class="person ${m.id===me.id?"me-card":""}"><div class="top">${avatar(m.id,"xl")}<div class="grow"><div class="title" style="font-size:17px">${esc(m.name)}${m.id===me.id?' <span class="muted" style="font-weight:400">(you)</span>':""}</div><div><span class="chip ${m.role==="President"?"accent":""}">${esc(m.role)}</span></div><div class="sub" style="margin-top:4px">${[m.grade?"Grade "+m.grade:"",m.committee].filter(Boolean).map(esc).join(", ")}</div></div></div>${m.bio?`<p>${esc(m.bio)}</p>`:""}<div class="stats"><span>Open tasks <b>${S.tasks.filter(t=>{const s=taskState(t);return s.owner===m.id&&s.status!=="done"}).length}</b></span><span>Attendance <b>${attRate(m.id)}</b></span>${m.manual?"<span>No account</span>":""}</div>${isPres&&W()?`<div><button class="btn sm ghost" data-act="edit-member" data-id="${m.id}">Edit</button></div>`:m.id===me.id?`<div><button class="btn sm ghost" data-act="edit-profile">Edit my profile</button></div>`:""}</article>`).join("")}</div>`
+  :empty("No members yet",isPres?"Create your own profile, list your members' email addresses below, then share the page with them.":"Council members appear here once the president approves them.",isPres?"join":null,"Create my profile",isPres&&W()));
+}
+function presPanel(){
+  const pend=S.members.filter(d=>!isApproved(d));resolveIds(pend.map(d=>d.id));
+  return`<section class="panel" style="display:flex;flex-direction:column;gap:14px"><h2>President controls <span class="sub" style="font-weight:500">Only you see this section</span></h2>
+    <div class="banner" style="max-width:none">How to share this page: give council members <b>Editor</b> access so they can make changes. Give everyone else at Avenues <b>Viewer</b> access. They see the bulletin, calendar and tasks, and nothing else. People you add as <b>Contributor</b> can also use the suggestion box.</div>
+    <div class="grid2">
+      <div class="field"><label for="emails">Approved member emails</label><textarea id="emails" rows="5" placeholder="one email per line">${esc((ADMIN.emails||[]).join("\n"))}</textarea><span class="sub">People who join with one of these addresses are approved automatically. This list is private to you.</span><div><button class="btn sm primary" data-act="save-emails">Save list</button></div></div>
+      <div class="field"><label for="formurl">Outside suggestion form (optional)</label><input id="formurl" value="${esc(CFG.formUrl||"")}" placeholder="https://forms.gle/…"><span class="sub">If students can't sign in to claude.ai, paste a link to a school Google Form. The Suggestions page links to it.</span><div><button class="btn sm" data-act="save-form">Save link</button></div>
+        <label style="margin-top:12px">Join requests</label>
+        ${pend.length?`<ul class="list" style="margin:0">${pend.map(d=>{const em=PROF[d.id]&&PROF[d.id].email;return`<li>${avatar(d.id,"lg")}<div class="grow"><div class="title">${esc(d.name||"Unnamed")}</div><div class="sub">${em?esc(em):"Email not shared"}${em&&(ADMIN.emails||[]).includes(em.toLowerCase())?", on your approved list":""}</div></div><button class="btn sm good" data-act="approve" data-id="${d.id}">Approve</button><button class="btn sm ghost danger" data-act="decline" data-id="${d.id}">Decline</button></li>`}).join("")}</ul>`:`<span class="sub">No one is waiting for approval.</span>`}
+      </div>
+    </div></section>`;
+}
+async function autoApprove(){
+  if(!isPres||!U||!db||!adminExists||!loaded.has("config")||!loaded.has("members"))return;
+  const emails=(ADMIN.emails||[]).map(e=>e.toLowerCase());if(!emails.length)return;
+  const pend=S.members.filter(d=>!isApproved(d)&&!autoTried.has(d.id));if(!pend.length)return;
+  pend.forEach(d=>autoTried.add(d.id));
+  const ps=await U.profiles(pend.map(d=>d.id));Object.assign(PROF,ps);
+  const ok=pend.filter(d=>{const e=(ps[d.id]&&ps[d.id].email||"").toLowerCase();return e&&emails.includes(e)});
+  if(!ok.length){render();return}
+  if(await save(()=>cfgSet(c=>ok.forEach(d=>c.approved[d.id]=true)),`${ok.length} member${ok.length>1?"s":""} approved from your email list`))ok.forEach(d=>log("approved","member",d.name));
+}
+
+/* history */
+function historyView(){
+  const all=[];for(const h of S.history)for(const[k,e]of Object.entries(h.entries||{}))all.push({...e,key:k});
+  all.sort((a,b)=>(b.t||"").localeCompare(a.t||""));
+  const list=histFilter==="all"?all:all.filter(e=>e.k===histFilter);
+  resolveIds(list.slice(0,300).map(e=>e.by));
+  const groups=[];let cur=null;
+  for(const e of list.slice(0,300)){const d=iso(new Date(e.t));if(!cur||cur.d!==d){cur={d,items:[]};groups.push(cur)}cur.items.push(e)}
+  return head("Every change made in the hub, with who made it and when.","History",`<label for="histFilter" class="sub">Show</label><select id="histFilter">${KINDS.map(([v,l])=>`<option value="${v}" ${v===histFilter?"selected":""}>${l}</option>`).join("")}</select>`)+
+  (list.length>300?`<div class="sub">Showing the latest 300 changes.</div>`:"")+
+  (groups.length?`<section class="panel">${groups.map(g=>`<div class="hday">${g.d===TODAY?"Today":esc(fmt(g.d,{weekday:"long",month:"long",day:"numeric",year:"numeric"}))}</div><ul class="hlist">${g.items.map(e=>`<li><time>${new Date(e.t).toLocaleTimeString(undefined,{hour:"numeric",minute:"2-digit"})}</time><span>${e.by?who(e.by):'<span class="who muted">Someone</span>'} <span>${esc(e.a)} ${esc(KIND_NOUN[e.k]||"")}${e.title?` <b>“${esc(e.title)}”</b>`:""}</span></span></li>`).join("")}</ul>`).join("")}</section>`
+  :empty("Nothing recorded yet","As people add events, accept tasks, write proposals and take attendance, each change is logged here."));
+}
+
+/* ---------- forms ---------- */
+function fieldHTML(f,v){
+  const id="f-"+f.id,full=f.full||f.type==="textarea"||f.type==="photo"?" full":"",req=f.required?" required":"";
+  if(f.type==="checkbox")return`<div class="field check${full}"><input type="checkbox" id="${id}" ${v?"checked":""}><label for="${id}">${f.label}</label></div>`;
+  if(f.type==="photo")return`<div class="field full"><label for="${id}">${f.label}</label><div class="photo-row"><img id="${id}-prev" class="avatar xl" src="${esc(v||"")}" alt="" ${v?"":"hidden"}><input type="file" id="${id}" accept="image/*"><button type="button" class="btn sm ghost" id="${id}-clear" ${v?"":"hidden"}>Remove photo</button></div><span class="sub">Square photos look best. It's resized automatically.</span></div>`;
+  let input;
+  if(f.type==="textarea")input=`<textarea id="${id}"${req} placeholder="${esc(f.placeholder||"")}">${esc(v)}</textarea>`;
+  else if(f.type==="select")input=`<select id="${id}">${f.options.map(([k,l])=>`<option value="${esc(k)}" ${String(v??"")===String(k)?"selected":""}>${esc(l)}</option>`).join("")}</select>`;
+  else input=`<input id="${id}" type="${f.type||"text"}" value="${esc(v)}"${req}${f.list?` list="${id}-l"`:""}${f.type==="number"?' min="0" step="any"':""}>${f.list?`<datalist id="${id}-l">${f.list.map(o=>`<option value="${esc(o)}">`).join("")}</datalist>`:""}`;
+  return`<div class="field${full}"><label for="${id}">${f.label}</label>${input}</div>`;
+}
+function resizeImage(file){return new Promise((res,rej)=>{const fr=new FileReader();fr.onload=()=>{const img=new Image();img.onload=()=>{const s=256,c=document.createElement("canvas");c.width=c.height=s;const k=Math.max(s/img.width,s/img.height),w=img.width*k,h=img.height*k;c.getContext("2d").drawImage(img,(s-w)/2,(s-h)/2,w,h);res(c.toDataURL("image/jpeg",.82))};img.onerror=rej;img.src=fr.result};fr.onerror=rej;fr.readAsDataURL(file)})}
+function closeModal(){const m=$("#modal");m.hidden=true;m.innerHTML=""}
+function openForm({title,fields,values={},submit,onDelete,submitLabel="Save",note=""}){
+  const m=$("#modal");const photoVals={};
+  m.innerHTML=`<div class="sheet" role="dialog" aria-modal="true" aria-labelledby="mt"><form id="mform" novalidate><h2 id="mt">${esc(title)}</h2>${note?`<p class="sub" style="margin:-6px 0 14px">${note}</p>`:""}<div class="fields">${fields.map(f=>fieldHTML(f,values[f.id])).join("")}</div><div class="err" id="merr"></div><div class="mactions">${onDelete?`<button type="button" class="btn danger ghost" id="mdel">Delete</button>`:""}<span class="sp"></span><button type="button" class="btn ghost" id="mcancel">Cancel</button><button class="btn primary" type="submit" id="msave">${submitLabel}</button></div></form></div>`;
+  m.hidden=false;
+  const first=m.querySelector("input:not([type=file]),textarea,select");first&&first.focus();
+  fields.filter(f=>f.type==="photo").forEach(f=>{
+    const inp=$("#f-"+f.id),prev=$("#f-"+f.id+"-prev"),clr=$("#f-"+f.id+"-clear");photoVals[f.id]=values[f.id]||"";
+    inp.onchange=async()=>{const file=inp.files[0];if(!file)return;try{const url=await resizeImage(file);photoVals[f.id]=url;prev.src=url;prev.hidden=false;clr.hidden=false}catch{toast("That image couldn't be read. Try a JPG or PNG.")}};
+    clr.onclick=()=>{photoVals[f.id]="";prev.hidden=true;clr.hidden=true;inp.value=""};
+  });
+  $("#mcancel").onclick=closeModal;
+  if(onDelete){const d=$("#mdel");d.onclick=async()=>{if(d.dataset.armed){d.disabled=true;if(await onDelete()!==false)closeModal();else d.disabled=false}else{d.dataset.armed=1;d.textContent="Confirm delete"}}}
+  $("#mform").onsubmit=async e=>{
+    e.preventDefault();const vals={};
+    for(const f of fields){const el=$("#f-"+f.id);vals[f.id]=f.type==="photo"?photoVals[f.id]:f.type==="checkbox"?el.checked:f.type==="number"?(el.value===""?null:Number(el.value)):el.value.trim()}
+    const miss=fields.find(f=>f.required&&!vals[f.id]);if(miss){$("#merr").textContent=`Add ${miss.label.toLowerCase()} to continue.`;return}
+    $("#msave").disabled=true;
+    if(await submit(vals)!==false)closeModal();else $("#msave").disabled=false;
+  };
+}
+function crud(colName,{title,fields,noun,kind,titleKey="title"}){
+  return(id,preset={})=>{
+    const doc=id&&S[colName].find(x=>x.id===id);
+    openForm({title:doc?`Edit ${noun}`:title,fields,values:doc||preset,
+      submit:vals=>doc?save(()=>col(colName).doc(id).update(vals),"Saved",["edited",kind,vals[titleKey]]):save(()=>col(colName).add({...vals,created:new Date().toISOString(),createdBy:me.id||null}),`${noun[0].toUpperCase()+noun.slice(1)} added`,["added",kind,vals[titleKey]]),
+      onDelete:doc?()=>save(()=>col(colName).doc(id).delete(),`${noun[0].toUpperCase()+noun.slice(1)} deleted`,["deleted",kind,doc[titleKey]]):null});
+  };
+}
+const PROFILE_FIELDS=[{id:"name",label:"Full name",required:true,full:true},{id:"grade",label:"Grade"},{id:"committee",label:"Committee",list:COMMITTEES},{id:"bio",label:"About you",type:"textarea",placeholder:"What you do on council, what you want to get done this year, a fun fact."},{id:"photo",label:"Photo",type:"photo"}];
+const forms={
+  event:()=>crud("events",{title:"Add to calendar",noun:"event",kind:"event",fields:[{id:"title",label:"Title",required:true,full:true},{id:"date",label:"Date",type:"date",required:true},{id:"time",label:"Time",type:"time"},{id:"type",label:"Type",type:"select",options:EV_TYPES},{id:"location",label:"Location"},{id:"notes",label:"Notes",type:"textarea"}]}),
+  task:()=>crud("tasks",{title:"Assign a task",noun:"task",kind:"task",fields:[{id:"title",label:"Task",required:true,full:true},{id:"assignee",label:"Assign to",type:"select",options:memberOpts("Open — any member can accept")},{id:"due",label:"Due date",type:"date"},{id:"priority",label:"Priority",type:"select",options:PRI},{id:"committee",label:"Committee",list:COMMITTEES},{id:"details",label:"Details",type:"textarea"}]}),
+  post:()=>crud("bulletin",{title:"New bulletin post",noun:"post",kind:"post",fields:[{id:"title",label:"Headline",required:true,full:true},{id:"tag",label:"Category",type:"select",options:POST_TAGS},{id:"date",label:"Post date",type:"date"},{id:"author",label:"Posted by",type:"select",options:memberOpts("Student Council")},{id:"pinned",label:"Pin to top",type:"checkbox"},{id:"body",label:"Message",type:"textarea",required:true}]}),
+  meeting:()=>crud("meetings",{title:"Start a meeting",noun:"meeting",kind:"meeting",fields:[{id:"title",label:"Meeting name",required:true,full:true},{id:"date",label:"Date",type:"date",required:true},{id:"notes",label:"Notes",full:true}]}),
+};
+function joinForm(){
+  const d=myDoc();
+  openForm({title:d?"Edit my profile":isPres?"Create your president profile":"Join the council",fields:PROFILE_FIELDS,values:d||{name:me.name||""},submitLabel:d?"Save":"Create profile",
+    note:d||isPres?"":"The president approves new members. Your profile is visible to everyone who can open this page.",
+    submit:async vals=>{
+      const ref=db.doc("members/"+me.id);
+      if(d)return save(()=>ref.update(vals),"Profile saved",["updated their profile","member",vals.name]);
+      const ok=await save(()=>ref.set({...vals,joinedAt:new Date().toISOString()}),isPres?"Profile created":"Profile created. Waiting for approval.",["joined as","member",vals.name]);
+      if(ok&&isPres)await save(()=>cfgSet(c=>{c.president=me.id;c.approved[me.id]=true;c.roles[me.id]="President"}));
+      return ok;
+    }});
+}
+function memberForm(id){
+  const d=id?S.members.find(x=>x.id===id):null,fm=d?full(d):null;
+  const fields=[...PROFILE_FIELDS.slice(0,3),{id:"role",label:"Role",type:"select",options:ROLES.map(r=>[r,r])},...PROFILE_FIELDS.slice(3)];
+  openForm({title:d?`Edit ${d.name}`:"Add member without an account",fields,values:fm||{role:"Member"},
+    note:d?"":"For people who won't sign in, like your advisor. They can be marked at roll call and assigned tasks, but can't accept tasks themselves.",
+    submit:async vals=>{const{role,...rest}=vals;
+      if(d){const ok=await save(()=>db.doc("members/"+id).update(rest),"Saved",["edited","member",vals.name]);if(ok&&role!==fm.role)await save(()=>cfgSet(c=>{c.roles[id]=role}),null,["set role to "+role+" for","member",vals.name]);return ok}
+      const ref=col("members").doc();const ok=await save(()=>ref.set({...rest,manual:true,created:new Date().toISOString()}),"Member added",["added","member",vals.name]);if(ok)await save(()=>cfgSet(c=>{c.roles[ref.id]=role}));return ok},
+    onDelete:d&&id!==me.id?async()=>{const ok=await save(()=>db.doc("members/"+id).delete(),"Member removed",["removed","member",d.name]);if(ok)await save(()=>cfgSet(c=>{delete c.approved[id];delete c.roles[id]}));return ok}:null});
+}
+
+/* ---------- actions ---------- */
+document.addEventListener("click",async e=>{
+  if(e.target.id==="modal"){closeModal();return}
+  const b=e.target.closest("[data-act]");if(!b)return;
+  const{act,id}=b.dataset;
+  const go=(f,preset)=>forms[f]()(null,preset);
+  const task=()=>S.tasks.find(t=>t.id===id);
+  switch(act){
+    case"join":return joinForm();
+    case"edit-profile":return joinForm();
+    case"add-member":return memberForm(null);
+    case"edit-member":return memberForm(id);
+    case"approve":{const d=S.members.find(x=>x.id===id);return save(()=>cfgSet(c=>{c.approved[id]=true}),"Member approved",["approved","member",d&&d.name])}
+    case"decline":{const d=S.members.find(x=>x.id===id);return save(()=>db.doc("members/"+id).delete(),"Request declined",["declined","member",d&&d.name])}
+    case"save-emails":{const list=[...new Set($("#emails").value.split(/[\s,;]+/).map(s=>s.trim().toLowerCase()).filter(s=>s.includes("@")))];const ok=await save(()=>db.doc("admin/access").set({emails:list}),`Saved ${list.length} approved email${list.length===1?"":"s"}`,["updated the approved email list","settings",""]);if(ok){autoTried.clear()}return}
+    case"save-form":{const raw=$("#formurl").value.trim(),v=safeUrl(raw);if(raw&&!v){toast("Paste a full link that starts with https://");return}return save(()=>cfgSet(c=>{c.formUrl=v;delete c.school}),v?"Suggestion form link saved":"Suggestion form link removed",["updated the suggestion form link","settings",""])}
+    case"add-suggestion":return suggestionForm();
+    case"sug-reply":{const inp=$("#rp-"+b.dataset.key),v=inp.value.trim();if(!v){inp.focus();return}const x=allSuggestions().find(s=>s.key===b.dataset.key);return save(()=>db.doc("suggestions/"+b.dataset.uid).update({items:{[b.dataset.key]:{reply:v,repliedBy:me.id,repliedAt:new Date().toISOString(),...(x&&x.status==="new"?{status:"review"}:{})}}}),"Reply sent",["replied to","suggestion",x&&x.title])}
+    case"task-mode":taskMode=b.dataset.to;return render();
+    case"add-event":return go("event",{date:TODAY,type:"meeting"});
+    case"edit-event":return forms.event()(id);
+    case"day":if(canAct())go("event",{date:b.dataset.date,type:"meeting"});return;
+    case"add-task":return go("task",{priority:"normal",assignee:""});
+    case"edit-task":return forms.task()(id);
+    case"task-move":{const t=task();return save(()=>col("tasks").doc(id).update({status:b.dataset.to,statusAt:new Date().toISOString()}),null,["moved to "+label(TASK_STATUS,b.dataset.to)+":","task",t&&t.title])}
+    case"t-accept":{const t=task();return save(()=>setClaim(id,"accepted"),"Task accepted",["accepted","task",t&&t.title])}
+    case"t-claim":{const t=task(),to=b.dataset.to;return save(()=>setClaim(id,to),to==="done"?"Nice work":null,[to==="done"?"finished":to==="doing"&&taskState(t).status==="done"?"reopened":"started","task",t&&t.title])}
+    case"t-drop":{const t=task();return save(()=>setClaim(id,null),"Task dropped",["dropped","task",t&&t.title])}
+    case"add-post":return go("post",{date:TODAY,tag:"Announcement",author:amMember()&&myDoc()?me.id:""});
+    case"edit-post":return forms.post()(id);
+    case"new-proposal":return openEditor(null);
+    case"edit-proposal":return openEditor(id);
+    case"ed-cancel":editing=null;$("#main").innerHTML="";return render();
+    case"ed-save":return saveEditor();
+    case"b-add":readEditor();editing.d.budget.push({item:"",cost:null});$("#budget").innerHTML=budgetRows(editing.d.budget);return;
+    case"b-del":readEditor();editing.d.budget.splice(Number(b.dataset.i),1);$("#budget").innerHTML=budgetRows(editing.d.budget);$("#preview").innerHTML=docHTML(editing.d);return;
+    case"export":b.disabled=true;await exportProposal(id,b.dataset.kind);b.disabled=false;return;
+    case"pick-proposal":selProposal=id;return render();
+    case"p-stage":{const p=S.proposals.find(x=>x.id===id);return save(()=>col("proposals").doc(id).update({status:b.dataset.to}),null,["marked as "+label(P_STAGES,b.dataset.to).toLowerCase()+":","proposal",p&&p.title])}
+    case"p-close":{const p=S.proposals.find(x=>x.id===id),t=tally(p),pass=t.aye>t.nay;return save(()=>col("proposals").doc(id).update({status:pass?"passed":"failed"}),pass?"Proposal passed":"Proposal failed",[`closed the vote (${t.aye}–${t.nay}–${t.abstain}, ${pass?"passed":"failed"}) on`,"proposal",p.title])}
+    case"vote":{const p=S.proposals.find(x=>x.id===id);return save(()=>col("proposals").doc(id).update({votes:{[b.dataset.m]:b.dataset.v}}),null,[`recorded ${nameOf(b.dataset.m)}'s vote (${label(VOTES,b.dataset.v)}) on`,"proposal",p&&p.title])}
+    case"add-meeting":return go("meeting",{date:TODAY,title:"General council meeting"});
+    case"edit-meeting":return forms.meeting()(id);
+    case"pick-meeting":selMeeting=id;return render();
+    case"mark":{const m=S.meetings.find(x=>x.id===id);return save(()=>col("meetings").doc(id).update({records:{[b.dataset.m]:b.dataset.v}}),null,[`marked ${nameOf(b.dataset.m)} ${label(ATT,b.dataset.v).toLowerCase()} at`,"meeting",m&&m.title])}
+    case"all-present":{const r={},m=S.meetings.find(x=>x.id===id);roster().forEach(x=>r[x.id]="present");return save(()=>col("meetings").doc(id).update({records:r}),"Everyone marked present",["marked everyone present at","meeting",m&&m.title])}
+    case"cal-prev":calCursor=new Date(calCursor.getFullYear(),calCursor.getMonth()-1,1);return render();
+    case"cal-next":calCursor=new Date(calCursor.getFullYear(),calCursor.getMonth()+1,1);return render();
+    case"cal-today":calCursor=firstOfMonth(new Date());return render();
+    case"sample":b.disabled=true;return loadSample();
+  }
+});
+document.addEventListener("change",e=>{if(e.target.id==="sugFilter"){sugFilter=e.target.value;render()}
+  if(e.target.dataset&&e.target.dataset.sug){const t=e.target,x=allSuggestions().find(s=>s.key===t.dataset.key);save(()=>db.doc("suggestions/"+t.dataset.sug).update({items:{[t.dataset.key]:{status:t.value,reviewedBy:me.id,reviewedAt:new Date().toISOString()}}}),"Status updated",["marked as "+label(SUG_STATUS,t.value).toLowerCase()+":","suggestion",x&&x.title])}
+  if(e.target.id==="taskFilter"){taskFilter=e.target.value;render()}if(e.target.id==="histFilter"){histFilter=e.target.value;render()}});
+document.addEventListener("keydown",e=>{if(e.key==="Escape"&&!$("#modal").hidden)closeModal()});
+
+/* ---------- sample council (president only; example data marked sample:true) ---------- */
+async function loadSample(){
+  const d=n=>iso(addDays(new Date(),n));
+  const ok=await save(async()=>{
+    const names=[["Maya Chen","Vice President","11","Spirit","Runs Spirit Week and pep rallies."],["Jordan Ellis","Secretary","11","Communications","Takes minutes and runs the bulletin."],["Sam Ortiz","Treasurer","12","Fundraising","Keeps the budget and the cash box."],["Leo Park","Class Representative","9","Service","Freshman rep. Organizing the food drive."],["Ava Brooks","Class Representative","10","Events","Sophomore rep. Planning the winter formal."]];
+    const ids=[],roles={};
+    for(const[name,role,grade,committee,bio]of names){const r=col("members").doc();await r.set({name,grade,committee,bio,manual:true,sample:true});ids.push(r.id);roles[r.id]=role}
+    await cfgSet(c=>Object.assign(c.roles,roles));
+    for(const e of[{title:"Weekly council meeting",date:d(5),time:"15:15",type:"meeting",location:"Room 204"},{title:"Spirit Week begins",date:d(10),type:"event",location:"Whole school"},{title:"Winter formal budget due",date:d(8),type:"deadline"},{title:"Bake sale",date:d(14),time:"11:30",type:"fundraiser",location:"Cafeteria"},{title:"Weekly council meeting",date:d(12),time:"15:15",type:"meeting",location:"Room 204"}])await col("events").add({...e,sample:true});
+    for(const t of[{title:"Book the gym for the winter formal",assignee:ids[4],due:d(3),priority:"high",committee:"Events"},{title:"Design Spirit Week posters",assignee:ids[0],due:d(6),priority:"normal",committee:"Spirit"},{title:"Send meeting minutes to advisor",assignee:ids[1],due:d(-1),priority:"normal",committee:"Communications"},{title:"Run the bake sale table at lunch",assignee:"",due:d(14),priority:"low",committee:"Fundraising"}])await col("tasks").add({...t,sample:true,created:new Date().toISOString()});
+    for(const p of[{title:"Spirit Week themes are here",tag:"Spirit",date:d(0),author:ids[0],pinned:true,body:"Monday: Pajama Day\nTuesday: Decades Day\nWednesday: Jersey Day\nThursday: Twin Day\nFriday: School Colors"},{title:"Bake sale volunteers needed",tag:"Opportunity",date:d(-2),author:ids[2],body:"Sign up with any council member to bake or work a shift. Proceeds go to the winter formal."}])await col("bulletin").add({...p,sample:true});
+    const yy=String(new Date().getFullYear()).slice(2);
+    await col("proposals").add({number:`P-${yy}-01`,title:"Water bottle filling station by the gym",sponsor:ids[3],cosponsors:"Ava Brooks, Sam Ortiz",committee:"Service",budget:[{item:"Filling station unit",cost:950},{item:"Installation by district facilities",cost:250}],date:d(-6),status:"voting",summary:"Fund one water bottle filling station outside the gym from the council budget.",background:"Students fill bottles at the gym fountain, which is slow and often broken. In our October survey, 212 of 340 students said they skip refilling during PE.",action:"The Treasurer will request a quote from district facilities and place the order. Facilities installs it over winter break.",timeline:"Dec 1: order placed\nDec 22 – Jan 2: installation\nJan 10: report back to council",impact:"Fewer plastic bottles bought at the student store, and students stay hydrated during PE and practice.",resolution:"BE IT RESOLVED that the Student Council approves up to $1,200 from the general fund to purchase and install one water bottle filling station outside the gym.",votes:{[ids[0]]:"aye",[ids[1]]:"aye",[ids[2]]:"nay"},sample:true});
+    await col("meetings").add({title:"General council meeting",date:d(-2),records:{[ids[0]]:"present",[ids[1]]:"late",[ids[2]]:"present",[ids[3]]:"absent",[ids[4]]:"excused"},sample:true});
+  },"Sample council loaded. Edit or delete anything.",["loaded the sample council","settings",""]);
+  if(!ok)render();
+}
+
+/* ---------- boot ---------- */
+render();
+(async()=>{
+  if(!window.claude||!window.claude.use){setStatus("offline");render();return}
+  const[d,u]=await Promise.all([claude.use("db"),claude.use("user")]);
+  db=d;U=u;
+  if(u){const m=await u.me();me={id:m.id,name:m.name,email:m.email,avatarUrl:m.avatarUrl,color:m.color};isPres=!!m.isOwner;isEditor=!!m.canEdit||isPres;const c=await u.can("data.write");if(c===false)canWrite=false}
+  if(!db){setStatus("nodb");render();return}
+  const cols=COLS.filter(c=>isEditor||!COUNCIL_ONLY.includes(c));
+  const subs=[...cols,"config"].concat(isPres?["admin"]:[]);
+  const timer=setTimeout(()=>{if(loaded.size<subs.length)setStatus("slow")},10000);
+  const done=(k,snap)=>{if(!snap.metadata.fromCache)loaded.add(k);if(loaded.size>=subs.length){clearTimeout(timer);setStatus("ok")}};
+  const fail=()=>{clearTimeout(timer);setStatus("err");render()};
+  cols.forEach(c=>col(c).onSnapshot(snap=>{S[c]=snap.docs.map(x=>({id:x.id,...x.data()}));done(c,snap);render();if(c==="members")autoApprove()},fail));
+  db.doc("config/access").onSnapshot(s=>{cfgExists=s.exists;CFG={approved:{},roles:{},school:"",president:null,...(s.exists?s.data():{})};done("config",s);render()},fail);
+  if(isPres)db.doc("admin/access").onSnapshot(s=>{adminExists=s.exists;ADMIN={emails:[],...(s.exists?s.data():{})};done("admin",s);render();autoApprove()},fail);
+  setStatus("connecting");render();
+})();
+</script>
