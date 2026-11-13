@@ -469,6 +469,49 @@ body.is-site .app{grid-template-columns:minmax(0,1fr)}
 @media (max-width:980px){.home-nav{flex-wrap:wrap}.home-links{order:3;flex-basis:100%;overflow-x:auto;scrollbar-width:none}}
 @media (max-width:560px){.me-glass span,.home-brand span{display:none}.band{min-height:230px}}
 
+/* community: Aviator of the Week, Grade Race, home explainer */
+.aviator{display:grid;grid-template-columns:auto minmax(0,1fr);gap:22px;align-items:center;background:var(--ink);color:var(--ground);padding:22px;box-shadow:0 -3px 0 var(--ink),0 3px 0 var(--ink),-3px 0 0 var(--ink),3px 0 0 var(--ink),0 6px 0 var(--rail),-3px 3px 0 var(--rail),3px 3px 0 var(--rail)}
+.aviator.empty-av{grid-template-columns:minmax(0,1fr)}
+.av-photo{width:150px;aspect-ratio:1;background:var(--rail);overflow:hidden}
+.av-photo img{width:100%;height:100%;object-fit:cover;display:block}
+.av-body{display:flex;flex-direction:column;align-items:flex-start;gap:3px;min-width:0}
+.av-tag{background:var(--rail);color:var(--rail-ink);font-weight:800;font-size:14px;padding:2px 8px}
+.aviator h2{font-size:34px;font-weight:800;letter-spacing:-.025em;margin-top:8px;overflow-wrap:anywhere}
+.aviator p{margin:8px 0;max-width:60ch;overflow-wrap:anywhere}
+.aviator .sub{color:inherit;opacity:.78}
+.aviator .btn{color:var(--ground);border-color:var(--ground)}
+.aviator .btn:hover{background:transparent;border-color:var(--rail)}
+.aviator .btn.primary{background:var(--rail);color:var(--rail-ink);border-color:var(--rail);margin-top:6px}
+.aviator .heart{color:var(--ground)}
+.sundaes{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:16px;text-align:center}
+.sundae-col{display:flex;flex-direction:column;align-items:center;gap:4px;min-width:0}
+.sundae{display:flex;flex-direction:column;align-items:center;margin-bottom:8px}
+.cherry{width:14px;height:14px;background:var(--bad);margin-bottom:-4px;position:relative;z-index:1}
+.cherry[hidden]{display:block!important;visibility:hidden}
+.sundae-glass{width:96px;max-width:100%;height:130px;position:relative;background:var(--rule);clip-path:polygon(0 0,100% 0,80% 100%,20% 100%)}
+.scoops{position:absolute;left:0;right:0;bottom:0;background:repeating-linear-gradient(0deg,#7B4A2E 0 22px,#F2A7C3 22px 44px,#F7E7CE 44px 66px)}
+.stem{width:10px;height:14px;background:var(--rule-strong)}
+.stem::after{content:"";display:block;width:46px;height:6px;background:var(--rule-strong);margin:14px 0 0 -18px}
+.ranks{list-style:none;margin:10px 0 0;padding:0}
+.ranks li{display:flex;gap:12px;align-items:baseline;padding:9px 0;border-bottom:1px solid var(--rule)}
+.ranks .rk{width:26px;font-weight:800;color:var(--muted)}
+.ranks li.you{box-shadow:inset 5px 0 0 var(--rail);padding-left:12px}
+.opt.right{border-color:var(--good);box-shadow:inset 5px 0 0 var(--good)}
+.summary a{color:var(--info);font-weight:600}
+.home-about{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:40px;padding-block:40px;padding-left:max(27px,env(safe-area-inset-left,0px));padding-right:max(27px,env(safe-area-inset-right,0px));max-width:1220px}
+.home-about h2{font-size:30px;font-weight:800;letter-spacing:-.02em}
+.about-list{list-style:none;margin:14px 0 0;padding:0}
+.about-list li{display:grid;grid-template-columns:140px minmax(0,1fr);gap:12px;padding:10px 0;border-top:1px solid var(--rule)}
+.about-list a{font-weight:800;color:var(--ink)}
+.about-list span{color:var(--muted)}
+.race-mini{margin-top:26px}
+.race-mini h3{font-size:20px;font-weight:800;margin-bottom:6px}
+.race-mini a{color:var(--info);font-weight:600}
+.race-row{display:grid;grid-template-columns:80px minmax(0,1fr) 44px;gap:10px;align-items:center;padding:5px 0}
+.race-bar{height:12px;background:var(--rule);display:block}
+.race-bar i{display:block;height:100%;background:var(--rail)}
+@media (max-width:700px){.home-about{grid-template-columns:minmax(0,1fr)}.aviator{grid-template-columns:minmax(0,1fr)}.sundaes{grid-template-columns:repeat(2,minmax(0,1fr))}.about-list li{grid-template-columns:minmax(0,1fr);gap:0}}
+
 /* history */
 .hday{font-size:17px;font-weight:800;margin-top:14px}
 .hday:first-child{margin-top:0}
@@ -540,16 +583,16 @@ body.is-site .app{grid-template-columns:minmax(0,1fr)}
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
 <script>
-const STUDENT_NAV=[["hub","Student Hub"],["events","Events"],["life","Student Life"],["opportunities","Opportunities"],["voice","Student Voice"]];
+const STUDENT_NAV=[["hub","Student Hub"],["events","Events"],["life","Student Life"],["play","Grade Race"],["opportunities","Opportunities"],["voice","Student Voice"]];
 const COUNCIL_NAV=[["overview","Overview"],["tasks","Tasks"],["proposals","Proposals"],["attendance","Attendance"],["members","Members"],["history","History"]];
-const ROUTES={home:"home",hub:"hub",calendar:"hub",bulletin:"hub",events:"events",life:"life",opportunities:"opportunities",voice:"voice",suggestions:"voice",working:"voice",overview:"overview",tasks:"tasks",proposals:"proposals",attendance:"attendance",members:"members",history:"history"};
-const STUDENT_ROUTES=["home","hub","calendar","bulletin","events","life","opportunities","voice","suggestions","working"];
-const COLS=["members","events","tasks","claims","bulletin","suggestions","albums","stories","opps","polls","votes","signups","birthdays","playlists","proposals","meetings","history"];
+const ROUTES={home:"home",hub:"hub",calendar:"hub",bulletin:"hub",events:"events",life:"life",clubs:"life",play:"play",leaderboard:"play",opportunities:"opportunities",voice:"voice",suggestions:"voice",working:"voice",overview:"overview",tasks:"tasks",proposals:"proposals",attendance:"attendance",members:"members",history:"history"};
+const STUDENT_ROUTES=["home","hub","calendar","bulletin","events","life","clubs","play","leaderboard","opportunities","voice","suggestions","working"];
+const COLS=["members","events","tasks","claims","bulletin","suggestions","albums","stories","opps","polls","votes","signups","birthdays","playlists","aviators","predictions","picks","scores","clubs","proposals","meetings","history"];
 const COUNCIL_ONLY=["proposals","meetings","history"];
 const SCHOOL="Avenues The World School";
 const SUG_CATS=["Events","Spirit","Vending machine","Facilities","Food","Clubs","School policy","Report a problem","Other"];
 const SUG_STATUS=[["new","New"],["review","Under review"],["planned","Planned"],["done","Done"],["declined","Not this time"]];
-const S={members:[],events:[],tasks:[],claims:[],bulletin:[],suggestions:[],albums:[],stories:[],opps:[],polls:[],votes:[],signups:[],birthdays:[],playlists:[],proposals:[],meetings:[],history:[]};
+const S={members:[],events:[],tasks:[],claims:[],bulletin:[],suggestions:[],albums:[],stories:[],opps:[],polls:[],votes:[],signups:[],birthdays:[],playlists:[],aviators:[],predictions:[],picks:[],scores:[],clubs:[],proposals:[],meetings:[],history:[]};
 let CFG={approved:{},roles:{},school:"",president:null}, cfgExists=false, ADMIN={emails:[]}, adminExists=false;
 const EV_TYPES=[["meeting","StuCo meeting"],["event","School event"],["dance","Dance"],["trip","Trip"],["competition","Competition or tournament"],["fundraiser","Fundraiser"],["deadline","Deadline"]];
 const TASK_STATUS=[["todo","To do"],["doing","In progress"],["done","Done"]];
@@ -562,7 +605,7 @@ const ATT=[["present","Present"],["late","Late"],["excused","Excused"],["absent"
 const VOTES=[["aye","Aye"],["nay","Nay"],["abstain","Abstain"]];
 const PALETTE=["#2446C7","#B4442F","#1C8250","#8A4FBF","#9A6500","#0F7C8C","#C2407A","#5A6B2E"];
 const KINDS=[["all","Everything"],["task","Tasks"],["proposal","Proposals"],["event","Calendar"],["post","Bulletin"],["meeting","Attendance"],["member","Members"],["suggestion","Suggestions"],["album","Photos"],["story","Stories"],["opportunity","Opportunities"],["poll","Polls"]];
-const KIND_NOUN={task:"task",proposal:"proposal",event:"event",post:"bulletin post",meeting:"meeting",member:"member",settings:"settings",suggestion:"suggestion",album:"photo album",story:"story",opportunity:"opportunity",poll:"poll"};
+const KIND_NOUN={task:"task",proposal:"proposal",event:"event",post:"bulletin post",meeting:"meeting",member:"member",settings:"settings",suggestion:"suggestion",album:"photo album",story:"story",opportunity:"opportunity",poll:"poll",prediction:"prediction",club:"club"};
 const HINT={
   summary:"One or two sentences: what you want the council to approve.",
   background:"What problem does this solve? Who asked for it? Include any facts, such as survey results or how many students it affects.",
@@ -680,7 +723,7 @@ function render(){
   const cur0=shownView(),site=!council();
   document.body.classList.toggle("is-home",cur0==="home");document.body.classList.toggle("is-site",site&&cur0!=="home");
   $("#band").hidden=cur0==="home";
-  if(cur0==="home"){if($("#homeHero")){$("#homeLive").innerHTML=homeLive();$("#homeAuth").innerHTML=homeAuth();return}
+  if(cur0==="home"){if($("#homeHero")){$("#homeLive").innerHTML=homeLive();$("#homeAuth").innerHTML=homeAuth();$("#homeAv").innerHTML=homeAviator();return}
     $("#main").innerHTML=homeView();startScene($("#homeScene"));return}
   if(sceneCanvas!==$("#bandScene"))startScene($("#bandScene"));
   pageHead={title:"",context:""};
@@ -690,7 +733,7 @@ function render(){
     if(d&&!isApproved(d))banner=`<div class="banner">Your council profile is waiting for the president's approval.</div>`;
     else if(d&&isApproved(d)&&!isEditor)banner=`<div class="banner">You're an approved council member. Ask the president to give you Editor access to this page so you can make changes.</div>`;}
   if(preview&&canCouncil())banner=`<div class="banner preview"><span>You're seeing the site the way students see it.</span><button class="btn sm" data-act="mode" data-to="council">Back to council view</button></div>`+banner;
-  const VIEWFN={hub:hubView,calendar:hubView,bulletin:hubView,events:eventsView,life:lifeView,opportunities:oppsView,voice:voiceView,suggestions:voiceView,working:voiceView,overview,tasks:()=>tasks(),proposals,attendance,members,history:historyView};
+  const VIEWFN={hub:hubView,calendar:hubView,bulletin:hubView,events:eventsView,life:lifeHub,clubs:lifeHub,play:playView,leaderboard:playView,opportunities:oppsView,voice:voiceView,suggestions:voiceView,working:voiceView,overview,tasks:()=>tasks(),proposals,attendance,members,history:historyView};
   const ae=document.activeElement,keep=ae&&ae.id&&$("#main").contains(ae)?{id:ae.id,val:ae.value,sel:ae.selectionStart!=null?[ae.selectionStart,ae.selectionEnd]:null}:null;
   $("#main").innerHTML=banner+VIEWFN[shownView()]();
   $("#bandH1").innerHTML=pageHead.title||"";const bc=$("#bandCtx");bc.innerHTML=pageHead.context||"";bc.hidden=!pageHead.context;
@@ -941,8 +984,8 @@ function lifeView(){
   const albums=sortedAlbums(),stories=[...S.stories].sort((a,b)=>(b.date||"").localeCompare(a.date||"")),shown=stories.filter(s=>lifeFilter==="all"||(lifeFilter==="Meme")===(s.kind==="Meme"));
   const bd=S.birthdays.filter(b=>b.show!==false&&b.name&&b.month&&b.day).map(b=>({...b,next:nextBday(b)})).filter(b=>(b.next-parse(TODAY))/864e5<=7).sort((a,b)=>a.next-b.next);
   const mineB=S.birthdays.find(b=>b.id===me.id),pls=allPlaylists();
-  return head("Photos, recaps, spotlights, birthdays and playlists from the Avenues community.","Student Life",canAct()?`<button class="btn" data-act="add-story">+ Add a story</button><button class="btn primary" data-act="add-album">+ Add photo album</button>`:"")+
-  (albums.length?beltsHTML(2)+`<section class="panel"><h2>Photo albums</h2><div class="albums">${albums.map(albumCard).join("")}</div></section>`:empty("No photos yet",canAct()?"Add an album of photos from a dance, game or trip. The photos drift across the top of this page, and clicking one opens its album.":"Photos from events will show up here.","add-album","Add the first album"))+
+  return head("Photos, recaps, spotlights, birthdays and playlists from the Avenues community.","Student Life",canAct()?`<button class="btn" data-act="add-aviator">+ Aviator of the Week</button><button class="btn" data-act="add-story">+ Add a story</button><button class="btn primary" data-act="add-album">+ Add photo album</button>`:"")+
+  aviatorBlock()+(albums.length?beltsHTML(2)+`<section class="panel"><h2>Photo albums</h2><div class="albums">${albums.map(albumCard).join("")}</div></section>`:empty("No photos yet",canAct()?"Add an album of photos from a dance, game or trip. The photos drift across the top of this page, and clicking one opens its album.":"Photos from events will show up here.","add-album","Add the first album"))+
   `<section class="panel"><h2>Stories</h2><div class="fchips" style="margin-top:10px">${[["all","All"],["stories","Stories and spotlights"],["Meme","Memes"]].map(([k,l])=>`<button class="fchip" data-act="life-filter" data-to="${k}" aria-pressed="${lifeFilter===k}">${l}</button>`).join("")}</div>${shown.length?`<div class="stories">${shown.map(storyCard).join("")}</div>`:`<p class="sub" style="margin:12px 0 0">${stories.length?"Nothing here yet.":"Recaps, student spotlights, interviews and memes will show up here."}</p>`}</section>`+
   `<div class="grid2"><section class="panel"><h2>Birthdays this week</h2>${bd.length?bd.map(b=>{const today=iso(b.next)===TODAY;return`<div class="bday"><b>${esc(b.name)}</b><span class="sub">${today?"":esc(b.next.toLocaleDateString(undefined,{weekday:"long",month:"short",day:"numeric"}))}</span>${today?`<span class="chip gold">Today</span>`:""}${canAct()?`<span class="sp"></span><button class="btn sm ghost" data-act="bday-remove" data-id="${b.id}">Remove</button>`:""}</div>`}).join(""):`<p class="sub" style="margin:10px 0 0">No birthdays in the next 7 days.</p>`}${canJoin()?`<div style="margin-top:12px"><button class="btn sm" data-act="bday">${mineB?"Edit my birthday":"Add my birthday"}</button> <span class="sub">Optional. Only your name and the date are shown.</span></div>`:""}</section>
   <section class="panel"><h2>Student playlists</h2>${pls.length?pls.slice(0,12).map(p=>`<div class="playlist"><div class="grow"><a class="title" href="${esc(safeUrl(p.url))}" target="_blank" rel="noopener">${esc(p.title)}</a><div class="sub parts">${p.vibe?`<span>${esc(p.vibe)}</span>`:""}${p.name?`<span>Shared by ${esc(p.name)}</span>`:""}</div></div>${p.uid===me.id||canAct()?`<button class="btn sm ghost" data-act="pl-remove" data-uid="${esc(p.uid)}" data-key="${esc(p.key)}">Remove</button>`:""}</div>`).join(""):`<p class="sub" style="margin:10px 0 0">No playlists yet. Share what you're listening to.</p>`}${canJoin()?`<div style="margin-top:12px"><button class="btn sm" data-act="add-playlist">+ Share a playlist</button></div>`:""}</section></div>`;
@@ -1051,18 +1094,21 @@ function resizeToBlob(file,max){return new Promise((res,rej)=>{const url=URL.cre
 const SW=480,SH=270,GY=214,HY=GY-10,CORNER=356,TOPC=14;
 let sceneRAF=0,sceneCanvas=null;
 function seeded(n){let s=n>>>0;return()=>(s=(s*1664525+1013904223)>>>0)/4294967296}
-function isNight(){const t=document.documentElement.dataset.theme;return t?t==="dark":matchMedia("(prefers-color-scheme: dark)").matches}
+let sceneOverride=null;
+function sceneSeason(){if(sceneOverride&&sceneOverride.season)return sceneOverride.season;const m=new Date().getMonth();return m<2||m===11?"winter":m<5?"spring":m<8?"summer":"fall"}
+function scenePhase(){if(sceneOverride&&sceneOverride.phase)return sceneOverride.phase;const h=new Date().getHours(),se=sceneSeason(),dusk=se==="winter"?16:se==="fall"?17:se==="spring"?18:19;return h<6||h>=dusk+2?"night":h<8?"dawn":h>=dusk?"dusk":"day"}
 function makeCanvas(w,h){const c=document.createElement("canvas");c.width=w;c.height=h;const g=c.getContext("2d");g.imageSmoothingEnabled=false;return[c,g]}
 const box=(g,x,y,w,h,c)=>{g.fillStyle=c;g.fillRect(Math.round(x),Math.round(y),w,h)};
-const FONT={A:["010","101","111","101","101"],V:["101","101","101","101","010"],E:["111","100","110","100","111"],N:["101","111","111","111","101"],U:["101","101","101","101","111"],S:["111","100","111","001","111"]};
-function pixelText(g,txt,x,y,c){for(const ch of txt){const f=FONT[ch];if(f)f.forEach((row,r)=>[...row].forEach((b,k)=>{if(b==="1")box(g,x+k,y+r,1,1,c)}));x+=4}}
+const FONT={A:"010101111101101",B:"110101110101110",C:"011100100100011",D:"110101101101110",E:"111100110100111",F:"111100110100100",G:"011100101101011",H:"101101111101101",I:"111010010010111",J:"001001001101010",K:"101101110101101",L:"100100100100111",M:"101111111101101",N:"110101101101101",O:"010101101101010",P:"110101110100100",Q:"010101101111011",R:"110101110101101",S:"011100010001110",T:"111010010010010",U:"101101101101111",V:"101101101101010",W:"101101111111101",X:"101101010101101",Y:"101101010010010",Z:"111001010100111",0:"111101101101111",1:"010110010010111",2:"110001010100111",3:"110001010001110",4:"101101111001001",5:"111100110001110",6:"011100110101010",7:"111001010010010",8:"111101111101111",9:"010101011001110","!":"010010010000010",":":"000010000010000","'":"010010000000000",".":"000000000000010","-":"000000111000000"};
+const pxClean=t=>String(t||"").toUpperCase().replace(/[^A-Z0-9 !:'.\-]/g," ").replace(/\s+/g," ").trim();
+function pixelText(g,txt,x,y,c){for(const ch of txt){const f=FONT[ch];if(f)for(let i=0;i<15;i++)if(f[i]==="1")box(g,x+i%3,y+Math.floor(i/3),1,1,c);x+=4}}
 
-function drawSky(g,night){
-  const cols=night?["#0A1430","#0E1A3B","#122247","#172A53","#1C3260","#223B6C","#2A4578"]:["#3F93E0","#4FA0E6","#62ADEB","#78BAF0","#8FC7F4","#A7D4F7","#BFE0F9"];
+function drawSky(g,phase){
+  const night=phase==="night",cols={night:["#0A1430","#0E1A3B","#122247","#172A53","#1C3260","#223B6C","#2A4578"],day:["#3F93E0","#4FA0E6","#62ADEB","#78BAF0","#8FC7F4","#A7D4F7","#BFE0F9"],dawn:["#3C4F8A","#5C5F9A","#8A6FA0","#C0809A","#E89A8A","#F5B98A","#FBD9A6"],dusk:["#2B2F6B","#4B3A7A","#7B4A85","#B85C7A","#E5785E","#F49A52","#F9C272"]}[phase];
   const bh=Math.ceil(GY/cols.length);
   for(let y=0;y<GY;y++){const i=Math.min(cols.length-1,Math.floor(y/bh)),pos=y%bh,nx=cols[Math.min(cols.length-1,i+1)];box(g,0,y,SW,1,cols[i]);
     if(pos>=bh-3&&i<cols.length-1)for(let x=(y%2);x<SW;x+=pos===bh-1?2:4)box(g,x,y,1,1,nx)}
-  if(night){const r=seeded(7);for(let k=0;k<70;k++)box(g,Math.floor(r()*SW),Math.floor(r()*130),1,1,r()>.7?"#FFF6D8":"#C9D6F2")}
+  if(night){const r=seeded(7);for(let k=0;k<70;k++)box(g,Math.floor(r()*SW),Math.floor(r()*130),1,1,r()>.7?"#FFF6D8":"#C9D6F2");box(g,60,30,8,10,"#F4F1DE");box(g,59,32,10,6,"#F4F1DE");box(g,62,32,2,2,"#D9D4B8")}
 }
 function makeCloud(w,h,seed,night){
   const[c,g]=makeCanvas(w,h),r=seeded(seed),blobs=[];
@@ -1098,7 +1144,7 @@ function drawFace(g,tex,xNear,xFar,k){
     const top=Math.round(HY+(TOPC-HY)*w),bot=Math.round(HY+(GY-HY)*w);
     g.drawImage(tex,sx,0,1,tex.height,xNear+dir*i-(dir<0?1:0),top,1,bot-top)}
 }
-function drawBackdrop(g,night){
+function drawBackdrop(g,night,season){
   const r=seeded(11);
   // flat 2D skyline
   const haze=night?"#1A2743":"#9DBBD6",haze2=night?"#162038":"#8AADCB",hwin=night?"#3B4C70":"#BBD2E4";
@@ -1109,7 +1155,7 @@ function drawBackdrop(g,night){
   box(g,170,HY-66,36,66,night?"#3E2623":"#A9604A");for(let yy=HY-60;yy<HY-6;yy+=8)for(let xx=174;xx<202;xx+=6)box(g,xx,yy,3,4,night?(r()>.6?"#E8C873":"#241513"):"#5E3A31");
   box(g,204,HY-92,38,92,night?"#333843":"#E4E7EA");for(let yy=HY-84;yy<HY-8;yy+=9)for(let xx=208;xx<238;xx+=7)box(g,xx,yy,4,5,night?(r()>.6?"#E8C873":"#1B1F27"):"#8FA2B0");
   // ground, then the building's two faces meeting at the near corner
-  box(g,0,HY,SW,GY+8-HY,night?"#4E4B47":"#C3BDB1");
+  box(g,0,HY,SW,GY+8-HY,season==="winter"?(night?"#77818C":"#E6EBEF"):night?"#4E4B47":"#C3BDB1");
   drawFace(g,faceTex(night,true,false),CORNER,238,.58);
   drawFace(g,faceTex(night,false,true),CORNER,476,.6);
   box(g,CORNER,TOPC,1,GY-TOPC,night?"#8A795E":"#FBF0D2");
@@ -1117,9 +1163,9 @@ function drawBackdrop(g,night){
   // lamp post with a navy banner, one street tree
   box(g,226,GY-58,2,60,"#5D6670");box(g,222,GY-60,8,2,"#5D6670");box(g,223,GY-58,4,2,night?"#FFE9A0":"#D9DEE2");box(g,228,GY-50,6,12,"#1F2E5A");box(g,230,GY-46,2,4,"#FFFFFF");
   if(night){g.fillStyle="rgba(255,226,140,.16)";g.fillRect(214,GY-58,22,60)}
-  const dk=night?"#132A18":"#2E6A39",md=night?"#1B3B22":"#3F8A45",lt=night?"#26502D":"#6DB356";
+  const[dk,md,lt]=season==="winter"?["#DDE6EE","#F4F8FB","#FFFFFF"]:season==="fall"?(night?["#5A2C0E","#7A3D12","#96561A"]:["#9A4A14","#D2691E","#F0A030"]):season==="spring"?(night?["#7A4760","#96607A","#B07C94"]:["#D97BA6","#F2A7C3","#FBD3E0"]):night?["#132A18","#1B3B22","#26502D"]:["#2E6A39","#3F8A45","#6DB356"];
   box(g,141,GY-14,3,18,night?"#2A2018":"#5B4330");
-  for(let y=-13;y<=13;y++)for(let x=-13;x<=13;x++){const d=x*x+y*y*1.3;if(d<169&&r()>.05)box(g,142+x,GY-26+y,1,1,d<60&&y<0&&x<0?lt:(r()>.5?md:dk))}
+  for(let y=-13;y<=13;y++)for(let x=-13;x<=13;x++){const d=x*x+y*y*1.3;if(d<169&&r()>(season==="winter"?.72:.05))box(g,142+x,GY-26+y,1,1,d<60&&y<0&&x<0?lt:(r()>.5?md:dk))}
   // sidewalk seams, curb, bike lane, street, crosswalk
   for(let x=0;x<SW;x+=16)box(g,x,GY,1,8,night?"#45423E":"#B0AA9D");
   box(g,0,GY+8,SW,2,night?"#3A3835":"#8C877E");box(g,0,GY+10,SW,SH-GY-10,night?"#24272C":"#4A4F57");
@@ -1151,10 +1197,10 @@ function drawPed(g,p){const f=Math.floor(p.dist/2.5)%2,x=Math.round(p.x),y=p.y;
 
 function startScene(canvas){
   stopScene();if(!canvas)return;sceneCanvas=canvas;
-  const night=isNight(),r=Math.random;canvas.width=SW;canvas.height=SH;
+  const phase=scenePhase(),season=sceneSeason(),night=phase==="night",r=Math.random;canvas.width=SW;canvas.height=SH;
   const g=canvas.getContext("2d");g.imageSmoothingEnabled=false;
-  const[sky,sg]=makeCanvas(SW,SH);drawSky(sg,night);
-  const[city,cg]=makeCanvas(SW,SH);drawBackdrop(cg,night);
+  const[sky,sg]=makeCanvas(SW,SH);drawSky(sg,phase);
+  const[city,cg]=makeCanvas(SW,SH);drawBackdrop(cg,night,season);if(phase==="dawn"||phase==="dusk"){cg.fillStyle="rgba(255,120,60,.13)";cg.fillRect(0,0,SW,SH)}
   const clouds=[[200,60,3,-20,4,26],[150,44,9,190,2.5,58],[110,30,5,330,5,8]].map(([w,h,s,x,sp,y])=>({img:makeCloud(w,h,s,night),x,y,sp}));
   const lane={y:GY+54,d:-1,list:[]},bikes=[],peds=[],birds=[];
   const newVehicle=x=>{const k=r(),kind=k<.2?"bus":k<.62?"taxi":"car";return{kind,L:kind==="bus"?44:22,d:lane.d,y:lane.y,x,v:(kind==="bus"?16:22)+r()*8,color:["#2B2F36","#8C9399","#F4F4F2","#3A5A8C","#7A2E2E"][Math.floor(r()*5)]}};
@@ -1162,11 +1208,23 @@ function startScene(canvas){
   const newPed=x=>({x,y:GY+7-Math.floor(r()*3),d:r()>.5?1:-1,v:4+r()*4,dist:0,skin:SKIN[Math.floor(r()*SKIN.length)],hair:["#1B1410","#3B2416","#7A4B26","#D8B26A"][Math.floor(r()*4)],shirt:SHIRT[Math.floor(r()*SHIRT.length)],pants:["#22303F","#2B2F36","#5A6470","#7A5C3A"][Math.floor(r()*4)],bag:r()>.4?["#C8373B","#2446C7","#F4B400","#14202E"][Math.floor(r()*4)]:null});
   lane.list.push(newVehicle(120),newVehicle(330));bikes.push(newBike(r()*SW));
   for(let k=0;k<7;k++)peds.push(newPed(r()*SW));
+  let clock=2;const plane={x:-20,wait:3};
+  const parts=season==="summer"?[]:Array.from({length:season==="winter"?46:20},()=>({x:r()*SW,y:r()*GY,v:(season==="winter"?9:6)+r()*8,ph:r()*6,c:season==="winter"?"#FFFFFF":season==="fall"?["#D2691E","#F0A030","#9A4A14"][Math.floor(r()*3)]:["#F2A7C3","#FBD3E0"][Math.floor(r()*2)]}));
+  const drawParts=()=>parts.forEach(p=>box(g,p.x+Math.sin(clock*1.3+p.ph)*3,p.y,season==="winter"?1:2,1,p.c));
+  const drawPlane=()=>{const txt=pxClean(sceneInfo().aviator);if(!txt||plane.wait>0)return;const x=Math.round(plane.x),y=118,w=txt.length*4+5;
+    box(g,x-w-8,y-1,w,9,"#FFFFFF");box(g,x-w-8,y-1,w,1,"#F4B400");box(g,x-w-8,y+7,w,1,"#F4B400");pixelText(g,txt,x-w-5,y+1,"#14202E");box(g,x-8,y+3,8,1,"#14202E");
+    box(g,x,y+1,12,4,"#C8373B");box(g,x+12,y+2,2,2,"#C8373B");box(g,x+3,y-1,5,2,"#E9EDF0");box(g,x-1,y-1,2,3,"#C8373B");box(g,x+9,y+2,2,1,"#BFE0F9");box(g,x+14,y+1,1,4,"#14202E")};
+  const drawBday=()=>{const names=sceneInfo().bdays;if(!names.length)return;const nm=pxClean(names[Math.floor(clock/8)%names.length]).slice(0,14),h=Math.min(18,Math.round((clock%8)*14)),x=364,y=64;
+    box(g,x+4,y-6,1,6,"#5D6670");box(g,x+57,y-6,1,6,"#5D6670");box(g,x,y,62,h,"#F4B400");box(g,x,y,62,1,"#14202E");
+    if(h>=18){box(g,x,y+17,62,1,"#14202E");pixelText(g,"HAPPY BIRTHDAY",x+4,y+3,"#14202E");pixelText(g,nm,x+31-nm.length*2,y+10,"#14202E")}};
+  const drawTruck=v=>{const x=Math.round(v.x);box(g,x+10,v.y-15,v.L-10,12,"#FFFFFF");box(g,x+10,v.y-4,v.L-10,1,"#8C9399");pixelText(g,v.text,x+14,v.y-12,"#14202E");box(g,x,v.y-10,10,7,"#2446C7");box(g,x+1,v.y-9,4,3,"#BFE0F9");box(g,x,v.y-5,1,1,"#FFF7D0");[3,v.L-8].forEach(wx=>{box(g,x+wx,v.y-3,4,3,"#161616");box(g,x+wx+1,v.y-2,2,1,"#8A8A8A")})};
   const step=dt=>{
+    clock+=dt;parts.forEach(p=>{p.y+=p.v*dt;if(p.y>GY+8){p.y=-2;p.x=r()*SW}});
+    if(plane.wait>0)plane.wait-=dt;else{plane.x+=15*dt;if(plane.x>SW+230){plane.x=-20;plane.wait=18}}
     clouds.forEach(c=>{c.x+=c.sp*dt;if(c.x>SW)c.x=-c.img.width});
-    lane.list.forEach(v=>v.x+=v.d*v.v*dt);lane.list=lane.list.filter(v=>v.x>-60);
+    lane.list.forEach(v=>v.x+=v.d*v.v*dt);lane.list=lane.list.filter(v=>v.x>-v.L-20);
     const edge=Math.max(...lane.list.map(v=>v.x+v.L),-999);
-    if(edge<SW-110&&r()<dt*.3)lane.list.push(newVehicle(SW));
+    if(edge<SW-110&&r()<dt*.3){const news=pxClean(sceneInfo().news).slice(0,26);if(news&&!lane.list.some(v=>v.kind==="truck")&&r()<.5)lane.list.push({kind:"truck",text:news,L:news.length*4+18,d:-1,y:lane.y,x:SW,v:17});else lane.list.push(newVehicle(SW))}
     lane.list.sort((a,b)=>a.x-b.x);for(let i=0;i<lane.list.length-1;i++){const a=lane.list[i],b=lane.list[i+1];if(b.x-(a.x+a.L)<8)b.v=Math.min(b.v,a.v)}
     for(const b of bikes){b.x+=b.d*b.v*dt;b.dist+=b.v*dt}
     for(let i=bikes.length-1;i>=0;i--)if(bikes[i].x<-14||bikes[i].x>SW+14)bikes.splice(i,1);
@@ -1180,8 +1238,8 @@ function startScene(canvas){
   const draw=()=>{
     g.drawImage(sky,0,0);clouds.forEach(c=>g.drawImage(c.img,Math.round(c.x),c.y));
     birds.forEach(b=>{const up=Math.floor(b.t*6)%2,c=night?"#9FB0CF":"#2B3A4A";box(g,b.x,b.y,1,1,c);box(g,b.x-1,b.y-(up?1:0),1,1,c);box(g,b.x+1,b.y-(up?1:0),1,1,c)});
-    g.drawImage(city,0,0);[...peds].sort((a,b)=>a.y-b.y).forEach(p=>drawPed(g,p));
-    bikes.forEach(b=>drawBiker(g,b));lane.list.forEach(v=>drawVehicle(g,v,night));
+    drawPlane();g.drawImage(city,0,0);drawBday();[...peds].sort((a,b)=>a.y-b.y).forEach(p=>drawPed(g,p));
+    bikes.forEach(b=>drawBiker(g,b));lane.list.forEach(v=>v.kind==="truck"?drawTruck(v):drawVehicle(g,v,night));drawParts();
     if(night)lane.list.forEach(v=>{g.fillStyle="rgba(255,240,170,.22)";g.fillRect(Math.round(v.x-6),v.y-7,6,4)});
   };
   const still=matchMedia("(prefers-reduced-motion: reduce)").matches;
@@ -1217,12 +1275,108 @@ function homeView(){
     <canvas id="homeScene" aria-hidden="true"></canvas><div class="home-shade" aria-hidden="true"></div>
     <header class="home-nav">${siteNav()}</header>
     <div class="home-copy"><h1>Know what's happening before the group chat does.</h1>
-      <p>Events, sign-ups, opportunities and Student Council, all in one place.</p>
+      <p>The community hub for Avenues students: events, clubs, the Grade Race, spotlights and Student Council.</p>
       <div class="home-actions"><a class="hbtn" href="#hub">See this week</a><a class="hbtn glass" href="#suggestions">Make a suggestion</a></div></div>
   </section>
   <div class="home-strip"><div class="home-live" id="homeLive">${homeLive()}</div></div>
+  <section class="home-about"><div><h2>One place for the Avenues community</h2><ul class="about-list">
+    <li><a href="#events">Events</a><span>Sign up for dances, trips and tournaments.</span></li>
+    <li><a href="#play">Grade Race</a><span>Call what happens this week and win points for your grade.</span></li>
+    <li><a href="#life">Student Life</a><span>Aviator of the Week, photos, stories and birthdays.</span></li>
+    <li><a href="#clubs">Clubs</a><span>Find a club, see when it meets, and join.</span></li>
+    <li><a href="#opportunities">Opportunities</a><span>Volunteering, internships, competitions and auditions.</span></li>
+    <li><a href="#voice">Student Voice</a><span>Vote in polls, send ideas, and see what Student Council is working on.</span></li>
+  </ul></div><div id="homeAv">${homeAviator()}</div></section>
   <footer class="home-foot"><span><b>Avenues Student Hub</b>, run by the Avenues The World School Student Council</span><span class="sp"></span>${canCouncil()?`<a href="#overview">Council workspace</a>`:""}<a href="#suggestions">Contact Student Council</a></footer>`;
 }
+
+
+/* ---------- community: Aviator of the Week, Grade Race, clubs ---------- */
+const GRADES=["9","10","11","12"];
+const sortedAviators=()=>[...S.aviators].sort((a,b)=>(b.date||"").localeCompare(a.date||""));
+const currentAviator=()=>sortedAviators()[0]||null;
+function aviatorBlock(){const all=sortedAviators(),a=all[0];
+  if(!a)return canAct()?`<section class="aviator empty-av"><div class="av-body"><span class="av-tag">Aviator of the Week</span><p>Spotlight one student each week: an achievement, a project, or something they did for the community.</p><button class="btn primary" data-act="add-aviator">Name the first Aviator</button></div></section>`:"";
+  return`<section class="aviator">${a.photo?`<div class="av-photo"><img src="${blob(a.photo)}" alt=""></div>`:""}<div class="av-body"><span class="av-tag">Aviator of the Week</span><h2>${esc(a.name)}</h2><div class="sub">${a.grade?"Grade "+esc(a.grade):""}${a.date?(a.grade?", ":"")+"week of "+esc(short(a.date)):""}</div>${a.why?`<p>${esc(a.why)}</p>`:""}<div class="toolbar">${heartBtn(a.id)}${canAct()?`<button class="btn sm" data-act="edit-aviator" data-id="${a.id}">Edit</button><button class="btn sm" data-act="add-aviator">Name a new one</button>`:""}</div>${all.length>1?`<div class="sub">Past Aviators: ${all.slice(1,7).map(x=>esc(x.name)).join(", ")}</div>`:""}</div></section>`}
+function aviatorForm(id){const a=id&&S.aviators.find(x=>x.id===id);
+  openForm({title:a?"Edit Aviator of the Week":"Name the Aviator of the Week",note:"Ask the student before you post their name and photo.",
+    fields:[{id:"name",label:"Student's name",required:true,full:true},{id:"grade",label:"Grade",type:"select",options:GRADES.map(g=>[g,"Grade "+g])},{id:"date",label:"Week of",type:"date"},{id:"photo",label:"Photo",type:"photos"},{id:"why",label:"Why they're this week's Aviator",type:"textarea",required:true,placeholder:"The achievement, project, or thing they did for the community"}],
+    values:a||{date:weekStart(TODAY),grade:"9"},
+    submit:v=>a?save(()=>col("aviators").doc(id).update(v),"Saved",["edited Aviator of the Week","aviator",v.name]):save(()=>col("aviators").add({...v,created:new Date().toISOString()}),"Aviator posted",["named Aviator of the Week:","aviator",v.name]),
+    onDelete:a?()=>save(()=>col("aviators").doc(id).delete(),"Removed",["removed Aviator of the Week","aviator",a.name]):null})}
+
+/* Grade Race: students pick answers; council marks the result and the points are written by council, so picks can't be changed for credit afterwards */
+const myPlay=()=>S.picks.find(d=>d.id===me.id)||{};
+function savePlay(patch){const p=myPlay();return db.doc("picks/"+me.id).set({name:p.name||"",grade:p.grade||"",picks:p.picks||{},clubs:p.clubs||{},...patch})}
+const ptsOf=d=>Object.values((d&&d.log)||{}).reduce((t,x)=>t+(Number(x&&x.p)||0),0);
+const scoreDocs=()=>S.scores.filter(d=>d.id!=="_settings");
+const raceGoal=()=>{const s=S.scores.find(d=>d.id==="_settings")||{};return{goal:Number(s.goal)||500,prize:s.prize||"an ice cream sundae party"}};
+function gradeTotals(){const t=Object.fromEntries(GRADES.map(g=>[g,0]));for(const d of scoreDocs())if(t[d.grade]!=null)t[d.grade]+=ptsOf(d);return t}
+function upsert(c,id,data){return S[c].some(d=>d.id===id)?db.doc(c+"/"+id).update(data):db.doc(c+"/"+id).set(data)}
+const predOpen=p=>p.answer==null&&(!p.closes||p.closes>=TODAY);
+function lifeHub(){return subnav([["life","Student Life"],["clubs","Clubs"]])+(shownView()==="clubs"?clubsView():lifeView())}
+function playView(){return subnav([["play","Predictions"],["leaderboard","Leaderboard"]])+(shownView()==="leaderboard"?leaderboardView():predictionsView())}
+function joinPrompt(){if(!canJoin())return`<div class="banner">${needAccess("play")}</div>`;if(myPlay().grade)return"";
+  return`<section class="start"><div><h2>Pick your grade to play</h2><p class="sub" style="margin:8px 0 0">Every point you earn also counts for your grade.</p></div><div class="acts"><button class="btn primary" data-act="play-join">Join the Grade Race</button></div></section>`}
+function predictionsView(){
+  const ps=[...S.predictions].sort((a,b)=>(b.created||"").localeCompare(a.created||"")),open=ps.filter(predOpen),done=ps.filter(p=>!predOpen(p)).slice(0,8),mine=S.scores.find(d=>d.id===me.id),g=myPlay().grade;
+  return head("Call what happens at school this week. Every right answer earns points for you and for your grade.","Grade Race",canAct()?`<button class="btn" data-act="award">Award points</button><button class="btn primary" data-act="add-pred">+ New prediction</button>`:"")+joinPrompt()+
+  (g?`<div class="summary"><span>You have <b>${ptsOf(mine)}</b> points</span><span>Grade ${esc(g)} has <b>${gradeTotals()[g]||0}</b></span><a href="#leaderboard">See the leaderboard</a><button class="btn sm ghost" data-act="play-join">Change my grade</button></div>`:"")+
+  (open.length?`<div class="polls">${open.map(predCard).join("")}</div>`:empty("No predictions open right now",canAct()?"Post a few each Monday: who wins Friday's game, what's for lunch on Thursday, whether the fire alarm goes off.":"New ones go up each week.","add-pred","Post a prediction"))+
+  (done.length?`<section class="panel"><h2>Results</h2><div class="polls" style="margin-top:12px">${done.map(predCard).join("")}</div></section>`:"");
+}
+function predCard(p){const opts=p.options||[],pk=(myPlay().picks||{})[p.id],open=predOpen(p),can=open&&canJoin()&&!!myPlay().grade,res=p.answer!=null,pts=Number(p.points)||10;
+  return`<article class="poll"><div class="sub parts"><span class="chip gold">${pts} points</span><span>${res?"The result is in":open?(p.closes?"Locks after "+esc(short(p.closes)):"Open"):"Locked, waiting for the result"}</span></div><h3>${esc(p.question)}</h3>
+  <div class="opts">${opts.map((o,i)=>`<button class="opt ${res&&p.answer===i?"right":""}" data-act="pred-pick" data-id="${p.id}" data-i="${i}" aria-pressed="${pk===i}" ${can?"":"disabled"}><span class="optlabel">${esc(o)}</span>${res&&p.answer===i?`<span class="optpct">Correct</span>`:pk===i?`<span class="optpct">Your pick</span>`:""}</button>`).join("")}</div>
+  ${res&&pk!=null?`<p class="sub" style="margin:0">${pk===p.answer?`You called it. +${pts} points for you and your grade.`:"Not this time."}</p>`:""}
+  ${canAct()?`<div class="toolbar"><button class="btn sm primary" data-act="pred-resolve" data-id="${p.id}">${res?"Change the answer":"Mark the answer"}</button><button class="btn sm ghost" data-act="edit-pred" data-id="${p.id}">Edit</button><span class="sub">${S.picks.filter(d=>(d.picks||{})[p.id]!=null).length} picks so far</span></div>`:""}</article>`}
+function leaderboardView(){
+  const t=gradeTotals(),{goal,prize}=raceGoal(),lead=Math.max(...Object.values(t));
+  const players=scoreDocs().filter(d=>!d.team).map(d=>({...d,pts:ptsOf(d)})).filter(d=>d.pts>0).sort((a,b)=>b.pts-a.pts).slice(0,15);
+  const bonus=[];for(const d of scoreDocs())if(d.team)for(const[k,x]of Object.entries(d.log||{}))bonus.push({k,grade:d.grade,...x});bonus.sort((a,b)=>b.k.localeCompare(a.k));
+  return head(`The first grade to ${goal} points wins ${esc(prize)}. Points come from predictions, Spirit Week and showing up.`,"Leaderboard",canAct()?`<button class="btn" data-act="race-goal">Set the prize</button><button class="btn primary" data-act="award">Award points</button>`:"")+
+  `<div class="sundaes">${GRADES.map(g=>{const pct=Math.min(100,Math.round(t[g]/goal*100)),top=t[g]===lead&&lead>0;return`<div class="sundae-col"><div class="sundae" role="img" aria-label="Grade ${g}: ${t[g]} of ${goal} points"><div class="cherry" ${pct>=100?"":"hidden"}></div><div class="sundae-glass"><div class="scoops" style="height:${pct}%"></div></div><div class="stem"></div></div><div class="title">Grade ${g}</div><div class="sub"><b>${t[g]}</b> of ${goal}</div>${top?`<span class="chip gold">In the lead</span>`:""}</div>`}).join("")}</div>
+  <div class="grid2"><section class="panel"><h2>Top players</h2>${players.length?`<ol class="ranks">${players.map((d,i)=>`<li class="${d.id===me.id?"you":""}"><span class="rk">${i+1}</span><span class="grow title">${esc(d.name||"Student")}${d.id===me.id?" (you)":""}</span><span class="sub">Grade ${esc(d.grade||"?")}</span><b>${d.pts}</b></li>`).join("")}</ol>`:`<p class="sub" style="margin:10px 0 0">No points yet. Make a prediction to get on the board.</p>`}</section>
+  <section class="panel"><h2>Grade bonuses</h2>${bonus.length?`<ul class="list">${bonus.slice(0,8).map(x=>`<li><div class="grow"><div class="title">${esc(x.why||"Bonus")}</div><div class="sub">Grade ${esc(x.grade)}</div></div><b>+${Number(x.p)||0}</b></li>`).join("")}</ul>`:`<p class="sub" style="margin:10px 0 0">Spirit Week, turning up to games and class challenges add bonus points here.</p>`}</section></div>`;
+}
+function raceMini(){const t=gradeTotals(),{goal}=raceGoal();return`<div class="race-mini"><h3>Grade Race</h3>${GRADES.map(g=>`<div class="race-row"><span class="title">Grade ${g}</span><span class="race-bar"><i style="width:${Math.min(100,t[g]/goal*100)}%"></i></span><b>${t[g]}</b></div>`).join("")}<a href="#leaderboard">See the leaderboard</a></div>`}
+function predForm(id){const p=id&&S.predictions.find(x=>x.id===id);
+  openForm({title:p?"Edit prediction":"New prediction",submitLabel:p?"Save":"Post prediction",
+    fields:[{id:"question",label:"What might happen?",required:true,full:true,placeholder:"e.g. Who wins Friday's basketball game?"},{id:"optionsText",label:"Answers, one per line",type:"textarea",required:true},{id:"closes",label:"Last day to pick",type:"date"},{id:"points",label:"Points for a right answer",type:"number"}],
+    values:p?{...p,optionsText:(p.options||[]).join("\n")}:{points:10,closes:iso(addDays(new Date(),3))},
+    submit:v=>{const options=v.optionsText.split("\n").map(x=>x.trim()).filter(Boolean).slice(0,6);if(options.length<2){$("#merr").textContent="Add at least two answers.";return false}
+      const data={question:v.question,options,closes:v.closes||"",points:Number(v.points)||10};
+      return p?save(()=>col("predictions").doc(id).update(data),"Saved",["edited","prediction",data.question]):save(()=>col("predictions").add({...data,answer:null,created:new Date().toISOString()}),"Prediction posted",["posted","prediction",data.question])},
+    onDelete:p?()=>save(()=>col("predictions").doc(id).delete(),"Deleted",["deleted","prediction",p.question]):null})}
+function resolveForm(id){const p=S.predictions.find(x=>x.id===id);if(!p)return;
+  openForm({title:"What actually happened?",submitLabel:"Award points",note:esc(p.question),fields:[{id:"answer",label:"Correct answer",type:"select",full:true,options:(p.options||[]).map((o,i)=>[String(i),o])}],values:{answer:String(p.answer??0)},
+    submit:v=>{const ans=Number(v.answer),pts=Number(p.points)||10;return save(async()=>{
+      for(const d of S.picks){const pk=(d.picks||{})[id];if(pk==null)continue;const had=((S.scores.find(s=>s.id===d.id)||{}).log||{})[id];
+        if(pk===ans)await upsert("scores",d.id,{name:d.name||"Student",grade:d.grade||"",log:{[id]:{p:pts,why:p.question}}});
+        else if(had&&had.p)await upsert("scores",d.id,{log:{[id]:{p:0,why:p.question}}})}
+      await col("predictions").doc(id).update({answer:ans})},"Points awarded",["marked the answer for","prediction",p.question])}})}
+function awardForm(){
+  openForm({title:"Award points",submitLabel:"Award",note:"For Spirit Week, turning up to a game, winning a class challenge.",
+    fields:[{id:"who",label:"Who gets them",type:"select",full:true,options:[...GRADES.map(g=>["g:"+g,"All of Grade "+g]),...S.picks.filter(d=>d.name).map(d=>["u:"+d.id,`${d.name} (Grade ${d.grade||"?"})`])]},{id:"p",label:"Points",type:"number"},{id:"why",label:"What for",required:true,placeholder:"e.g. Spirit Week: Pajama Day"}],values:{who:"g:9",p:25},
+    submit:v=>{const pts=Number(v.p)||0,key="b"+Date.now().toString(36),entry={log:{[key]:{p:pts,why:v.why}}};if(!pts){$("#merr").textContent="Enter the number of points.";return false}
+      if(v.who.startsWith("g:")){const g=v.who.slice(2);return save(()=>upsert("scores","grade-"+g,{name:"Grade "+g+" bonus",grade:g,team:true,...entry}),"Points awarded",[`gave Grade ${g} ${pts} points for`,"points",v.why])}
+      const d=S.picks.find(x=>x.id===v.who.slice(2));return save(()=>upsert("scores",d.id,{name:d.name,grade:d.grade||"",...entry}),"Points awarded",[`gave ${d.name} ${pts} points for`,"points",v.why])}})}
+function goalForm(){const g=raceGoal();
+  openForm({title:"Set the prize",fields:[{id:"goal",label:"Points to win",type:"number"},{id:"prize",label:"The prize",full:true,placeholder:"an ice cream sundae party"}],values:g,
+    submit:v=>save(()=>upsert("scores","_settings",{goal:Number(v.goal)||500,prize:v.prize||"an ice cream sundae party"}),"Saved",["set the Grade Race prize to","points",v.prize])})}
+function playJoinForm(){const p=myPlay();
+  openForm({title:"Join the Grade Race",submitLabel:"Save",fields:[{id:"name",label:"Your name, as shown on the leaderboard",required:true,full:true},{id:"grade",label:"Your grade",type:"select",options:GRADES.map(g=>[g,"Grade "+g])}],values:{name:p.name||me.name||"",grade:p.grade||"9"},
+    submit:v=>save(()=>savePlay({name:v.name,grade:v.grade}),"You're in")})}
+
+/* clubs */
+function clubsView(){const cs=[...S.clubs].sort((a,b)=>(a.name||"").localeCompare(b.name||"")),mine=myPlay().clubs||{};
+  return head("Every club at Avenues: when it meets, who runs it, and how to join.","Clubs",addBtn("add-club","Add a club"))+
+  (cs.length?`<div class="opps">${cs.map(c=>{const link=safeUrl(c.link),n=S.picks.filter(d=>(d.clubs||{})[c.id]).length;return`<article class="opp"><h3>${esc(c.name)}</h3>${c.about?`<p>${esc(c.about)}</p>`:""}<div class="sub parts">${c.meets?`<span>Meets ${esc(c.meets)}</span>`:""}${c.leader?`<span>Run by ${esc(c.leader)}</span>`:""}</div>${c.news?`<div class="reply"><b>Latest:</b> ${esc(c.news)}</div>`:""}<div class="toolbar">${canJoin()?`<button class="btn sm" data-act="club-join" data-id="${c.id}" aria-pressed="${!!mine[c.id]}">${mine[c.id]?"You're interested":"I'm interested"}</button>`:""}${link?`<a class="btn sm ghost" href="${esc(link)}" target="_blank" rel="noopener">Club page</a>`:""}${council()&&n?`<span class="sub">${n} interested</span>`:""}${canAct()?`<button class="btn sm ghost" data-act="edit-club" data-id="${c.id}">Edit</button>`:""}</div></article>`}).join("")}</div>`
+  :empty("No clubs listed yet",canAct()?"Add each club with when it meets and who runs it. Students can tap I'm interested, and you see how many.":"Clubs will be listed here soon.","add-club","Add the first club"));
+}
+function sceneInfo(){const a=currentAviator(),p=sortedPosts()[0],now=new Date();
+  return{aviator:a?"AVIATOR OF THE WEEK: "+a.name:"",news:p?p.title:"",bdays:S.birthdays.filter(b=>b.show!==false&&b.name&&Number(b.month)===now.getMonth()+1&&Number(b.day)===now.getDate()).map(b=>b.name)}}
+function homeAviator(){return aviatorBlock()+raceMini()}
 
 
 /* ---------- proposals ---------- */
@@ -1556,6 +1710,7 @@ function crud(colName,{title,fields,noun,kind,titleKey="title"}){
 const PROFILE_FIELDS=[{id:"name",label:"Full name",required:true,full:true},{id:"grade",label:"Grade"},{id:"committee",label:"Committee",list:COMMITTEES},{id:"bio",label:"About you",type:"textarea",placeholder:"What you do on council, what you want to get done this year, a fun fact."},{id:"photo",label:"Photo",type:"photo"}];
 const forms={
   event:()=>crud("events",{title:"Add event",noun:"event",kind:"event",fields:[{id:"title",label:"Title",required:true,full:true},{id:"date",label:"Date",type:"date",required:true},{id:"time",label:"Time",type:"time"},{id:"type",label:"Type",type:"select",options:EV_TYPES},{id:"location",label:"Location"},{id:"details",label:"Details",type:"textarea"},{id:"schedule",label:"Schedule, one line per item",type:"textarea"},{id:"signup",label:"Sign-up",type:"select",options:SIGNUP_KINDS},{id:"capacity",label:"Spots (blank for no limit)",type:"number"},{id:"price",label:"Price and how to pay",placeholder:"e.g. $25, pay at the front desk"},{id:"closes",label:"Sign-up closes",type:"date"},{id:"askTeam",label:"Ask for a team name",type:"checkbox"},{id:"change",label:"Schedule or location change",full:true,placeholder:"e.g. Moved to the gym. Shows as an alert on the Student Hub."}]}),
+  club:()=>crud("clubs",{title:"Add a club",noun:"club",kind:"club",titleKey:"name",fields:[{id:"name",label:"Club name",required:true,full:true},{id:"meets",label:"When and where it meets",placeholder:"e.g. Tuesdays at lunch, Room 512"},{id:"leader",label:"Who runs it"},{id:"link",label:"Link (optional)",full:true,placeholder:"https://"},{id:"news",label:"Latest update",full:true,placeholder:"e.g. Bake sale this Friday"},{id:"about",label:"What the club does",type:"textarea"}]}),
   opp:()=>crud("opps",{title:"Post an opportunity",noun:"opportunity",kind:"opportunity",fields:[{id:"title",label:"Title",required:true,full:true},{id:"category",label:"Category",type:"select",options:OPP_GROUPS},{id:"deadline",label:"Deadline",type:"date"},{id:"org",label:"Organization or club",full:true},{id:"who",label:"Who can apply",full:true,placeholder:"e.g. Grades 9 to 12"},{id:"link",label:"Link to apply or learn more",full:true,placeholder:"https://"},{id:"details",label:"Details",type:"textarea"}]}),
   task:()=>crud("tasks",{title:"Assign a task",noun:"task",kind:"task",fields:[{id:"title",label:"Task",required:true,full:true},{id:"assignee",label:"Assign to",type:"select",options:memberOpts("Open — any member can accept")},{id:"due",label:"Due date",type:"date"},{id:"priority",label:"Priority",type:"select",options:PRI},{id:"committee",label:"Committee",list:COMMITTEES},{id:"details",label:"Details",type:"textarea"}]}),
   post:()=>crud("bulletin",{title:"New bulletin post",noun:"post",kind:"post",fields:[{id:"title",label:"Headline",required:true,full:true},{id:"tag",label:"Category",type:"select",options:POST_TAGS},{id:"date",label:"Post date",type:"date"},{id:"author",label:"Posted by",type:"select",options:memberOpts("Student Council")},{id:"pinned",label:"Pin to top",type:"checkbox"},{id:"body",label:"Message",type:"textarea",required:true}]}),
@@ -1605,6 +1760,18 @@ document.addEventListener("click",async e=>{
     case"add-suggestion":return suggestionForm(b.dataset.cat);
     case"mode":preview=b.dataset.to==="student";try{localStorage.setItem("stuco-view",preview?"student":"council")}catch(err){}view=null;if(location.hash)try{history.replaceState(null,"",location.pathname+location.search)}catch(err){location.hash=""}window.scrollTo(0,0);return render();
     case"heart":{const e=myEngage(),h={...(e.hearts||{})};if(h[id])delete h[id];else h[id]=true;return save(()=>db.doc("signups/"+me.id).set({events:e.events||{},hearts:h}))}
+    case"add-aviator":return aviatorForm(null);
+    case"edit-aviator":return aviatorForm(id);
+    case"play-join":return playJoinForm();
+    case"pred-pick":return save(()=>savePlay({picks:{...(myPlay().picks||{}),[id]:+b.dataset.i}}),"Pick saved");
+    case"add-pred":return predForm(null);
+    case"edit-pred":return predForm(id);
+    case"pred-resolve":return resolveForm(id);
+    case"award":return awardForm();
+    case"race-goal":return goalForm();
+    case"add-club":return forms.club()(null);
+    case"edit-club":return forms.club()(id);
+    case"club-join":{const c={...(myPlay().clubs||{})};if(c[id])delete c[id];else c[id]=true;return save(()=>savePlay({clubs:c}))}
     case"ev-toggle":openEvent=openEvent===id?null:id;return render();
     case"ev-filter":evFilter=b.dataset.to;return render();
     case"ev-join":{const ev=S.events.find(x=>x.id===id);if(!ev)return;const ok=ev.signup==="tickets"?"Ticket reserved":"You're signed up";
