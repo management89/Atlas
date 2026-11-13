@@ -552,6 +552,59 @@ body.is-site .app{grid-template-columns:minmax(0,1fr)}
 .feed-cover.r2{aspect-ratio:4/5}
 .feed-cover img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:block}
 
+/* daily games */
+.game{background:var(--surface);box-shadow:0 -3px 0 var(--surface),0 3px 0 var(--surface),-3px 0 0 var(--surface),3px 0 0 var(--surface),0 6px 0 var(--rail),-3px 3px 0 var(--rail),3px 3px 0 var(--rail);padding:22px;display:flex;flex-direction:column;gap:14px;margin:3px}
+.game-head{display:flex;flex-direction:column;align-items:flex-start;gap:6px}
+.game-head h2{font-size:34px;font-weight:800;letter-spacing:-.025em}
+.g-q{margin:0;font-size:20px;font-weight:600;max-width:60ch}
+.vs{display:grid;grid-template-columns:minmax(0,1fr) auto minmax(0,1fr);gap:14px;align-items:center}
+.vs button{border:0;min-height:130px;padding:16px;font-weight:800;font-size:clamp(20px,3vw,32px);letter-spacing:-.02em;cursor:pointer;overflow-wrap:anywhere}
+.vs-a{background:#F4B400;color:#14202E}
+.vs-b{background:#2446C7;color:#FFFFFF}
+.vs button[aria-pressed="true"]{outline:5px solid var(--ink);outline-offset:3px}
+.vs button:disabled{cursor:default;opacity:.8}
+.vs-or{font-weight:800;color:var(--muted)}
+.vs-bar{height:22px;background:#2446C7;margin:10px 0 8px}
+.vs-bar i{display:block;height:100%;background:#F4B400}
+.entries{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:14px}
+.entry{display:flex;flex-direction:column;gap:6px;min-width:0}
+.entry img{width:100%;aspect-ratio:1;object-fit:cover;display:block;background:var(--rule)}
+.mystery{max-width:min(420px,100%);display:block;image-rendering:auto}
+.rounds{margin:0;padding-left:22px;display:flex;flex-direction:column;gap:14px}
+.rounds li{padding-left:4px}
+.rounds li>*+*{margin-top:6px}
+.con-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px}
+.con-w{border:0;background:var(--ground);color:var(--ink);font-weight:700;font-size:clamp(13px,1.6vw,17px);padding:18px 6px;cursor:pointer;overflow-wrap:anywhere;min-height:64px}
+.con-w[aria-pressed="true"]{background:var(--ink);color:var(--ground)}
+.con-w:disabled{cursor:default}
+.con-row{padding:12px 14px;display:flex;flex-direction:column;text-align:center;color:#14202E;margin-bottom:8px}
+.con-row.c0{background:#F4D06F}.con-row.c1{background:#9BD3A8}.con-row.c2{background:#A9C4F2}.con-row.c3{background:#D5B3E8}
+.win-photo{display:flex;gap:14px;align-items:center;margin-top:10px}
+.win-photo img{width:120px;aspect-ratio:1;object-fit:cover;display:block;flex:none}
+.giftcard{background:#14202E;color:#FFFFFF;padding:18px;margin-top:12px;display:flex;flex-direction:column;gap:10px;box-shadow:0 -3px 0 #14202E,0 3px 0 #14202E,-3px 0 0 #14202E,3px 0 0 #14202E,0 6px 0 #F4B400,-3px 3px 0 #F4B400,3px 3px 0 #F4B400}
+.gc-top{display:flex;justify-content:space-between;gap:10px;align-items:baseline;flex-wrap:wrap}
+.gc-top b{font-size:24px;font-weight:800;letter-spacing:-.02em}
+.gc-bar{height:16px;background:#2B3642}
+.gc-bar i{display:block;height:100%;background:#F4B400}
+.gc-note{font-size:14px;color:#C9D2DC}
+.planner select{border:1.5px solid var(--rule);background:var(--surface);border-radius:3px;padding:5px 8px}
+.planner li{align-items:center}
+#reveal{position:fixed;inset:0;z-index:80;background:#14202E;color:#FFFFFF;overflow:auto;display:grid;place-items:center;padding:max(20px,env(safe-area-inset-top,0px)) 20px max(20px,env(safe-area-inset-bottom,0px))}
+.rv{width:min(760px,100%);display:flex;flex-direction:column;gap:22px}
+.rv-top{display:flex;flex-direction:column;align-items:flex-start;gap:8px}
+.rv-top h1{font-size:clamp(34px,6vw,60px);font-weight:800;letter-spacing:-.03em;color:#FFFFFF}
+.rv-top p{margin:0;font-size:19px}
+.rv-vs{display:flex;height:220px}
+.rv-a,.rv-b{display:grid;place-items:center;font-weight:800;font-size:clamp(18px,3vw,30px);padding:10px;overflow:hidden;text-align:center}
+.rv-a{background:#F4B400;color:#14202E;transition:width .3s steps(5)}
+.rv-b{flex:1;background:#2446C7;color:#FFFFFF}
+.rv-photo{background:#0E141B;display:grid;place-items:center;height:min(52vh,420px)}
+.rv-photo img{max-width:100%;max-height:100%;display:block}
+.rv-out h2{font-size:clamp(28px,5vw,46px);font-weight:800;letter-spacing:-.025em;color:#F4B400}
+.rv-out p{margin:6px 0 0;font-size:18px}
+#reveal :focus-visible{outline:3px solid #FFFFFF;outline-offset:4px}
+@media (max-width:560px){.vs{grid-template-columns:minmax(0,1fr)}.vs-or{text-align:center}.vs button{min-height:90px}}
+
 /* history */
 .hday{font-size:17px;font-weight:800;margin-top:14px}
 .hday:first-child{margin-top:0}
@@ -625,14 +678,14 @@ body.is-site .app{grid-template-columns:minmax(0,1fr)}
 <script>
 const STUDENT_NAV=[["hub","Bulletin"],["community","Community"],["clubs","Clubs"],["challenges","Challenges"],["stuco","StuCo"]];
 const COUNCIL_NAV=[["overview","Overview"],["tasks","Tasks"],["proposals","Proposals"],["attendance","Attendance"],["members","Members"],["history","History"]];
-const ROUTES={home:"home",hub:"hub",events:"hub",calendar:"hub",bulletin:"hub",community:"community",create:"community",collabs:"community",opportunities:"community",life:"community",clubs:"clubs",connect:"clubs",challenges:"challenges",play:"challenges",leaderboard:"challenges",stuco:"stuco",suggestions:"stuco",lost:"stuco",voice:"stuco",working:"stuco",overview:"overview",tasks:"tasks",proposals:"proposals",attendance:"attendance",members:"members",history:"history"};
-const STUDENT_ROUTES=["home","hub","events","calendar","bulletin","community","create","collabs","opportunities","life","clubs","connect","challenges","play","leaderboard","stuco","suggestions","lost","voice","working"];
-const COLS=["members","events","tasks","claims","bulletin","suggestions","albums","stories","opps","polls","votes","signups","birthdays","playlists","aviators","predictions","picks","scores","clubs","clubposts","clubdrafts","posts","submissions","replies","challenges","done","lostfound","roster","proposals","meetings","history"];
-const COUNCIL_ONLY=["proposals","meetings","history","roster"];
+const ROUTES={home:"home",hub:"hub",events:"hub",calendar:"hub",bulletin:"hub",community:"community",create:"community",collabs:"community",opportunities:"community",life:"community",clubs:"clubs",connect:"clubs",challenges:"challenges",play:"challenges",dares:"challenges",leaderboard:"challenges",stuco:"stuco",suggestions:"stuco",lost:"stuco",voice:"stuco",working:"stuco",overview:"overview",tasks:"tasks",proposals:"proposals",attendance:"attendance",members:"members",history:"history"};
+const STUDENT_ROUTES=["home","hub","events","calendar","bulletin","community","create","collabs","opportunities","life","clubs","connect","challenges","play","dares","leaderboard","stuco","suggestions","lost","voice","working"];
+const COLS=["members","events","tasks","claims","bulletin","suggestions","albums","stories","opps","polls","votes","signups","birthdays","playlists","aviators","predictions","picks","scores","clubs","clubposts","clubdrafts","posts","submissions","replies","challenges","done","lostfound","games","gamevotes","plays","gamekeys","roster","proposals","meetings","history"];
+const COUNCIL_ONLY=["proposals","meetings","history","roster","gamekeys"];
 const SCHOOL="Avenues The World School";
 const SUG_CATS=["Events","Spirit","Vending machine","Facilities","Food","Clubs","School policy","Report a problem","Other"];
 const SUG_STATUS=[["new","New"],["review","Under review"],["planned","Planned"],["done","Done"],["declined","Not this time"]];
-const S={members:[],events:[],tasks:[],claims:[],bulletin:[],suggestions:[],albums:[],stories:[],opps:[],polls:[],votes:[],signups:[],birthdays:[],playlists:[],aviators:[],predictions:[],picks:[],scores:[],clubs:[],clubposts:[],clubdrafts:[],posts:[],submissions:[],replies:[],challenges:[],done:[],lostfound:[],roster:[],proposals:[],meetings:[],history:[]};
+const S={members:[],events:[],tasks:[],claims:[],bulletin:[],suggestions:[],albums:[],stories:[],opps:[],polls:[],votes:[],signups:[],birthdays:[],playlists:[],aviators:[],predictions:[],picks:[],scores:[],clubs:[],clubposts:[],clubdrafts:[],posts:[],submissions:[],replies:[],challenges:[],done:[],lostfound:[],games:[],gamevotes:[],plays:[],gamekeys:[],roster:[],proposals:[],meetings:[],history:[]};
 let CFG={approved:{},roles:{},school:"",president:null}, cfgExists=false, ADMIN={emails:[]}, adminExists=false;
 const EV_TYPES=[["meeting","StuCo meeting"],["event","School event"],["dance","Dance"],["trip","Trip"],["competition","Competition or tournament"],["fundraiser","Fundraiser"],["deadline","Deadline"]];
 const TASK_STATUS=[["todo","To do"],["doing","In progress"],["done","Done"]];
@@ -761,7 +814,7 @@ function renderMe(){
   b.innerHTML=`${img}<div class="grow"><div class="title">${esc((d&&d.name)||me.name||"You")}</div><div class="sub">${esc(role)}</div></div>${window.__signOut?`<button class="btn sm ghost" data-act="signout">Sign out</button>`:""}`;
 }
 function render(){
-  renderNav();renderMe();
+  renderNav();renderMe();maybeReveal();
   {const wb=$("#workBar"),w=gal&&gal.work&&S.posts.find(x=>x.id===gal.work);if(wb&&w)wb.innerHTML=workBar(w)}
   if(editing&&shownView()==="proposals"&&$("#editor"))return;
   const cur0=shownView(),site=!council();
@@ -778,7 +831,7 @@ function render(){
     else if(d&&isApproved(d)&&!isEditor)banner=`<div class="banner">You're an approved council member. Ask the president to give you Editor access to this page so you can make changes.</div>`;}
   if(preview&&canCouncil())banner=`<div class="banner preview"><span>You're seeing the site the way students see it.</span><button class="btn sm" data-act="mode" data-to="council">Back to council view</button></div>`+banner;
   if(lockedOut())banner+=`<div class="banner">You're signed in as ${esc(me.email||"an account")}, which isn't on the Avenues student list. Sign in with your school email, or ask Student Council to add you.</div>`;
-  const VIEWFN={hub:hubView,events:hubView,calendar:hubView,bulletin:hubView,community:communityHub,create:communityHub,collabs:communityHub,opportunities:communityHub,life:communityHub,clubs:clubsView,connect:clubsView,challenges:challengeHub,play:challengeHub,leaderboard:challengeHub,stuco:stucoHub,suggestions:stucoHub,lost:stucoHub,voice:stucoHub,working:stucoHub,overview,tasks:()=>tasks(),proposals,attendance,members,history:historyView};
+  const VIEWFN={hub:hubView,events:hubView,calendar:hubView,bulletin:hubView,community:communityHub,create:communityHub,collabs:communityHub,opportunities:communityHub,life:communityHub,clubs:clubsView,connect:clubsView,challenges:challengeHub,play:challengeHub,dares:challengeHub,leaderboard:challengeHub,stuco:stucoHub,suggestions:stucoHub,lost:stucoHub,voice:stucoHub,working:stucoHub,overview,tasks:()=>tasks(),proposals,attendance,members,history:historyView};
   const ae=document.activeElement,keep=ae&&ae.id&&$("#main").contains(ae)?{id:ae.id,val:ae.value,sel:ae.selectionStart!=null?[ae.selectionStart,ae.selectionEnd]:null}:null;
   $("#main").innerHTML=banner+VIEWFN[shownView()]();
   $("#bandH1").innerHTML=pageHead.title||"";const bc=$("#bandCtx");bc.innerHTML=pageHead.context||"";bc.hidden=!pageHead.context;
@@ -1310,7 +1363,9 @@ function homeLive(){
   if(next){const n=Math.round((parse(next.date)-parse(TODAY))/864e5);
     a=`<a class="live-card live-count" href="#events"><span class="num">${n===0?"Now":n}</span><span class="grow"><span class="k">${n===0?"Happening today":n===1?"day until":"days until"}</span><span class="v">${esc(next.title)}</span><span class="m">${esc(longd(next.date))}${next.time?", "+esc(fmtTime(next.time)):""}</span></span></a>`}
   else a=`<a class="live-card" href="#calendar"><span class="k">Next up</span><span class="v">Nothing scheduled yet</span><span class="m">New events show up here first</span></a>`;
-  if(poll){const mv=myVotes()[poll.id];
+  const tg=gameOn(TODAY);
+  if(tg)b=`<a class="live-card" href="#challenges"><span class="k">Today's game</span><span class="v">${esc(gameName(tg))}</span><span class="m">Play now. The result drops tomorrow morning.</span></a>`;
+  else if(poll){const mv=myVotes()[poll.id];
     b=`<div class="live-card"><span class="k">Quick poll</span><span class="v">${esc(poll.question)}</span>${canJoin()?`<span class="live-opts">${(poll.options||[]).slice(0,4).map((o,i)=>`<button data-act="poll-vote" data-id="${poll.id}" data-i="${i}" aria-pressed="${mv===i}">${esc(o)}</button>`).join("")}</span>`:`<a class="m" href="#voice">Sign in to vote</a>`}</div>`}
   else b=`<a class="live-card" href="#suggestions"><span class="k">Student Voice</span><span class="v">Got an idea for school?</span><span class="m">Tell Student Council. They reply to every one.</span></a>`;
   return a+b+`<a class="live-card" href="#bulletin"><span class="k">Latest announcement</span><span class="v">${post?esc(post.title):"No announcements yet"}</span><span class="m">${post?esc(longd(post.date)):"The weekly bulletin lives here"}</span></a>`;
@@ -1370,12 +1425,11 @@ function predCard(p){const opts=p.options||[],pk=(myPlay().picks||{})[p.id],open
   <div class="opts">${opts.map((o,i)=>`<button class="opt ${res&&p.answer===i?"right":""}" data-act="pred-pick" data-id="${p.id}" data-i="${i}" aria-pressed="${pk===i}" ${can?"":"disabled"}><span class="optlabel">${esc(o)}</span>${res&&p.answer===i?`<span class="optpct">Correct</span>`:pk===i?`<span class="optpct">Your pick</span>`:""}</button>`).join("")}</div>
   ${res&&pk!=null?`<p class="sub" style="margin:0">${pk===p.answer?`You called it. +${pts} points for you and your grade.`:"Not this time."}</p>`:""}
   ${canAct()?`<div class="toolbar"><button class="btn sm primary" data-act="pred-resolve" data-id="${p.id}">${res?"Change the answer":"Mark the answer"}</button><button class="btn sm ghost" data-act="edit-pred" data-id="${p.id}">Edit</button><span class="sub">${S.picks.filter(d=>(d.picks||{})[p.id]!=null).length} picks so far</span></div>`:""}</article>`}
-function leaderboardView(){
+function leaderBody(){
   const t=gradeTotals(),{goal,prize}=raceGoal(),lead=Math.max(...Object.values(t));
   const players=scoreDocs().filter(d=>!d.team).map(d=>({...d,pts:ptsOf(d)})).filter(d=>d.pts>0).sort((a,b)=>b.pts-a.pts).slice(0,15);
   const bonus=[];for(const d of scoreDocs())if(d.team)for(const[k,x]of Object.entries(d.log||{}))bonus.push({k,grade:d.grade,...x});bonus.sort((a,b)=>b.k.localeCompare(a.k));
-  return head(`The first grade to ${goal} points wins ${esc(prize)}. Points come from predictions, Spirit Week and showing up.`,"Leaderboard",canAct()?`<button class="btn" data-act="race-goal">Set the prize</button><button class="btn primary" data-act="award">Award points</button>`:"")+
-  `<div class="sundaes">${GRADES.map(g=>{const pct=Math.min(100,Math.round(t[g]/goal*100)),top=t[g]===lead&&lead>0;return`<div class="sundae-col"><div class="sundae" role="img" aria-label="Grade ${g}: ${t[g]} of ${goal} points"><div class="cherry" ${pct>=100?"":"hidden"}></div><div class="sundae-glass"><div class="scoops" style="height:${pct}%"></div></div><div class="stem"></div></div><div class="title">Grade ${g}</div><div class="sub"><b>${t[g]}</b> of ${goal}</div>${top?`<span class="chip gold">In the lead</span>`:""}</div>`}).join("")}</div>
+  return `<div class="toolbar"><span class="sub">The first grade to ${goal} points wins ${esc(prize)}.</span><span class="sp"></span>${canAct()?`<button class="btn sm" data-act="race-goal">Set the prizes</button><button class="btn sm" data-act="award">Award points</button>`:""}</div><div class="sundaes">${GRADES.map(g=>{const pct=Math.min(100,Math.round(t[g]/goal*100)),top=t[g]===lead&&lead>0;return`<div class="sundae-col"><div class="sundae" role="img" aria-label="Grade ${g}: ${t[g]} of ${goal} points"><div class="cherry" ${pct>=100?"":"hidden"}></div><div class="sundae-glass"><div class="scoops" style="height:${pct}%"></div></div><div class="stem"></div></div><div class="title">Grade ${g}</div><div class="sub"><b>${t[g]}</b> of ${goal}</div>${top?`<span class="chip gold">In the lead</span>`:""}</div>`}).join("")}</div>
   <div class="grid2"><section class="panel"><h2>Top players</h2>${players.length?`<ol class="ranks">${players.map((d,i)=>`<li class="${d.id===me.id?"you":""}"><span class="rk">${i+1}</span><span class="grow title">${esc(d.name||"Student")}${d.id===me.id?" (you)":""}</span><span class="sub">Grade ${esc(d.grade||"?")}</span><b>${d.pts}</b></li>`).join("")}</ol>`:`<p class="sub" style="margin:10px 0 0">No points yet. Make a prediction to get on the board.</p>`}</section>
   <section class="panel"><h2>Grade bonuses</h2>${bonus.length?`<ul class="list">${bonus.slice(0,8).map(x=>`<li><div class="grow"><div class="title">${esc(x.why||"Bonus")}</div><div class="sub">Grade ${esc(x.grade)}</div></div><b>+${Number(x.p)||0}</b></li>`).join("")}</ul>`:`<p class="sub" style="margin:10px 0 0">Spirit Week, turning up to games and class challenges add bonus points here.</p>`}</section></div>`;
 }
@@ -1401,9 +1455,9 @@ function awardForm(){
     submit:v=>{const pts=Number(v.p)||0,key="b"+Date.now().toString(36),entry={log:{[key]:{p:pts,why:v.why}}};if(!pts){$("#merr").textContent="Enter the number of points.";return false}
       if(v.who.startsWith("g:")){const g=v.who.slice(2);return save(()=>upsert("scores","grade-"+g,{name:"Grade "+g+" bonus",grade:g,team:true,...entry}),"Points awarded",[`gave Grade ${g} ${pts} points for`,"points",v.why])}
       const d=S.picks.find(x=>x.id===v.who.slice(2));return save(()=>upsert("scores",d.id,{name:d.name,grade:d.grade||"",...entry}),"Points awarded",[`gave ${d.name} ${pts} points for`,"points",v.why])}})}
-function goalForm(){const g=raceGoal();
-  openForm({title:"Set the prize",fields:[{id:"goal",label:"Points to win",type:"number"},{id:"prize",label:"The prize",full:true,placeholder:"an ice cream sundae party"}],values:g,
-    submit:v=>save(()=>upsert("scores","_settings",{goal:Number(v.goal)||500,prize:v.prize||"an ice cream sundae party"}),"Saved",["set the Grade Race prize to","points",v.prize])})}
+function goalForm(){const g=raceGoal(),st=S.scores.find(d=>d.id==="_settings")||{};
+  openForm({title:"Set the prizes",fields:[{id:"goal",label:"Grade prize: points to win",type:"number"},{id:"prize",label:"Grade prize",placeholder:"an ice cream sundae party"},{id:"cardGoal",label:"Personal prize: points to reach",type:"number"},{id:"cardPrize",label:"Personal prize",placeholder:"$20 gift card"}],values:{...g,cardGoal:Number(st.cardGoal)||1000,cardPrize:st.cardPrize||"$20 gift card"},
+    submit:v=>save(()=>upsert("scores","_settings",{goal:Number(v.goal)||500,prize:v.prize||"an ice cream sundae party",cardGoal:Number(v.cardGoal)||1000,cardPrize:v.cardPrize||"$20 gift card"}),"Saved",["set the prizes","points",""])})}
 function playJoinForm(){const p=myPlay();
   openForm({title:"Join the Grade Race",submitLabel:"Save",fields:[{id:"name",label:"Your name, as shown on the leaderboard",required:true,full:true},{id:"grade",label:"Your grade",type:"select",options:GRADES.map(g=>[g,"Grade "+g])}],values:{name:p.name||me.name||"",grade:p.grade||"9"},
     submit:v=>save(()=>savePlay({name:v.name,grade:v.grade}),"You're in")})}
@@ -1563,7 +1617,134 @@ function lostView(){const items=allLost().filter(x=>x.status!=="returned"&&(lost
 function lostForm(kind){const found=kind==="found";
   openForm({title:found?"I found something":"I lost something",submitLabel:"Post it",fields:[{id:"what",label:found?"What did you find?":"What did you lose?",required:true,full:true,placeholder:"e.g. Black North Face jacket"},{id:"where",label:found?"Where did you find it?":"Where did you last have it?"},{id:"date",label:"When",type:"date"},{id:"photo",label:"Photo (optional)",type:"photos"},{id:"details",label:"Anything else",type:"textarea",placeholder:found?"Where it is now, how to get it back":"Size, color, name inside"}],values:{date:TODAY},
     submit:v=>save(()=>upsert("lostfound",me.id,{items:{[Date.now().toString(36)]:{...v,type:found?"found":"lost",status:"open",at:new Date().toISOString(),name:myName()}}}),"Posted to Lost and found")})}
-function challengeHub(){const cur=shownView();return subnav([["challenges","Challenges"],["play","Predictions"],["leaderboard","Leaderboard"]])+(cur==="leaderboard"?leaderboardView():cur==="play"?predictionsView():challengesView())}
+function challengeHub(){const cur=shownView();return subnav([["challenges","Today",["leaderboard"]],["dares","Challenges"],["play","Predictions"]])+(cur==="dares"?challengesView():cur==="play"?predictionsView():gamesView())}
+
+
+/* ---------- daily games ----------
+   One game per day, stored at games/<date>. Votes and photo entries are in gamevotes/<uid> (members can read, so anyone's
+   browser can work out a result); quiz and Connections progress is private in plays/<uid>. Answers are stored only as
+   hashes in the game; the readable copy is in gamekeys/<date>, which only council can read. A council member's browser
+   awards the points the next day. */
+const GAME_TYPES=[["versus","This or That"],["photo","Photo challenge"],["quiz","Mystery or quiz"],["connections","Connections"]];
+const DAY_GAME={1:["versus","This or That"],2:["photo","Photo challenge"],3:["quiz","Mystery"],4:["connections","Avenues Connections"],5:["quiz","Friday mini-game"]};
+const gameOn=d=>S.games.find(g=>g.id===d);
+const gameName=g=>g.title||({versus:"This or That",photo:"Photo challenge",quiz:"Mystery",connections:"Avenues Connections"})[g.type];
+const gnorm=t=>String(t||"").toLowerCase().replace(/[^a-z0-9]/g,"");
+async function gh(gid,t){const b=await crypto.subtle.digest("SHA-256",new TextEncoder().encode(gid+":"+gnorm(t)));return[...new Uint8Array(b)].slice(0,12).map(x=>x.toString(16).padStart(2,"0")).join("")}
+const canPlay=()=>canJoin()&&!!myPlay().grade;
+const myGV=()=>S.gamevotes.find(d=>d.id===me.id)||{};
+const myV=gid=>((myGV().v)||{})[gid]||{};
+function saveGV(gid,patch){return db.doc("gamevotes/"+me.id).set({name:myPlay().name||myName(),grade:myPlay().grade||"",v:{...(myGV().v||{}),[gid]:{...myV(gid),...patch}}})}
+const myPl=()=>S.plays.find(d=>d.id===me.id)||{};
+const myG=gid=>((myPl().g)||{})[gid]||{};
+function savePl(gid,patch){return db.doc("plays/"+me.id).set({name:myPlay().name||myName(),grade:myPlay().grade||"",g:{...(myPl().g||{}),[gid]:{...myG(gid),...patch}}})}
+function versusTally(g){let a=0,b=0;for(const d of S.gamevotes){const p=((d.v||{})[g.id]||{}).pick;if(p==="a")a++;else if(p==="b")b++}return{a,b}}
+function photoEntries(g){return S.gamevotes.map(d=>({uid:d.id,name:d.name,grade:d.grade,...((d.v||{})[g.id]||{})})).filter(x=>x.photo&&!x.removed)}
+function photoVotes(g){const t={};for(const d of S.gamevotes){const v=((d.v||{})[g.id]||{}).vote;if(v)t[v]=(t[v]||0)+1}return t}
+function gameResult(g){if(g.result)return g.result;
+  if(g.type==="versus"){const t=versusTally(g);return{...t,win:t.a===t.b?"tie":t.a>t.b?"a":"b"}}
+  if(g.type==="photo"){const es=photoEntries(g),v=photoVotes(g);if(!es.length)return{none:true};es.sort((x,y)=>(v[y.uid]||0)-(v[x.uid]||0)||(x.at||"").localeCompare(y.at||""));return{winner:es[0].uid,name:es[0].name||"",grade:es[0].grade||"",photo:es[0].photo,votes:v[es[0].uid]||0,entries:es.length,all:es.slice(0,8).map(e=>e.photo)}}
+  return null}
+const lastGame=()=>S.games.filter(g=>g.date<TODAY&&g.date>=iso(addDays(new Date(),-6))).sort((a,b)=>b.date.localeCompare(a.date))[0]||null;
+
+/* today's game, by type */
+function versusHTML(g){const pk=myV(g.id).pick,can=canPlay(),pts=Number(g.points)||10;
+  return`${g.q?`<p class="g-q">${esc(g.q)}</p>`:""}<div class="vs"><button class="vs-a" data-act="g-pick" data-id="${g.id}" data-to="a" aria-pressed="${pk==="a"}" ${can?"":"disabled"}>${esc(g.a)}</button><span class="vs-or">or</span><button class="vs-b" data-act="g-pick" data-id="${g.id}" data-to="b" aria-pressed="${pk==="b"}" ${can?"":"disabled"}>${esc(g.b)}</button></div>
+  <p class="sub" style="margin:0">${pk?`You're on team ${esc(g[pk])}. You can switch until midnight. `:"Pick a side. "}The winning side is revealed tomorrow morning, and everyone on it gets ${pts} points.</p>`}
+function photoHTML(g){const es=photoEntries(g),mine=myV(g.id),can=canPlay(),pts=Number(g.points)||10;
+  return`<p class="g-q">${esc(g.prompt)}</p><div class="toolbar">${can?`<button class="btn primary" data-act="g-photo" data-id="${g.id}">${mine.photo?"Change my photo":"Add my photo"}</button>`:""}<span class="sub">${es.length} photo${es.length===1?"":"s"} so far. Vote for your favorite. Entering earns ${pts} points, and the winner, revealed tomorrow, gets ${pts*5}.</span></div>
+  ${es.length?`<div class="entries">${es.map(e=>`<div class="entry"><img src="${blob(e.photo)}" alt="A photo entry" loading="lazy"><div class="toolbar">${e.uid===me.id?`<span class="sub">Yours</span>`:can?`<button class="btn sm" data-act="g-vote" data-id="${g.id}" data-uid="${esc(e.uid)}" aria-pressed="${mine.vote===e.uid}">${mine.vote===e.uid?"Your vote":"Vote"}</button>`:""}${canAct()?`<button class="btn sm ghost danger" data-act="g-remove" data-id="${g.id}" data-uid="${esc(e.uid)}">Remove</button>`:""}</div></div>`).join("")}</div>`:""}`}
+function quizHTML(g){const st=myG(g.id),can=canPlay(),pts=Number(g.points)||10;
+  return`${g.image?`<img class="mystery" src="${blob(g.image)}" alt="Mystery image">`:""}${g.intro?`<p class="g-q">${esc(g.intro)}</p>`:""}<ol class="rounds">${(g.items||[]).map((it,i)=>{const r=(st.r||{})[i]||{},link=safeUrl(it.link),done=r.ok||(r.n||0)>=3;
+    return`<li><div class="title">${esc(it.q)}</div>${link?`<div><a class="btn sm" href="${esc(link)}" target="_blank" rel="noopener">Open the clue</a></div>`:""}${r.ok?`<span class="chip good">Correct: ${esc(r.t)}</span>`:done?`<span class="chip bad">Out of tries</span>`:can?`<div class="reply-form"><input id="gq-${i}" aria-label="Your guess" placeholder="Your guess" maxlength="80"><button class="btn sm" data-act="g-guess" data-id="${g.id}" data-i="${i}">Guess</button></div><span class="sub">${3-(r.n||0)} ${3-(r.n||0)===1?"try":"tries"} left</span>`:""}</li>`}).join("")}</ol>
+  <p class="sub" style="margin:0">${pts} points for each one you get. Answers are revealed tomorrow morning.</p>`}
+let conSel=[];
+function conHTML(g){const st=myG(g.id),solved=st.s||[],miss=st.m||0,done=solved.length>=4||miss>=4,can=canPlay()&&!done,used=new Set(solved.flatMap(x=>x.w||[])),pts=Number(g.points)||10;
+  conSel=conSel.filter(w=>!used.has(w)&&(g.words||[]).includes(w));
+  return`${solved.map((x,i)=>`<div class="con-row c${i}"><b>${esc(x.name)}</b><span>${(x.w||[]).map(esc).join(", ")}</span></div>`).join("")}<div class="con-grid">${(g.words||[]).filter(w=>!used.has(w)).map(w=>`<button class="con-w" data-act="con-tap" data-w="${esc(w)}" aria-pressed="${conSel.includes(w)}" ${can?"":"disabled"}>${esc(w)}</button>`).join("")}</div>
+  <div class="toolbar">${can?`<button class="btn primary" data-act="con-submit" data-id="${g.id}" ${conSel.length===4?"":"disabled"}>Submit these four</button>`:""}<span class="sub">${solved.length>=4?"Solved!":miss>=4?"Out of mistakes. The groups are revealed tomorrow.":`Find four groups of four. ${4-miss} mistake${4-miss===1?"":"s"} left. ${pts} points a group.`}</span></div>`}
+function gameHTML(g){return({versus:versusHTML,photo:photoHTML,quiz:quizHTML,connections:conHTML})[g.type](g)}
+
+/* results */
+function resultHTML(g){const r=gameResult(g),pts=Number(g.points)||10;if(!r)return`<p class="sub" style="margin:8px 0 0">Results are being counted. Check back soon.</p>`;
+  if(g.type==="versus"){const tot=r.a+r.b||1,pa=Math.round(r.a/tot*100);return`<div class="vs-bar"><i style="width:${pa}%"></i></div><div class="parts"><b>${r.win==="tie"?"It was a tie":esc(g[r.win])+" won"}</b><span class="sub">${esc(g.a)} ${pa}%, ${esc(g.b)} ${100-pa}%</span></div>`}
+  if(g.type==="photo")return r.none?`<p class="sub" style="margin:8px 0 0">No photos were entered.</p>`:`<div class="win-photo"><img src="${blob(r.photo)}" alt="The winning photo"><div><b>${esc(r.name||"A student")}${r.grade?", Grade "+esc(r.grade):""} won</b><div class="sub">${r.votes} vote${r.votes===1?"":"s"} out of ${r.entries} photos. ${esc(g.prompt)}</div></div></div>`;
+  return`<p style="white-space:pre-wrap;margin:8px 0 0">${esc(r.answers||"")}</p><div class="sub">${r.solved} of ${r.played} players got everything.</div>`}
+function closeReveal(){const el=$("#reveal");if(el){clearInterval(el._t);el.remove()}}
+function showReveal(g){const r=gameResult(g);if(!r)return;closeReveal();
+  const el=document.createElement("div"),mine=myV(g.id),pts=Number(g.points)||10,still=matchMedia("(prefers-reduced-motion: reduce)").matches;let body="",after=null;
+  el.id="reveal";el.setAttribute("role","dialog");el.setAttribute("aria-modal","true");el.setAttribute("aria-label","Yesterday's result");
+  if(g.type==="versus"){const tot=r.a+r.b||1,pa=Math.round(r.a/tot*100);
+    body=`<div class="rv-vs"><div class="rv-a" id="rvA" style="width:50%"><span>${esc(g.a)}</span></div><div class="rv-b"><span>${esc(g.b)}</span></div></div><div class="rv-out" id="rvOut" hidden><h2>${r.win==="tie"?"It's a tie!":esc(g[r.win])+" wins"}</h2><p>${pa}% to ${100-pa}%${mine.pick?(r.win==="tie"||mine.pick===r.win?`. You called it: +${pts} points.`:". Not your side this time."):"."}</p></div>`;
+    after=()=>{const a=el.querySelector("#rvA"),done=()=>{a.style.width=Math.max(10,Math.min(90,pa))+"%";el.querySelector("#rvOut").hidden=false};if(still)return done();let n=0;el._t=setInterval(()=>{a.style.width=(22+Math.random()*56)+"%";if(++n>9){clearInterval(el._t);setTimeout(done,380)}},330)}}
+  else if(g.type==="photo"){if(r.none)body=`<div class="rv-out"><h2>No photos this time</h2></div>`;
+    else{const all=r.all&&r.all.length?r.all:[r.photo];all.forEach(blob);
+      body=`<div class="rv-photo"><img id="rvImg" src="${blob(all[0])}" alt=""></div><div class="rv-out" id="rvOut" hidden><h2>${esc(r.name||"A student")} wins</h2><p>${r.votes} vote${r.votes===1?"":"s"} out of ${r.entries} photos${r.winner===me.id?`. That's you: +${pts*5} points.`:"."}</p></div>`;
+      after=()=>{const im=el.querySelector("#rvImg"),done=()=>{im.src=blob(r.photo);el.querySelector("#rvOut").hidden=false};if(still)return done();let n=0;el._t=setInterval(()=>{im.src=blob(all[n%all.length]);if(++n>11){clearInterval(el._t);setTimeout(done,300)}},260)}}}
+  else body=`<div class="rv-out"><h2>The answers</h2><p style="white-space:pre-wrap">${esc(r.answers||"")}</p><p>${r.solved} of ${r.played} players got everything.</p></div>`;
+  el.innerHTML=`<div class="rv"><div class="rv-top"><span class="av-tag">${esc(longd(g.date))}</span><h1>${esc(gameName(g))}</h1>${g.type==="versus"&&g.q?`<p>${esc(g.q)}</p>`:g.type==="photo"?`<p>${esc(g.prompt)}</p>`:""}</div>${body}<div class="home-actions"><a class="hbtn" href="#challenges" data-act="rv-close">Play today's game</a><button class="hbtn glass" data-act="rv-close">Close</button></div></div>`;
+  document.body.appendChild(el);after&&after();el.querySelector(".hbtn").focus();try{localStorage.setItem("atlas-reveal",g.id)}catch(e){}}
+let revealTried=false;
+function maybeReveal(){if(revealTried||dbState!=="ok"||!me.id||!canJoin()||council())return;const g=lastGame();if(!g||!gameResult(g))return;revealTried=true;let seen=null;try{seen=localStorage.getItem("atlas-reveal")}catch(e){}if(seen!==g.id)showReveal(g)}
+
+/* the Today page: game, yesterday's result, gift card and leaderboard together */
+function giftCard(){const st=S.scores.find(d=>d.id==="_settings")||{},goal=Number(st.cardGoal)||1000,prize=st.cardPrize||"$20 gift card",mine=ptsOf(S.scores.find(d=>d.id===me.id)),owed=council()?scoreDocs().filter(d=>!d.team&&ptsOf(d)>=goal):[];
+  return`<div class="giftcard"><div class="gc-top"><b>${esc(prize)}</b><span>${me.id?`${mine} of ${goal} points`:`${goal} points`}</span></div><div class="gc-bar"><i style="width:${Math.min(100,mine/goal*100)}%"></i></div><div class="gc-note">${mine>=goal?"You made it. Student Council will get it to you.":`Reach ${goal} points and it's yours.`}</div>${owed.length?`<div class="gc-note">Reached the goal: ${owed.map(d=>esc(d.name)).join(", ")}</div>`:""}</div>`}
+function plannerHTML(){const days=[];for(let i=0;days.length<7&&i<12;i++){const d=addDays(new Date(),i);if(d.getDay()>=1&&d.getDay()<=5)days.push(d)}
+  return`<section class="panel"><h2>Game schedule <span class="sub" style="font-weight:500">Only council sees this</span></h2><ul class="list planner">${days.map(d=>{const k=iso(d),g=gameOn(k),def=DAY_GAME[d.getDay()];
+    return`<li>${datebox(k)}<div class="grow"><div class="title">${g?esc(gameName(g)):def[1]}</div><div class="sub">${g?"Ready":"Not set up yet"}</div></div>${canAct()?`${g?"":`<select id="gt-${k}" aria-label="Game type for ${esc(short(k))}">${GAME_TYPES.map(([v,l])=>`<option value="${v}" ${v===def[0]?"selected":""}>${l}</option>`).join("")}</select>`}<button class="btn sm ${g?"":"primary"}" data-act="game-edit" data-id="${k}">${g?"Edit":"Set up"}</button>`:""}</li>`}).join("")}</ul></section>`}
+function gamesView(){const g=gameOn(TODAY),y=lastGame(),day=DAY_GAME[new Date().getDay()];
+  return head("One game a day. Play today, and see who won first thing tomorrow.","Today's game",canAct()&&!g?`<button class="btn primary" data-act="game-edit" data-id="${TODAY}">Set up today's game</button>`:"")+joinPrompt()+
+  (g?`<section class="game"><div class="game-head"><span class="av-tag">${esc(new Date().toLocaleDateString(undefined,{weekday:"long"}))}</span><h2>${esc(gameName(g))}</h2></div>${gameHTML(g)}</section>`:empty("No game today",day?`${day[1]} is usually on ${new Date().toLocaleDateString(undefined,{weekday:"long"})}s. Check back soon.`:"Games run Monday to Friday. See you Monday.",null,""))+
+  `<div class="grid2">${y?`<section class="panel"><h2>${y.date===iso(addDays(new Date(),-1))?"Yesterday":esc(fmt(y.date,{weekday:"long"}))}: ${esc(gameName(y))}${gameResult(y)?`<button class="btn sm" data-act="rv-show" data-id="${y.id}">Replay the reveal</button>`:""}</h2>${resultHTML(y)}</section>`:`<section class="panel"><h2>How it works</h2><ul class="list"><li>Monday: This or That</li><li>Tuesday: Photo challenge</li><li>Wednesday: Mystery</li><li>Thursday: Avenues Connections</li><li>Friday: a surprise mini-game</li></ul></section>`}
+  <section class="panel"><h2>Your prize</h2>${giftCard()}</section></div>
+  <section class="panel"><h2>Leaderboard</h2>${leaderBody()}</section>`+(council()?plannerHTML():"")}
+function leaderboardView(){return gamesView()}
+
+/* setting up a day: council only types the items */
+async function gameForm(date){const g=gameOn(date),key=S.gamekeys.find(k=>k.id===date)||{},wd=parse(date).getDay(),def=DAY_GAME[wd]||DAY_GAME[1],type=g?g.type:(($("#gt-"+date)||{}).value||def[0]),when=longd(date);
+  const finish=(doc,keyDoc)=>save(async()=>{await db.doc("games/"+date).set({...doc,type,date,points:Number(doc.points)||10,awarded:false});await db.doc("gamekeys/"+date).set(keyDoc||{raw:""})},"Game saved",["set up the game for","challenge",when]);
+  const onDelete=g?()=>save(async()=>{await db.doc("games/"+date).delete();await db.doc("gamekeys/"+date).delete()},"Game removed",["removed the game for","challenge",when]):null;
+  const P={id:"points",label:"Points",type:"number"};
+  if(type==="versus")return openForm({title:"This or That, "+when,onDelete,fields:[{id:"q",label:"Question (optional)",full:true,placeholder:"e.g. Which is better?"},{id:"a",label:"This",required:true,placeholder:"e.g. Pizza"},{id:"b",label:"That",required:true,placeholder:"e.g. Tacos"},P],values:g||{points:10},submit:v=>finish(v)});
+  if(type==="photo")return openForm({title:"Photo challenge, "+when,onDelete,fields:[{id:"prompt",label:"What should people send in?",required:true,full:true,placeholder:"e.g. A photo of your dog"},P],values:g||{points:10},submit:v=>finish(v)});
+  if(type==="connections")return openForm({title:"Connections, "+when,onDelete,note:"Four groups of four. One group per line, like this: <b>Teachers: Kim, Ortiz, Shah, Bell</b>",
+    fields:[{id:"raw",label:"The four groups",type:"textarea",required:true,placeholder:"Group name: word, word, word, word"},P],values:{raw:key.raw||"",points:(g&&g.points)||10},
+    submit:async v=>{const lines=v.raw.split("\n").map(l=>l.trim()).filter(Boolean),groups=[],words=[],ans=[];
+      for(const l of lines){const i=l.indexOf(":"),name=l.slice(0,i).trim(),ws=l.slice(i+1).split(",").map(x=>x.trim()).filter(Boolean);if(i<1||ws.length!==4){$("#merr").textContent=`Each line needs a name, a colon, then exactly four words. Check: "${l.slice(0,40)}"`;return false}
+        groups.push({name,h:await gh(date,ws.map(gnorm).sort().join(""))});words.push(...ws);ans.push(name+": "+ws.join(", "))}
+      if(groups.length!==4||new Set(words.map(gnorm)).size!==16){$("#merr").textContent="Add exactly four groups, with sixteen different words.";return false}
+      for(let i=words.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[words[i],words[j]]=[words[j],words[i]]}
+      return finish({title:"Avenues Connections",groups,words,points:v.points},{raw:v.raw,answers:ans.join("\n")})}});
+  return openForm({title:(wd===5?"Friday mini-game, ":"Mystery, ")+when,onDelete,note:"One round per line: <b>clue or question | answer, another accepted answer | link (optional)</b>",
+    fields:[{id:"title",label:"Name of the game",full:true,placeholder:"e.g. Guess that song"},{id:"image",label:"Picture (optional), like a zoomed-in photo",type:"photos"},{id:"intro",label:"Instructions (optional)",full:true},{id:"raw",label:"Rounds",type:"textarea",required:true,placeholder:"Where on campus is this? | library, the library\nFirst 5 seconds. Name the song. | Bohemian Rhapsody | https://…"},P],
+    values:{title:(g&&g.title)||(wd===5?"Friday mini-game":"Mystery"),image:(g&&g.image)||"",intro:(g&&g.intro)||"",raw:key.raw||"",points:(g&&g.points)||10},
+    submit:async v=>{const items=[],ans=[];
+      for(const l of v.raw.split("\n").map(x=>x.trim()).filter(Boolean)){const p=l.split("|").map(x=>x.trim()),as=(p[1]||"").split(/[,;]/).map(x=>x.trim()).filter(Boolean);if(!p[0]||!as.length){$("#merr").textContent=`Each line needs a clue, then | and the answer. Check: "${l.slice(0,40)}"`;return false}
+        items.push({q:p[0],link:safeUrl(p[2])||"",h:await Promise.all(as.map(a=>gh(date,a)))});ans.push(`${items.length}. ${as[0]}`)}
+      return finish({title:v.title||"Mystery",image:v.image,intro:v.intro,items,points:v.points},{raw:v.raw,answers:ans.join("\n")})}});
+}
+/* a council member's browser settles finished games: works out winners and writes the points */
+let settling=false;
+async function settleGames(){
+  if(settling||!db||!canCouncil()||!canWrite||!["games","gamevotes","plays","scores","gamekeys"].every(c=>loaded.has(c)))return;
+  const due=S.games.filter(g=>g.date<TODAY&&!g.awarded);if(!due.length)return;settling=true;
+  try{const awards={},done=[];for(const g of due){const pts=Number(g.points)||10,wins={};let result=gameResult(g)||{};
+    if(g.type==="versus"){for(const d of S.gamevotes){const p=((d.v||{})[g.id]||{}).pick;if(p&&(result.win==="tie"||p===result.win))wins[d.id]={p:pts,d}}}
+    else if(g.type==="photo"){for(const e of photoEntries(g))wins[e.uid]={p:e.uid===result.winner?pts*5:pts,d:e}}
+    else{let solved=0,played=0;
+      for(const d of S.plays){const st=(d.g||{})[g.id];if(!st)continue;played++;let n=0;
+        if(g.type==="quiz"){for(const[i,r]of Object.entries(st.r||{})){const it=(g.items||[])[i];if(it&&r.t&&(it.h||[]).includes(await gh(g.id,r.t)))n++}if(n&&n===(g.items||[]).length)solved++}
+        else{for(const x of st.s||[]){const h=await gh(g.id,(x.w||[]).map(gnorm).sort().join(""));if((g.groups||[]).some(q=>q.h===h))n++}if(n>=4)solved++}
+        if(n)wins[d.id]={p:n*pts,d}}
+      result={solved,played,answers:(S.gamekeys.find(k=>k.id===g.id)||{}).answers||""}}
+    for(const[uid,w]of Object.entries(wins)){const a=awards[uid]||(awards[uid]={name:w.d.name||"Student",grade:w.d.grade||"",log:{}});a.log["g"+g.id]={p:w.p,why:gameName(g)}}
+    done.push([g.id,result])}
+    // one write per student, so several days settled together add up instead of overwriting each other
+    for(const[uid,a]of Object.entries(awards))await upsert("scores",uid,a);
+    for(const[id,result]of done)await db.doc("games/"+id).update({awarded:true,result})}
+  catch(e){}finally{settling=false}
+}
 
 
 /* ---------- proposals ---------- */
@@ -1984,6 +2165,18 @@ document.addEventListener("click",async e=>{
     case"chal-done":return chalDoneForm(id);
     case"chal-award":return awardChal(id,[b.dataset.uid]);
     case"chal-award-all":return awardChal(id,null);
+    case"game-edit":return gameForm(id);
+    case"g-pick":return save(()=>saveGV(id,{pick:b.dataset.to,at:new Date().toISOString()}),"You're in");
+    case"g-photo":return openForm({title:"Add your photo",submitLabel:"Enter",fields:[{id:"photo",label:"Your photo",type:"photos"}],values:{photo:myV(id).photo||""},submit:v=>{if(!v.photo){$("#merr").textContent="Choose a photo first.";return false}return save(()=>saveGV(id,{photo:v.photo,at:new Date().toISOString()}),"Photo entered")}});
+    case"g-vote":return save(()=>saveGV(id,{vote:b.dataset.uid}),"Vote saved");
+    case"g-remove":return save(()=>db.doc("gamevotes/"+b.dataset.uid).update({v:{[id]:{removed:true}}}),"Photo removed");
+    case"g-guess":{const g=gameOn(id),i=b.dataset.i,inp=$("#gq-"+i),t=inp.value.trim();if(!g||!t){inp.focus();return}const st=myG(id),r=(st.r||{})[i]||{},ok=((g.items[i]||{}).h||[]).includes(await gh(id,t));inp.value="";
+      return save(()=>savePl(id,{r:{...(st.r||{}),[i]:{ok,n:(r.n||0)+1,t}}}),ok?"Correct!":"Not quite")}
+    case"con-tap":{const w=b.dataset.w;if(conSel.includes(w))conSel=conSel.filter(x=>x!==w);else if(conSel.length<4)conSel.push(w);return render()}
+    case"con-submit":{const g=gameOn(id);if(!g||conSel.length!==4)return;const st=myG(id),h=await gh(id,conSel.map(gnorm).sort().join("")),grp=(g.groups||[]).find(x=>x.h===h),pick=conSel.slice();conSel=[];
+      return save(()=>savePl(id,grp?{s:[...(st.s||[]),{name:grp.name,w:pick}]}:{m:(st.m||0)+1}),grp?"Got one: "+grp.name:"Not a group")}
+    case"rv-show":{const g=gameOn(id);return g&&showReveal(g)}
+    case"rv-close":return closeReveal();
     case"ev-toggle":openEvent=openEvent===id?null:id;return render();
     case"ev-filter":evFilter=b.dataset.to;return render();
     case"ev-join":{const ev=S.events.find(x=>x.id===id);if(!ev)return;const ok=ev.signup==="tickets"?"Ticket reserved":"You're signed up";
@@ -2054,7 +2247,7 @@ document.addEventListener("change",e=>{if(e.target.id==="rosterOnly"){const on=e
   if(e.target.id==="sugFilter"){sugFilter=e.target.value;render()}
   if(e.target.dataset&&e.target.dataset.sug){const t=e.target,x=allSuggestions().find(s=>s.key===t.dataset.key);save(()=>db.doc("suggestions/"+t.dataset.sug).update({items:{[t.dataset.key]:{status:t.value,reviewedBy:me.id,reviewedAt:new Date().toISOString()}}}),"Status updated",["marked as "+label(SUG_STATUS,t.value).toLowerCase()+":","suggestion",x&&x.title])}
   if(e.target.id==="taskFilter"){taskFilter=e.target.value;render()}if(e.target.id==="histFilter"){histFilter=e.target.value;render()}});
-document.addEventListener("keydown",e=>{if(!$("#modal").hidden){if(e.key==="Escape")closeModal();return}if(gal){if(e.key==="Escape")closeGallery();else if(e.key==="ArrowLeft")galStep(-1);else if(e.key==="ArrowRight")galStep(1)}});
+document.addEventListener("keydown",e=>{if(e.key==="Escape"&&$("#reveal")){closeReveal();return}if(!$("#modal").hidden){if(e.key==="Escape")closeModal();return}if(gal){if(e.key==="Escape")closeGallery();else if(e.key==="ArrowLeft")galStep(-1);else if(e.key==="ArrowRight")galStep(1)}});
 document.addEventListener("click",e=>{if(e.target.id==="gallery")closeGallery()});
 
 /* ---------- sample council (president only; example data marked sample:true) ---------- */
@@ -2088,7 +2281,7 @@ render();
   const timer=setTimeout(()=>{if(loaded.size<subs.length)setStatus("slow")},10000);
   const done=(k,snap)=>{if(!snap.metadata.fromCache)loaded.add(k);if(loaded.size>=subs.length){clearTimeout(timer);setStatus("ok")}};
   const fail=()=>{clearTimeout(timer);setStatus("err");render()};
-  cols.forEach(c=>col(c).onSnapshot(snap=>{S[c]=snap.docs.map(x=>({id:x.id,...x.data()}));done(c,snap);render();if(c==="members")autoApprove()},fail));
+  cols.forEach(c=>col(c).onSnapshot(snap=>{S[c]=snap.docs.map(x=>({id:x.id,...x.data()}));done(c,snap);render();if(c==="members")autoApprove();settleGames()},fail));
   db.doc("config/access").onSnapshot(s=>{cfgExists=s.exists;CFG={approved:{},roles:{},school:"",president:null,...(s.exists?s.data():{})};done("config",s);render()},fail);
   if(isPres)db.doc("admin/access").onSnapshot(s=>{adminExists=s.exists;ADMIN={emails:[],...(s.exists?s.data():{})};done("admin",s);render();autoApprove()},fail);
   setStatus("connecting");render();
