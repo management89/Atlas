@@ -13,8 +13,8 @@ rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
 
-    // 1. Replace PASTE_PRESIDENT_UID with your user ID (the site shows it after you sign in).
-    function isOwner() { return signedIn() && request.auth.uid == 'PASTE_PRESIDENT_UID'; }
+    // 1. The president's user ID (the site shows it after you sign in).
+    function isOwner() { return signedIn() && request.auth.uid == '4Dtjya2UUbdNGnynIZ8zCKRzfdT2'; }
 
     // 2. Optional: only allow school accounts to sign up, vote and suggest.
     //    Change `return true;` to, for example:
