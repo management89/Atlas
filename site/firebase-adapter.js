@@ -185,7 +185,7 @@
   }
   const assets = {
     upload: async (blob) => {
-      if (!isCouncil && !isLeader) throw { code: "not_granted", message: "Only council members and club leaders can upload photos." };
+      if (!user) throw { code: "not_granted", message: "Sign in to upload photos." };
       const url = await toSmallDataUrl(blob);
       const ref = fs.collection("photos").doc();
       await ref.set({ data: url, by: user.uid, at: new Date().toISOString() }).catch((e) => { throw toErr(e); });
@@ -213,7 +213,7 @@
       if (name === "db") return db;
       if (name === "user") return userNS;
       if (name === "downloads") return downloads;
-      if (name === "assets") return user && (isCouncil || isLeader) ? assets : null;
+      if (name === "assets") return user ? assets : null;
       return null;
     },
   };

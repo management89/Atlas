@@ -55,9 +55,11 @@ service cloud.firestore {
     match /predictions/{id} { allow read: if member(); allow write: if isCouncil(); }
     match /scores/{id}      { allow read: if member(); allow write: if isCouncil(); }
     match /clubposts/{id}   { allow read: if member(); allow write: if isCouncil(); }
+    match /posts/{id}       { allow read: if member(); allow write: if isCouncil(); }
+    match /challenges/{id}  { allow read: if member(); allow write: if isCouncil(); }
     match /photos/{id} {
       allow read: if member();
-      allow create: if (isCouncil() || isLeader()) && request.resource.data.data is string && request.resource.data.data.size() < 1000000;
+      allow create: if member() && request.resource.data.data is string && request.resource.data.data.size() < 1000000;
       allow delete: if isCouncil();
     }
     match /members/{uid} { allow read: if member(); allow write: if isOwner() || isSelf(uid); }
@@ -80,6 +82,12 @@ service cloud.firestore {
       allow read: if isSelf(uid) || isCouncil();
       allow write: if (isSelf(uid) && isLeader()) || isCouncil();
     }
+    // Student posts and creative work wait here until a council member approves them
+    match /submissions/{uid} { allow read: if isSelf(uid) || isCouncil(); allow write: if isSelf(uid) || isCouncil(); }
+    // Replies show right away; council can remove them
+    match /replies/{uid}     { allow read: if member(); allow write: if isSelf(uid) || isCouncil(); }
+    // "I did it" claims for challenges; council confirms and awards the points
+    match /done/{uid}        { allow read: if isSelf(uid) || isCouncil(); allow write: if isSelf(uid); }
     match /profiles/{uid} { allow read: if member(); allow write: if signedIn() && request.auth.uid == uid; }
     match /private/{uid}  { allow read: if isOwner() || (signedIn() && request.auth.uid == uid); allow write: if signedIn() && request.auth.uid == uid; }
 
