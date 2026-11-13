@@ -364,6 +364,43 @@ a.title:hover{text-decoration:underline;text-underline-offset:3px}
 .thumb-x{position:absolute;top:-7px;right:-7px;width:22px;height:22px;border-radius:50%;border:0;background:var(--ink);color:var(--ground);cursor:pointer;font-weight:700;line-height:1}
 @media (max-width:860px){.opps,.polls{grid-template-columns:minmax(0,1fr)}.event{gap:12px}.gal{padding:14px}.gal-head h2{font-size:25px}.stage-nav{width:40px;height:40px}}
 
+/* home: full-bleed pixel scene. One deliberate fixed look (white type on the illustration) in both themes; the scene itself turns to night in dark mode. */
+body.is-home .rail{display:none}
+body.is-home .app{grid-template-columns:minmax(0,1fr)}
+body.is-home main{padding:0}
+body.is-home .wrap{max-width:none;padding:0;gap:0}
+.home{position:relative;display:flex;flex-direction:column;min-height:max(600px,86svh);overflow:hidden;background:#6DB3ED;color:#FFFFFF;isolation:isolate}
+.home canvas{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:68% 100%;image-rendering:pixelated;z-index:-2}
+.home-shade{position:absolute;inset:0;z-index:-1;background:linear-gradient(100deg,rgba(14,26,48,.55) 0%,rgba(14,26,48,.32) 34%,rgba(14,26,48,0) 58%)}
+.home-nav{display:flex;align-items:center;justify-content:space-between;gap:14px;padding:18px max(20px,env(safe-area-inset-right,0px)) 0 max(20px,env(safe-area-inset-left,0px))}
+.home-brand{color:#FFFFFF;text-decoration:none;font-weight:800;font-size:22px;letter-spacing:-.02em;white-space:nowrap;text-shadow:0 1px 0 rgba(14,26,48,.3)}
+.home-brand span{font-weight:500;opacity:.9}
+.home-links{display:flex;flex-direction:row;margin:0;gap:2px;padding:4px;border-radius:12px;background:rgba(255,255,255,.16);border:1px solid rgba(255,255,255,.32);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px)}
+.home-links a{display:block;color:#FFFFFF;text-decoration:none;font-weight:600;font-size:15px;letter-spacing:0;padding:7px 13px;border-radius:8px;white-space:nowrap}
+.home-links a:hover{background:rgba(255,255,255,.2)}
+.hbtn{display:inline-flex;align-items:center;gap:8px;background:#FFFFFF;color:#14202E;border:0;border-radius:10px;padding:13px 20px;font-weight:700;font-size:16px;text-decoration:none;cursor:pointer;white-space:nowrap;box-shadow:0 2px 0 rgba(14,26,48,.18)}
+.hbtn:hover{background:#FFF6DB}
+.hbtn.sm{padding:9px 15px;font-size:15px}
+.hbtn.glass{background:rgba(255,255,255,.16);color:#FFFFFF;border:1px solid rgba(255,255,255,.5);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);box-shadow:none}
+.hbtn.glass:hover{background:rgba(255,255,255,.28)}
+.home :focus-visible{outline:3px solid #F4B400;outline-offset:2px}
+.home-copy{padding:clamp(36px,8vh,100px) max(20px,env(safe-area-inset-right,0px)) 0 max(20px,env(safe-area-inset-left,0px));max-width:720px}
+.home-copy h1{font-size:clamp(40px,6.2vw,78px);font-weight:800;letter-spacing:-.035em;line-height:1;color:#FFFFFF;text-shadow:0 2px 0 rgba(14,26,48,.22)}
+.home-copy p{margin:18px 0 0;font-size:clamp(17px,1.5vw,20px);line-height:1.5;max-width:44ch;color:#FFFFFF;text-shadow:0 1px 0 rgba(14,26,48,.3)}
+.home-actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:26px}
+.home-strip{background:#14202E}
+.home-live{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;padding-block:16px;padding-left:max(20px,env(safe-area-inset-left,0px));padding-right:max(20px,env(safe-area-inset-right,0px));max-width:1220px}
+.live-card{display:flex;flex-direction:column;gap:2px;min-width:0;padding:14px 16px;border-radius:12px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.14);color:#FFFFFF;text-decoration:none}
+.live-card:hover{background:rgba(255,255,255,.12);border-color:rgba(244,180,0,.6)}
+.live-card .k{font-size:13px;font-weight:600;color:#F4D06F}
+.live-card .v{font-size:18px;font-weight:700;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.live-card .m{font-size:14px;opacity:.85;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.home-foot{display:flex;flex-wrap:wrap;gap:8px 20px;align-items:center;padding-block:18px;padding-left:max(20px,env(safe-area-inset-left,0px));padding-right:max(20px,env(safe-area-inset-right,0px));font-size:14px;color:var(--muted);border-top:1px solid var(--rule)}
+.home-foot a{color:var(--ink);font-weight:600}
+a.brand{color:inherit;text-decoration:none}
+@media (max-width:980px){.home-links{display:none}}
+@media (max-width:700px){.home-live{grid-template-columns:minmax(0,1fr)}.home canvas{object-position:72% 100%}.home-shade{background:linear-gradient(180deg,rgba(14,26,48,.55) 0%,rgba(14,26,48,.2) 55%,rgba(14,26,48,0) 75%)}}
+
 /* history */
 .hday{font-size:17px;font-weight:800;margin-top:14px}
 .hday:first-child{margin-top:0}
@@ -419,7 +456,7 @@ a.title:hover{text-decoration:underline;text-underline-offset:3px}
 <div class="app">
   <aside class="rail">
     <div class="top-row">
-      <div class="brand"><b>StuCo Hub</b><small>Student Council</small></div>
+      <a class="brand" href="#home"><b>StuCo Hub</b><small>Student Council</small></a>
       <div class="me" id="meBox"><span class="avatar lg" style="background:var(--muted)">?</span><div class="grow"><div class="title">Checking sign-in…</div></div></div>
     </div>
     <div id="modeBox" hidden></div>
@@ -437,8 +474,8 @@ a.title:hover{text-decoration:underline;text-underline-offset:3px}
 <script>
 const STUDENT_NAV=[["hub","Student Hub"],["events","Events"],["life","Student Life"],["opportunities","Opportunities"],["voice","Student Voice"]];
 const COUNCIL_NAV=[["overview","Overview"],["tasks","Tasks"],["proposals","Proposals"],["attendance","Attendance"],["members","Members"],["history","History"]];
-const ROUTES={hub:"hub",calendar:"hub",bulletin:"hub",events:"events",life:"life",opportunities:"opportunities",voice:"voice",suggestions:"voice",working:"voice",overview:"overview",tasks:"tasks",proposals:"proposals",attendance:"attendance",members:"members",history:"history"};
-const STUDENT_ROUTES=["hub","calendar","bulletin","events","life","opportunities","voice","suggestions","working"];
+const ROUTES={home:"home",hub:"hub",calendar:"hub",bulletin:"hub",events:"events",life:"life",opportunities:"opportunities",voice:"voice",suggestions:"voice",working:"voice",overview:"overview",tasks:"tasks",proposals:"proposals",attendance:"attendance",members:"members",history:"history"};
+const STUDENT_ROUTES=["home","hub","calendar","bulletin","events","life","opportunities","voice","suggestions","working"];
 const COLS=["members","events","tasks","claims","bulletin","suggestions","albums","stories","opps","polls","votes","signups","birthdays","playlists","proposals","meetings","history"];
 const COUNCIL_ONLY=["proposals","meetings","history"];
 const SCHOOL="Avenues The World School";
@@ -506,7 +543,7 @@ const council=()=>canCouncil()&&!preview;
 const canAct=()=>W()&&council();
 const canJoin=()=>W()&&!!me.id;
 const allowed=v=>!!ROUTES[v]&&(council()||STUDENT_ROUTES.includes(v)||(v==="members"&&canJoin()));
-const shownView=()=>view&&allowed(view)?view:(council()?"overview":"hub");
+const shownView=()=>view&&allowed(view)?view:(council()?"overview":"home");
 const safeUrl=u=>/^https:\/\/[^\s"'<>]+$/i.test(u||"")?u:"";
 function nameOf(id){if(!id)return"";const m=S.members.find(x=>x.id===id);if(m&&m.name)return m.name;if(PROF[id]&&PROF[id].name)return PROF[id].name;if(id===me.id)return me.name||"You";return"Someone"}
 function resolveIds(ids){if(!U)return;const need=[...new Set(ids)].filter(i=>i&&!asked.has(i));if(!need.length)return;need.forEach(i=>asked.add(i));U.profiles(need).then(ps=>{Object.assign(PROF,ps);render()}).catch(()=>{})}
@@ -572,6 +609,10 @@ function renderMe(){
 function render(){
   renderNav();renderMe();
   if(editing&&shownView()==="proposals"&&$("#editor"))return;
+  const cur0=shownView();document.body.classList.toggle("is-home",cur0==="home");
+  if(cur0!=="home")stopScene();
+  else{if($("#homeHero")){$("#homeLive").innerHTML=homeLive();$("#homeAuth").innerHTML=homeAuth();return}
+    $("#main").innerHTML=homeView();startScene($("#homeScene"));return}
   let banner="";
   if(!db&&dbState!=="connecting")banner=window.__setupMsg?`<div class="banner">${esc(window.__setupMsg)}</div>`:`<div class="banner">Saving is off in this view, so nothing you add here will be kept. Open the page on claude.ai while signed in to use the council's shared records.</div>`;
   else if(db&&dbState!=="connecting"&&me.id&&!council()){const d=myDoc();
@@ -922,6 +963,179 @@ function playlistForm(){
     submit:v=>{if(!safeUrl(v.url)){$("#merr").textContent="Paste a full link that starts with https://";return false}const d=S.playlists.find(x=>x.id===me.id),items={...((d&&d.items)||{})};items[Date.now().toString(36)]={...v,at:new Date().toISOString()};return save(()=>db.doc("playlists/"+me.id).set({items}),"Playlist shared")}});
 }
 function resizeToBlob(file,max){return new Promise((res,rej)=>{const url=URL.createObjectURL(file),img=new Image();img.onload=()=>{const k=Math.min(1,max/Math.max(img.width,img.height)),c=document.createElement("canvas");c.width=Math.round(img.width*k);c.height=Math.round(img.height*k);c.getContext("2d").drawImage(img,0,0,c.width,c.height);URL.revokeObjectURL(url);c.toBlob(b=>b?res(b):rej(new Error("encode")),"image/jpeg",.85)};img.onerror=()=>{URL.revokeObjectURL(url);rej(new Error("decode"))};img.src=url})}
+
+
+/* ---------- home page: a pixel scene of the Avenues building ---------- */
+const SW=480,SH=270,GY=212;
+let sceneRAF=0;
+function seeded(n){let s=n>>>0;return()=>(s=(s*1664525+1013904223)>>>0)/4294967296}
+function isNight(){const t=document.documentElement.dataset.theme;return t?t==="dark":matchMedia("(prefers-color-scheme: dark)").matches}
+function makeCanvas(w,h){const c=document.createElement("canvas");c.width=w;c.height=h;const g=c.getContext("2d");g.imageSmoothingEnabled=false;return[c,g]}
+const box=(g,x,y,w,h,c)=>{g.fillStyle=c;g.fillRect(Math.round(x),Math.round(y),w,h)};
+const FONT={A:["010","101","111","101","101"],V:["101","101","101","101","010"],E:["111","100","110","100","111"],N:["101","111","111","111","101"],U:["101","101","101","101","111"],S:["111","100","111","001","111"]};
+function pixelText(g,txt,x,y,c){for(const ch of txt){const f=FONT[ch];if(f)f.forEach((row,r)=>[...row].forEach((b,k)=>{if(b==="1")box(g,x+k,y+r,1,1,c)}));x+=4}}
+
+function drawSky(g,night){
+  const cols=night?["#0A1430","#0E1A3B","#122247","#172A53","#1C3260","#223B6C","#2A4578"]:["#4C9DE5","#5CA8E9","#6DB3ED","#80BEF1","#94C9F4","#A9D5F7","#BFE0F9"];
+  const bh=Math.ceil(GY/cols.length);
+  for(let y=0;y<GY;y++){const i=Math.min(cols.length-1,Math.floor(y/bh)),pos=y%bh,nx=cols[Math.min(cols.length-1,i+1)];box(g,0,y,SW,1,cols[i]);
+    if(pos>=bh-3&&i<cols.length-1)for(let x=(y%2);x<SW;x+=pos===bh-1?2:4)box(g,x,y,1,1,nx)}
+  if(night){const r=seeded(7);for(let k=0;k<70;k++)box(g,Math.floor(r()*SW),Math.floor(r()*120),1,1,r()>.7?"#FFF6D8":"#C9D6F2")}
+}
+function makeCloud(w,h,seed,night){
+  const[c,g]=makeCanvas(w,h),r=seeded(seed),blobs=[];
+  for(let k=0;k<5;k++)blobs.push({x:w*(.15+.7*r()),y:h*(.45+.25*r()),r:h*(.28+.22*r())});
+  blobs.push({x:w*.5,y:h*.6,r:h*.4});
+  for(let y=0;y<h;y++)for(let x=0;x<w;x++){
+    if(y>h*.82)continue;
+    if(blobs.some(b=>(x-b.x)**2+((y-b.y)*1.25)**2<b.r*b.r)){const lo=y>h*.6;box(g,x,y,1,1,night?(lo?"#1E2C4B":"#2A3A5E"):(lo?"#D6E7F5":"#FFFFFF"))}
+  }
+  return c;
+}
+function drawCity(g,night,lights){
+  const r=seeded(11);
+  // distant skyline
+  const haze=night?"#1C2945":"#A9C0D6",haze2=night?"#18233C":"#98B2CA",hwin=night?"#2A3A5C":"#C3D5E4";
+  for(let x=-6;x<232;){const w=10+Math.floor(r()*18),h=34+Math.floor(r()*70),c=r()>.5?haze:haze2;box(g,x,GY-h,w,h,c);
+    for(let yy=GY-h+4;yy<GY-6;yy+=5)for(let xx=x+2;xx<x+w-2;xx+=3)if(r()>.35){box(g,xx,yy,1,2,hwin);if(night&&r()>.7)lights.push([xx,yy,1,2])}
+    x+=w+Math.floor(r()*3)}
+  box(g,62,GY-126,12,126,haze);box(g,65,GY-140,6,14,haze);box(g,67,GY-152,2,12,haze);box(g,68,GY-160,1,8,haze);
+  // mid buildings
+  box(g,150,GY-74,40,74,night?"#4A2A26":"#B4654C");for(let yy=GY-68;yy<GY-6;yy+=8)for(let xx=154;xx<186;xx+=6){box(g,xx,yy,3,4,night?"#2B1916":"#5E3A31");if(night&&r()>.5)lights.push([xx,yy,3,4])}
+  box(g,186,GY-96,44,96,night?"#3A3F4A":"#E7E3DA");box(g,186,GY-96,44,3,night?"#2E323B":"#CFCBC2");
+  for(let yy=GY-88;yy<GY-8;yy+=9)for(let xx=190;xx<226;xx+=7){box(g,xx,yy,4,5,night?"#1B1F27":"#3E4650");if(night&&r()>.55)lights.push([xx,yy,4,5])}
+  [["#D9534F",192,GY-40],["#5BC0DE",200,GY-36],["#F0AD4E",208,GY-42],["#9B59B6",214,GY-34]].forEach(([c,x,y])=>box(g,x,y,5,3,night?"#30354A":c));
+  // the Avenues building: front face, art deco piers, window grid
+  const L=228,R=396,TOP=32,side=night?"#6A5A44":"#C4AA79";
+  const sand=night?"#7C6B52":"#E4CF9F",hi=night?"#8A785D":"#F0DEB4",lo=night?"#6B5C46":"#D3BC8B",edge=night?"#5C4F3C":"#BEA474";
+  box(g,L,TOP+6,R-L,GY-TOP-6,sand);box(g,L+12,TOP,R-L-24,6,sand);box(g,L+12,TOP,R-L-24,1,hi);box(g,L,TOP+6,12,1,hi);box(g,R-12,TOP+6,12,1,hi);
+  box(g,R,TOP+12,38,GY-TOP-12,side);box(g,R,TOP+12,1,GY-TOP-12,edge);
+  const glass=night?"#1E2A36":"#4C6F86",glassHi=night?"#2C3B4A":"#9CC4DA",glassLo=night?"#18222D":"#3A576B",mull=night?"#8C7B60":"#EADCB6";
+  for(let row=0;row<10;row++){const wy=TOP+14+row*14;
+    for(let col=0;col<12;col++){const wx=L+4+col*14;
+      box(g,wx,wy,8,10,glass);box(g,wx+4,wy,1,10,mull);box(g,wx,wy+5,8,1,mull);box(g,wx,wy,2,1,glassHi);box(g,wx,wy+1,1,1,glassHi);box(g,wx+5,wy+6,3,4,glassLo);box(g,wx-1,wy+10,10,1,lo);
+      if(night&&r()>.55)lights.push([wx,wy,8,10,true])}
+    for(let col=0;col<3;col++){const wx=R+5+col*11;box(g,wx,wy+1,6,9,night?"#18212B":"#3D596C");box(g,wx+3,wy+1,1,9,night?"#5C4F3C":"#D2BE94");if(night&&r()>.6)lights.push([wx,wy+1,6,9,true])}}
+  for(let col=0;col<=12;col+=2){const px=L+col*14-2;box(g,px,TOP+10,2,GY-TOP-36,hi);box(g,px+2,TOP+10,1,GY-TOP-36,lo)}
+  // ground floor, canopy, AVENUES sign
+  box(g,L,GY-28,R-L,28,night?"#5E5240":"#D6C59E");box(g,R,GY-28,38,28,night?"#54493A":"#BFA474");
+  for(let x=L+6;x<R-6;x+=22)box(g,x,GY-22,16,20,night?"#2A3E4A":"#5E8090");
+  box(g,L+76,GY-22,18,22,night?"#151C21":"#2D3A41");box(g,L+40,GY-30,92,6,"#2F363B");box(g,L+40,GY-24,92,1,"#1E2327");
+  pixelText(g,"AVENUES",L+72,GY-29,"#FFFFFF");
+  [[L+8,"#4C8A3E"],[L+138,"#4C8A3E"],[R+6,"#3F7A34"]].forEach(([x,c])=>{box(g,x,GY-6,10,6,night?"#3B3F44":"#8E8A82");box(g,x+1,GY-10,8,4,night?"#24452A":c)});
+  // flag on the roof
+  box(g,262,TOP-18,1,18,"#9AA3AB");for(let k=0;k<5;k++)box(g,263,TOP-18+k,11,1,k%2?"#FFFFFF":"#C8373B");box(g,263,TOP-18,4,3,"#2D3F7A");
+  // white building and the High Line
+  box(g,434,48,46,GY-48,night?"#3C424C":"#E7EBEE");box(g,434,48,46,2,night?"#2F343C":"#CDD3D8");
+  for(let yy=56;yy<GY-30;yy+=9)for(let xx=438;xx<478;xx+=6){box(g,xx,yy,3,5,night?"#1B2028":"#A6B5C1");if(night&&r()>.6)lights.push([xx,yy,3,5])}
+  box(g,412,GY-46,68,11,night?"#1F2722":"#3B4A42");box(g,412,GY-49,68,3,night?"#2A332D":"#52625A");for(let x=414;x<480;x+=5)box(g,x,GY-42,1,1,night?"#33403A":"#6B7C73");
+  for(let x=412;x<480;x+=3){const h=3+Math.floor(r()*6);box(g,x,GY-49-h,3,h,night?"#1F3A24":(r()>.5?"#4F8F42":"#6CAE52"))}
+  box(g,426,GY-35,4,35,night?"#1A211D":"#33413A");box(g,462,GY-35,4,35,night?"#1A211D":"#33413A");
+  // lamp post with a navy banner
+  box(g,222,GY-62,2,62,"#5D6670");box(g,218,GY-64,8,2,"#5D6670");box(g,219,GY-62,4,2,night?"#FFE9A0":"#D9DEE2");box(g,224,GY-54,6,12,"#1F2E5A");box(g,226,GY-50,2,4,"#FFFFFF");
+  if(night)lights.push([214,GY-62,14,6,false,"lamp"]);
+  // sidewalk, curb, street, bike lane, crosswalk
+  box(g,0,GY,SW,8,night?"#4E4B47":"#BEB8AD");for(let x=0;x<SW;x+=14)box(g,x,GY,1,8,night?"#45423E":"#ACA699");
+  box(g,0,GY+8,SW,2,night?"#3A3835":"#8C877E");box(g,0,GY+10,SW,SH-GY-10,night?"#24272C":"#4A4F57");
+  for(let k=0;k<500;k++)box(g,Math.floor(r()*SW),GY+10+Math.floor(r()*(SH-GY-10)),1,1,night?"#2B2F35":"#545A62");
+  box(g,0,GY+11,SW,7,night?"#25402F":"#4E8E62");for(let x=10;x<SW;x+=120){box(g,x,GY+13,2,2,"#E9F1EA");box(g,x+5,GY+13,2,2,"#E9F1EA");box(g,x+2,GY+12,3,1,"#E9F1EA")}
+  for(let x=0;x<SW;x+=16)box(g,x,GY+36,8,1,night?"#8C8C80":"#E8E3C8");
+  for(let x=24;x<124;x+=10)box(g,x,GY+20,6,SH-GY-22,night?"#6D6E70":"#E6E6E6");
+}
+function drawTrees(g,night){
+  const r=seeded(23),dk=night?"#132A18":"#2E6A39",md=night?"#1B3B22":"#3F8A45",lt=night?"#26502D":"#6DB356";
+  box(g,30,GY-36,6,44,night?"#2A2018":"#5B4330");box(g,186,GY-18,3,26,night?"#2A2018":"#5B4330");
+  const blob=(cx,cy,rad)=>{for(let y=-rad;y<=rad;y++)for(let x=-rad;x<=rad;x++){const d=x*x+y*y*1.3;if(d<rad*rad&&r()>.04)box(g,cx+x,cy+y,1,1,d<rad*rad*.35&&y<0&&x<0?lt:(r()>.5?md:dk))}};
+  [[14,GY-70,26],[44,GY-80,24],[0,GY-100,22],[60,GY-58,18],[24,GY-112,16]].forEach(([x,y,rad])=>blob(x,y,rad));
+  [[188,GY-30,12],[178,GY-26,9]].forEach(([x,y,rad])=>blob(x,y,rad));
+}
+const SKIN=["#F1C9A5","#E0AC7E","#C68B59","#8D5A35","#5E3B22"],SHIRT=["#F4B400","#2446C7","#C8373B","#1D7A45","#FFFFFF","#14202E","#8A4FBF","#F08A24"];
+function drawVehicle(g,v,night){
+  const{x,y,d,L,kind}=v,X=lx=>d>0?x+lx:x+L-1-lx,bx=(lx,ly,w,h,c)=>{for(let k=0;k<w;k++)box(g,X(lx+k),y+ly,1,h,c)};
+  if(kind==="bus"){bx(0,-14,L,11,"#F2A900");bx(0,-14,L,1,"#D08F00");bx(0,-8,L,1,"#1F1F1F");bx(0,-5,L,1,"#1F1F1F");
+    for(let k=3;k<L-8;k+=5)bx(k,-12,4,3,"#2D3A44");bx(L-7,-13,6,6,"#2D3A44");bx(L-1,-6,1,2,night?"#FFF3B0":"#FFF7D0");bx(0,-6,1,2,"#D33A2C");bx(L-12,-11,3,8,"#2D3A44")}
+  else{const body=kind==="taxi"?"#F4B400":v.color;bx(0,-7,L,4,body);bx(4,-10,L-9,3,body);bx(5,-10,L-11,2,"#2D3A44");bx(L/2-1,-10,1,3,body);bx(0,-4,L,1,night?"#111":"#2A2A2A");
+    if(kind==="taxi"){bx(L/2-2,-11,4,1,"#FFFFFF");for(let k=0;k<L;k+=2)bx(k,-5,1,1,"#1F1F1F")}
+    bx(L-1,-6,1,1,night?"#FFF3B0":"#FFF7D0");bx(0,-6,1,1,"#D33A2C")}
+  [[4],[L-7]].forEach(([wx])=>{bx(wx,-3,4,3,"#161616");bx(wx+1,-2,2,1,"#8A8A8A")});
+}
+function drawBiker(g,b){const{x,y,d}=b,X=lx=>Math.round(d>0?x+lx:x+9-lx),f=Math.floor(b.dist/3)%2;
+  const ring=(cx)=>{box(g,X(cx),y-3,1,1,"#1B1B1B");box(g,X(cx)-1,y-2,1,1,"#1B1B1B");box(g,X(cx)+1,y-2,1,1,"#1B1B1B");box(g,X(cx),y-1,1,1,"#1B1B1B")};
+  ring(1);ring(8);for(let k=2;k<8;k++)box(g,X(k),y-3,1,1,b.frame);box(g,X(5),y-6,1,3,b.frame);
+  box(g,X(4),y-10,2,4,b.shirt);box(g,X(4),y-12,2,2,b.skin);box(g,X(4),y-13,2,1,b.helmet);box(g,X(6),y-9,2,1,b.shirt);
+  box(g,X(f?4:5),y-6,1,3,b.pants);box(g,X(f?6:3),y-5,1,2,b.pants)}
+function drawPed(g,p){const f=Math.floor(p.dist/2.5)%2,x=Math.round(p.x),y=p.y;
+  box(g,x,y-11,2,2,p.skin);box(g,x,y-12,2,1,p.hair);box(g,x-(p.d>0?1:0),y-9,3,4,p.shirt);if(p.bag)box(g,x+(p.d>0?-1:2),y-9,1,3,p.bag);
+  box(g,x+(f?0:1),y-5,1,5,p.pants);box(g,x+(f?1:0),y-5,1,f?4:5,p.pants)}
+
+function startScene(canvas){
+  stopScene();if(!canvas)return;
+  const night=isNight(),r=Math.random;canvas.width=SW;canvas.height=SH;
+  const g=canvas.getContext("2d");g.imageSmoothingEnabled=false;
+  const[sky,sg]=makeCanvas(SW,SH);drawSky(sg,night);
+  const lights=[],[city,cg]=makeCanvas(SW,SH);drawCity(cg,night,lights);
+  const[trees,tg]=makeCanvas(SW,SH);drawTrees(tg,night);
+  const clouds=[[150,40,3,20,6],[120,34,9,180,4],[90,26,5,330,8],[110,30,13,60,3]].map(([w,h,s,x,sp],i)=>({img:makeCloud(w,h,s,night),x,y:[14,34,8,52][i],sp}));
+  const lanes=[{y:GY+33,d:1,list:[]},{y:GY+54,d:-1,list:[]}],bikes=[],peds=[],birds=[];
+  const newVehicle=(lane,x)=>{const k=r(),kind=k<.28?"bus":k<.68?"taxi":"car";return{kind,L:kind==="bus"?44:22,d:lane.d,y:lane.y,x,v:(kind==="bus"?18:26)+r()*12,color:["#2B2F36","#8C9399","#F4F4F2","#3A5A8C","#7A2E2E"][Math.floor(r()*5)]}};
+  const newBike=x=>({x,y:GY+18,d:r()>.5?1:-1,v:11+r()*5,dist:0,shirt:SHIRT[Math.floor(r()*SHIRT.length)],skin:SKIN[Math.floor(r()*SKIN.length)],helmet:["#1F1F1F","#F4B400","#2446C7"][Math.floor(r()*3)],pants:"#2B2F36",frame:["#C8373B","#2446C7","#1D7A45","#1B1B1B"][Math.floor(r()*4)]});
+  const newPed=x=>({x,y:GY+7-Math.floor(r()*3),d:r()>.5?1:-1,v:4+r()*4,dist:0,skin:SKIN[Math.floor(r()*SKIN.length)],hair:["#1B1410","#3B2416","#7A4B26","#D8B26A"][Math.floor(r()*4)],shirt:SHIRT[Math.floor(r()*SHIRT.length)],pants:["#22303F","#2B2F36","#5A6470","#7A5C3A"][Math.floor(r()*4)],bag:r()>.5?["#C8373B","#2446C7","#F4B400","#14202E"][Math.floor(r()*4)]:null});
+  lanes.forEach(l=>{for(let x=10;x<SW;x+=70+r()*60)l.list.push(newVehicle(l,x))});
+  for(let k=0;k<3;k++)bikes.push(newBike(r()*SW));
+  for(let k=0;k<12;k++)peds.push(newPed(r()*SW));
+  const step=dt=>{
+    clouds.forEach(c=>{c.x+=c.sp*dt;if(c.x>SW)c.x=-c.img.width});
+    lanes.forEach(l=>{l.list.forEach(v=>v.x+=v.d*v.v*dt);l.list=l.list.filter(v=>v.x>-60&&v.x<SW+60);
+      const edge=l.d>0?Math.min(...l.list.map(v=>v.x),999):Math.max(...l.list.map(v=>v.x+v.L),-999);
+      if((l.d>0?edge>40:edge<SW-40)&&r()<dt*.7){const v=newVehicle(l,0);v.x=l.d>0?-v.L:SW;l.list.push(v)}
+      l.list.sort((a,b)=>a.x-b.x);for(let i=0;i<l.list.length-1;i++){const a=l.list[i],b=l.list[i+1];if(l.d>0&&b.x-(a.x+a.L)<6)a.v=Math.min(a.v,b.v);if(l.d<0&&b.x-(a.x+a.L)<6)b.v=Math.min(b.v,a.v)}});
+    for(const b of bikes){b.x+=b.d*b.v*dt;b.dist+=b.v*dt}
+    for(let i=bikes.length-1;i>=0;i--)if(bikes[i].x<-14||bikes[i].x>SW+14)bikes.splice(i,1);
+    if(bikes.length<4&&r()<dt*.35){const b=newBike(0);b.x=b.d>0?-12:SW+2;bikes.push(b)}
+    for(const p of peds){p.x+=p.d*p.v*dt;p.dist+=p.v*dt}
+    for(let i=peds.length-1;i>=0;i--)if(peds[i].x<-6||peds[i].x>SW+6)peds.splice(i,1);
+    if(peds.length<14&&r()<dt*1.2){const p=newPed(0);p.x=p.d>0?-4:SW+2;peds.push(p)}
+    if(!birds.length&&r()<dt*.06)birds.push({x:-10,y:20+r()*40,v:22+r()*10,t:0});
+    birds.forEach(b=>{b.x+=b.v*dt;b.t+=dt});for(let i=birds.length-1;i>=0;i--)if(birds[i].x>SW+10)birds.splice(i,1);
+  };
+  const draw=t=>{
+    g.drawImage(sky,0,0);clouds.forEach(c=>g.drawImage(c.img,Math.round(c.x),c.y));
+    birds.forEach(b=>{const up=Math.floor(b.t*6)%2,c=night?"#9FB0CF":"#2B3A4A";box(g,b.x,b.y,1,1,c);box(g,b.x-1,b.y-(up?1:0),1,1,c);box(g,b.x+1,b.y-(up?1:0),1,1,c)});
+    g.drawImage(city,0,0);[...peds].sort((a,b)=>a.y-b.y).forEach(p=>drawPed(g,p));g.drawImage(trees,0,0);
+    bikes.forEach(b=>drawBiker(g,b));lanes.forEach(l=>l.list.forEach(v=>drawVehicle(g,v,night)));
+    if(night){g.fillStyle="rgba(6,12,30,.28)";g.fillRect(0,0,SW,SH);
+      lights.forEach(([x,y,w,h,warm,kind])=>{if(kind==="lamp"){g.fillStyle="rgba(255,226,140,.18)";g.fillRect(x-6,y,w+12,40);box(g,x+5,y+2,4,2,"#FFE9A0");return}box(g,x,y,w,h,warm?(((x+y)%3)?"#F6D57A":"#F2B85A"):"#E8C873")});
+      lanes.forEach(l=>l.list.forEach(v=>{const fx=v.d>0?v.x+v.L:v.x-6;g.fillStyle="rgba(255,240,170,.22)";g.fillRect(Math.round(fx),v.y-7,6,4)}))}
+  };
+  const still=matchMedia("(prefers-reduced-motion: reduce)").matches;
+  let last=0;
+  const loop=ts=>{const dt=Math.min(.05,last?(ts-last)/1000:0);last=ts;step(dt);draw(ts);sceneRAF=requestAnimationFrame(loop)};
+  if(still)draw(0);else sceneRAF=requestAnimationFrame(loop);
+}
+function stopScene(){if(sceneRAF)cancelAnimationFrame(sceneRAF);sceneRAF=0}
+
+function homeAuth(){if(!me.id&&window.__signIn)return`<button class="hbtn sm" data-act="signin">Sign in</button>`;return`<a class="hbtn sm" href="#hub">Open the hub</a>`}
+function homeLive(){
+  const next=S.events.filter(e=>e.date>=TODAY&&e.type!=="deadline").sort(byDate)[0],post=sortedPosts()[0];
+  const polls=S.polls.filter(pollOpen).length,soon=S.opps.filter(o=>o.deadline&&o.deadline>=TODAY&&o.deadline<=iso(addDays(new Date(),14))).length;
+  const card=(href,k,v,m)=>`<a class="live-card" href="${href}"><span class="k">${k}</span><span class="v">${v}</span><span class="m">${m}</span></a>`;
+  return card("#events","Next up",next?esc(next.title):"Nothing scheduled yet",next?esc(longd(next.date))+(next.time?", "+esc(fmtTime(next.time)):"")+(next.location?", "+esc(next.location):""):"New events show up here first")+
+    card("#bulletin","Latest announcement",post?esc(post.title):"No announcements yet",post?esc(longd(post.date)):"The weekly bulletin lives here")+
+    (polls?card("#voice","Student Voice",`${polls} poll${polls===1?"":"s"} open`,"Vote before they close"):card("#opportunities","Opportunities",`${soon} closing in the next two weeks`,"Volunteering, internships, competitions and more"));
+}
+function homeView(){
+  return`<section class="home" id="homeHero">
+    <canvas id="homeScene" aria-hidden="true"></canvas><div class="home-shade" aria-hidden="true"></div>
+    <header class="home-nav"><a class="home-brand" href="#home">Avenues <span>Student Hub</span></a>
+      <nav class="home-links" aria-label="Sections">${STUDENT_NAV.map(([k,l])=>`<a href="#${k}">${k==="hub"?"This week":l}</a>`).join("")}</nav>
+      <div id="homeAuth">${homeAuth()}</div></header>
+    <div class="home-copy"><h1>Everything happening at Avenues, in one place.</h1>
+      <p>Events and sign-ups, the weekly bulletin, opportunities, and a direct line to Student Council.</p>
+      <div class="home-actions"><a class="hbtn" href="#hub">See this week</a><a class="hbtn glass" href="#suggestions">Make a suggestion</a></div></div>
+  </section>
+  <div class="home-strip"><div class="home-live" id="homeLive">${homeLive()}</div></div>
+  <footer class="home-foot"><span><b>Avenues Student Hub</b>, run by the Avenues The World School Student Council</span><span class="sp"></span>${canCouncil()?`<a href="#overview">Council workspace</a>`:""}<a href="#suggestions">Contact Student Council</a></footer>`;
+}
 
 
 /* ---------- proposals ---------- */
