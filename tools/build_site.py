@@ -6,6 +6,7 @@ stuco-hub.html is the single source for both versions:
 
 Run from the repo root:  python3 tools/build_site.py
 """
+import hashlib
 import re
 from pathlib import Path
 
@@ -20,6 +21,10 @@ app = (ROOT / "stuco-hub.html").read_text(encoding="utf-8")
 # The artifact sets its own title and a viewer hint; the website head below replaces both.
 app = re.sub(r"<title>.*?</title>\s*", "", app, count=1)
 app = re.sub(r'<meta name="claude:viewport-fit-sides"[^>]*>\s*', "", app, count=1)
+
+def ver(name):
+    """Short content hash, so browsers fetch a file again whenever it changes."""
+    return hashlib.sha1((ROOT / "site" / name).read_bytes()).hexdigest()[:8]
 
 head = f"""<!doctype html>
 <html lang="en">
@@ -39,8 +44,8 @@ head = f"""<!doctype html>
 <script src="https://www.gstatic.com/firebasejs/{FIREBASE}/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/{FIREBASE}/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/{FIREBASE}/firebase-firestore-compat.js"></script>
-<script src="firebase-config.js"></script>
-<script src="firebase-adapter.js"></script>
+<script src="firebase-config.js?v={ver('firebase-config.js')}"></script>
+<script src="firebase-adapter.js?v={ver('firebase-adapter.js')}"></script>
 </head>
 <body>
 <noscript><p style="padding:16px">Avenues Student Hub needs JavaScript. It lists events, sign-ups, the weekly bulletin, opportunities and Student Council news for Avenues The World School.</p></noscript>
