@@ -76,6 +76,19 @@ To load it, the president selects the cells in the sheet, copies them, and paste
 
 Club leaders can post updates and photos for their club. Each post waits on the Clubs page until any council member approves it.
 
+## Lost and found deck in Google Slides
+
+`tools/google-slides/` keeps a Google Slides deck in sync with the lost and found page: a title slide, then one slide per open item with its photo and details. It refreshes every hour, so the deck's share link is always current.
+
+Set it up once, signed in to the Google account that created the Firebase project:
+
+1. Create a blank deck in Google Slides and name it, for example "Avenues Lost and Found".
+2. **Extensions → Apps Script.**
+3. Click the gear (Project Settings) and turn on **Show "appsscript.json" manifest file in editor**.
+4. Back in the editor, replace `appsscript.json` with `tools/google-slides/appsscript.json`, and `Code.gs` with `tools/google-slides/Code.gs`. Save.
+5. Reload the deck. A **Lost and found** menu appears. Choose **Refresh automatically every hour** and allow the permissions Google asks for.
+6. Share the deck (Share → Anyone with the link can view) and paste its link into the site under StuCo → Lost and found → Connect a deck.
+
 ## Updating the website
 
 ```bash

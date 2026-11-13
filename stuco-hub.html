@@ -675,6 +675,8 @@ body.is-site .app{grid-template-columns:minmax(0,1fr)}
 .now-playing{display:flex;align-items:center;gap:10px;flex-wrap:wrap;font-size:18px}
 @media (prefers-reduced-motion:reduce){.tape,.tape:hover,.tape[aria-pressed="true"]{transition:none;transform:none}}
 
+.lf-council{border:2px dashed var(--rule);padding:12px 14px;display:flex;flex-direction:column;gap:8px}
+
 /* history */
 .hday{font-size:17px;font-weight:800;margin-top:14px}
 .hday:first-child{margin-top:0}
@@ -1682,7 +1684,7 @@ function communityHub(){const cur=shownView();return subnav([["community","Feed"
 /* lost and found: each person's items live in their own document and show right away */
 function allLost(){const out=[];for(const d of S.lostfound)for(const[k,v]of Object.entries(d.items||{}))if(v&&v.what)out.push({...v,key:k,uid:d.id});return out.sort((a,b)=>(b.at||"").localeCompare(a.at||""))}
 function lostView(){const items=allLost().filter(x=>x.status!=="returned"&&(lostFilter==="all"||x.type===lostFilter));
-  return head("Lost a jacket? Found a water bottle? Post it here so it gets back to its owner.","Lost and found",canJoin()?`<button class="btn" data-act="lost-new" data-kind="found">I found something</button><button class="btn primary" data-act="lost-new" data-kind="lost">I lost something</button>`:"")+`<div class="toolbar"><button class="btn" data-act="lf-present">View as slides</button><button class="btn" data-act="lf-deck">Download slides</button>${canAct()?`<span class="sub">Opens in Google Slides: upload to Drive, then share the link.</span>`:""}</div>`+
+  return head("Lost a jacket? Found a water bottle? Post it here so it gets back to its owner.","Lost and found",canJoin()?`<button class="btn" data-act="lost-new" data-kind="found">I found something</button><button class="btn primary" data-act="lost-new" data-kind="lost">I lost something</button>`:"")+(canAct()?`<div class="lf-council"><b>For Student Council</b><div class="toolbar">${safeUrl(CFG.lfDeckUrl)?`<a class="btn primary" href="${esc(CFG.lfDeckUrl)}" target="_blank" rel="noopener">Open the Google Slides deck</a>`:`<span class="sub">No Google Slides deck connected yet.</span>`}${isPres?`<button class="btn sm" data-act="lf-setdeck">${CFG.lfDeckUrl?"Change deck link":"Connect a deck"}</button>`:""}<button class="btn sm ghost" data-act="lf-deck">Download a copy (.pptx)</button></div><span class="sub">The deck updates itself from this page every hour. Share its link with anyone looking for something.</span></div>`:"")+
   (canJoin()?"":`<div class="banner">${needAccess("post a lost or found item")}</div>`)+chips([["all","Everything"],["lost","Lost"],["found","Found"]],lostFilter,"lost-filter")+
   (items.length?`<div class="opps">${items.map(x=>`<article class="opp"><div class="opp-top"><span class="chip ${x.type==="found"?"good":"bad"}">${x.type==="found"?"Found":"Lost"}</span><span class="sub">${esc(short((x.at||"").slice(0,10)))}</span></div><h3>${esc(x.what)}</h3>${x.photo?`<div class="cp-photos"><img src="${blob(x.photo)}" alt=""></div>`:""}<div class="sub parts">${x.where?`<span>${x.type==="found"?"Found":"Last seen"}: ${esc(x.where)}</span>`:""}${x.date?`<span>${esc(short(x.date))}</span>`:""}</div>${x.details?`<p>${esc(x.details)}</p>`:""}<div class="sub">${x.type==="found"?"Ask":"Tell"} ${esc(x.name||"Student Council")} if it's yours${x.type==="found"?"":" or you've seen it"}.</div>${x.uid===me.id||canAct()?`<div class="toolbar"><button class="btn sm good" data-act="lost-done" data-uid="${esc(x.uid)}" data-key="${esc(x.key)}">Mark as returned</button></div>`:""}</article>`).join("")}</div>`
   :empty("Nothing lost or found right now","If you lose or find something at school, post it here.",null,""))}
@@ -2372,7 +2374,7 @@ document.addEventListener("click",async e=>{
     case"work-year":workYear=+b.dataset.to;render();{const sc=$("#sec-working");sc&&sc.scrollIntoView({block:"start"})}return;
     case"add-win":return winForm(null,b.dataset.to);
     case"edit-win":return winForm(id);
-    case"lf-present":return openDeck();
+    case"lf-setdeck":return openForm({title:"Connect the Google Slides deck",note:"Paste the link to the lost and found deck. Only Student Council sees it here.",fields:[{id:"url",label:"Deck link",full:true,placeholder:"https://docs.google.com/presentation/d/…"}],values:{url:CFG.lfDeckUrl||""},submit:v=>{const u=safeUrl(v.url);if(v.url&&!/^https:\/\/docs\.google\.com\/presentation\//.test(u)){$("#merr").textContent="That doesn't look like a Google Slides link.";return false}return save(()=>cfgSet(c=>{c.lfDeckUrl=u}),u?"Deck connected":"Deck link removed")}});
     case"lf-deck":b.disabled=true;try{await downloadDeck()}finally{b.disabled=false}return;
     case"lost-new":return lostForm(b.dataset.kind);
     case"lost-filter":lostFilter=b.dataset.to;return render();
