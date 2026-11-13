@@ -491,6 +491,11 @@ body.is-site .app{grid-template-columns:minmax(0,1fr)}
 .race-bar i{display:block;height:100%;background:var(--rail)}
 @media (max-width:700px){.home-about{grid-template-columns:minmax(0,1fr)}.aviator{grid-template-columns:minmax(0,1fr)}.sundaes{grid-template-columns:repeat(2,minmax(0,1fr))}.about-list li{grid-template-columns:minmax(0,1fr);gap:0}}
 
+.clubpost{border-top:1px solid var(--rule);padding-top:10px;display:flex;flex-direction:column;gap:6px}
+.clubpost p{margin:0;white-space:pre-wrap;overflow-wrap:anywhere}
+.cp-photos{display:grid;grid-template-columns:repeat(auto-fill,minmax(88px,1fr));gap:6px}
+.cp-photos img{width:100%;aspect-ratio:1;object-fit:cover;display:block}
+
 /* history */
 .hday{font-size:17px;font-weight:800;margin-top:14px}
 .hday:first-child{margin-top:0}
@@ -566,12 +571,12 @@ const STUDENT_NAV=[["hub","Student Hub"],["events","Events"],["life","Student Li
 const COUNCIL_NAV=[["overview","Overview"],["tasks","Tasks"],["proposals","Proposals"],["attendance","Attendance"],["members","Members"],["history","History"]];
 const ROUTES={home:"home",hub:"hub",calendar:"hub",bulletin:"hub",events:"events",life:"life",clubs:"life",play:"play",leaderboard:"play",opportunities:"opportunities",voice:"voice",suggestions:"voice",working:"voice",overview:"overview",tasks:"tasks",proposals:"proposals",attendance:"attendance",members:"members",history:"history"};
 const STUDENT_ROUTES=["home","hub","calendar","bulletin","events","life","clubs","play","leaderboard","opportunities","voice","suggestions","working"];
-const COLS=["members","events","tasks","claims","bulletin","suggestions","albums","stories","opps","polls","votes","signups","birthdays","playlists","aviators","predictions","picks","scores","clubs","proposals","meetings","history"];
-const COUNCIL_ONLY=["proposals","meetings","history"];
+const COLS=["members","events","tasks","claims","bulletin","suggestions","albums","stories","opps","polls","votes","signups","birthdays","playlists","aviators","predictions","picks","scores","clubs","clubposts","clubdrafts","roster","proposals","meetings","history"];
+const COUNCIL_ONLY=["proposals","meetings","history","roster"];
 const SCHOOL="Avenues The World School";
 const SUG_CATS=["Events","Spirit","Vending machine","Facilities","Food","Clubs","School policy","Report a problem","Other"];
 const SUG_STATUS=[["new","New"],["review","Under review"],["planned","Planned"],["done","Done"],["declined","Not this time"]];
-const S={members:[],events:[],tasks:[],claims:[],bulletin:[],suggestions:[],albums:[],stories:[],opps:[],polls:[],votes:[],signups:[],birthdays:[],playlists:[],aviators:[],predictions:[],picks:[],scores:[],clubs:[],proposals:[],meetings:[],history:[]};
+const S={members:[],events:[],tasks:[],claims:[],bulletin:[],suggestions:[],albums:[],stories:[],opps:[],polls:[],votes:[],signups:[],birthdays:[],playlists:[],aviators:[],predictions:[],picks:[],scores:[],clubs:[],clubposts:[],clubdrafts:[],roster:[],proposals:[],meetings:[],history:[]};
 let CFG={approved:{},roles:{},school:"",president:null}, cfgExists=false, ADMIN={emails:[]}, adminExists=false;
 const EV_TYPES=[["meeting","StuCo meeting"],["event","School event"],["dance","Dance"],["trip","Trip"],["competition","Competition or tournament"],["fundraiser","Fundraiser"],["deadline","Deadline"]];
 const TASK_STATUS=[["todo","To do"],["doing","In progress"],["done","Done"]];
@@ -625,13 +630,16 @@ const full=d=>d&&({...d,role:CFG.roles[d.id]||d.role||"Member"});
 function member(id){return full(S.members.find(m=>m.id===id))}
 function roster(){const r=S.members.filter(isApproved).map(full);return r.sort((a,b)=>((ROLES.indexOf(a.role)+99)%99)-((ROLES.indexOf(b.role)+99)%99)||(a.name||"").localeCompare(b.name||""))}
 const myDoc=()=>me.id?S.members.find(m=>m.id===me.id):null;
-const amMember=()=>isPres||isApproved(myDoc());
+const amMember=()=>isPres||isApproved(myDoc())||!!(window.__rosterMe&&window.__rosterMe.council);
 const W=()=>canWrite&&!!db;
 let preview=false;try{preview=localStorage.getItem("stuco-view")==="student"}catch(e){}
 const canCouncil=()=>isPres||(amMember()&&isEditor);
 const council=()=>canCouncil()&&!preview;
 const canAct=()=>W()&&council();
-const canJoin=()=>W()&&!!me.id;
+const RM=()=>window.__rosterMe||null;
+const clubKey=n=>String(n||"").trim().toLowerCase();
+const lockedOut=()=>!!window.__signIn&&!!CFG.rosterOnly&&!!me.id&&!RM()&&!canCouncil();
+const canJoin=()=>W()&&!!me.id&&!lockedOut();
 const allowed=v=>!!ROUTES[v]&&(council()||STUDENT_ROUTES.includes(v)||(v==="members"&&canJoin()));
 const shownView=()=>view&&allowed(view)?view:(council()?"overview":"home");
 const safeUrl=u=>/^https:\/\/[^\s"'<>]+$/i.test(u||"")?u:"";
@@ -680,7 +688,7 @@ function setStatus(s){
 
 /* ---------- render ---------- */
 function renderNav(){
-  const counts={tasks:S.tasks.filter(t=>taskState(t).status!=="done").length,proposals:S.proposals.filter(p=>p.status==="voting").length,members:isPres?S.members.filter(d=>!isApproved(d)).length:0,voice:council()?allSuggestions().filter(x=>x.status==="new").length:0};
+  const counts={tasks:S.tasks.filter(t=>taskState(t).status!=="done").length,proposals:S.proposals.filter(p=>p.status==="voting").length,members:isPres?S.members.filter(d=>!isApproved(d)).length:0,voice:council()?allSuggestions().filter(x=>x.status==="new").length:0,life:council()?allDrafts().filter(d=>d.status==="pending").length:0};
   const sec=ROUTES[shownView()];
   const link=([k,l])=>`<a href="#${k}" ${k===sec?'aria-current="page"':""}>${l}${counts[k]?`<span class="count">${counts[k]}</span>`:""}</a>`;
   let h=council()?`<div class="navgroup">School site</div>${STUDENT_NAV.map(link).join("")}<div class="navgroup">Council</div>${COUNCIL_NAV.map(link).join("")}`:STUDENT_NAV.map(link).join("");
@@ -712,6 +720,7 @@ function render(){
     if(d&&!isApproved(d))banner=`<div class="banner">Your council profile is waiting for the president's approval.</div>`;
     else if(d&&isApproved(d)&&!isEditor)banner=`<div class="banner">You're an approved council member. Ask the president to give you Editor access to this page so you can make changes.</div>`;}
   if(preview&&canCouncil())banner=`<div class="banner preview"><span>You're seeing the site the way students see it.</span><button class="btn sm" data-act="mode" data-to="council">Back to council view</button></div>`+banner;
+  if(lockedOut())banner+=`<div class="banner">You're signed in as ${esc(me.email||"an account")}, which isn't on the Avenues student list. Sign in with your school email, or ask Student Council to add you.</div>`;
   const VIEWFN={hub:hubView,calendar:hubView,bulletin:hubView,events:eventsView,life:lifeHub,clubs:lifeHub,play:playView,leaderboard:playView,opportunities:oppsView,voice:voiceView,suggestions:voiceView,working:voiceView,overview,tasks:()=>tasks(),proposals,attendance,members,history:historyView};
   const ae=document.activeElement,keep=ae&&ae.id&&$("#main").contains(ae)?{id:ae.id,val:ae.value,sel:ae.selectionStart!=null?[ae.selectionStart,ae.selectionEnd]:null}:null;
   $("#main").innerHTML=banner+VIEWFN[shownView()]();
@@ -966,7 +975,7 @@ function lifeView(){
   return head("Photos, recaps, spotlights, birthdays and playlists from the Avenues community.","Student Life",canAct()?`<button class="btn" data-act="add-aviator">+ Aviator of the Week</button><button class="btn" data-act="add-story">+ Add a story</button><button class="btn primary" data-act="add-album">+ Add photo album</button>`:"")+
   aviatorBlock()+(albums.length?beltsHTML(2)+`<section class="panel"><h2>Photo albums</h2><div class="albums">${albums.map(albumCard).join("")}</div></section>`:empty("No photos yet",canAct()?"Add an album of photos from a dance, game or trip. The photos drift across the top of this page, and clicking one opens its album.":"Photos from events will show up here.","add-album","Add the first album"))+
   `<section class="panel"><h2>Stories</h2><div class="fchips" style="margin-top:10px">${[["all","All"],["stories","Stories and spotlights"],["Meme","Memes"]].map(([k,l])=>`<button class="fchip" data-act="life-filter" data-to="${k}" aria-pressed="${lifeFilter===k}">${l}</button>`).join("")}</div>${shown.length?`<div class="stories">${shown.map(storyCard).join("")}</div>`:`<p class="sub" style="margin:12px 0 0">${stories.length?"Nothing here yet.":"Recaps, student spotlights, interviews and memes will show up here."}</p>`}</section>`+
-  `<div class="grid2"><section class="panel"><h2>Birthdays this week</h2>${bd.length?bd.map(b=>{const today=iso(b.next)===TODAY;return`<div class="bday"><b>${esc(b.name)}</b><span class="sub">${today?"":esc(b.next.toLocaleDateString(undefined,{weekday:"long",month:"short",day:"numeric"}))}</span>${today?`<span class="chip gold">Today</span>`:""}${canAct()?`<span class="sp"></span><button class="btn sm ghost" data-act="bday-remove" data-id="${b.id}">Remove</button>`:""}</div>`}).join(""):`<p class="sub" style="margin:10px 0 0">No birthdays in the next 7 days.</p>`}${canJoin()?`<div style="margin-top:12px"><button class="btn sm" data-act="bday">${mineB?"Edit my birthday":"Add my birthday"}</button> <span class="sub">Optional. Only your name and the date are shown.</span></div>`:""}</section>
+  `<div class="grid2"><section class="panel"><h2>Birthdays this week</h2>${bd.length?bd.map(b=>{const today=iso(b.next)===TODAY;return`<div class="bday"><b>${esc(b.name)}</b><span class="sub">${today?"":esc(b.next.toLocaleDateString(undefined,{weekday:"long",month:"short",day:"numeric"}))}</span>${today?`<span class="chip gold">Today</span>`:""}${canAct()?`<span class="sp"></span><button class="btn sm ghost" data-act="bday-remove" data-id="${b.id}">Remove</button>`:""}</div>`}).join(""):`<p class="sub" style="margin:10px 0 0">No birthdays in the next 7 days.</p>`}${canJoin()&&!CFG.rosterOnly?`<div style="margin-top:12px"><button class="btn sm" data-act="bday">${mineB?"Edit my birthday":"Add my birthday"}</button> <span class="sub">Optional. Only your name and the date are shown.</span></div>`:""}</section>
   <section class="panel"><h2>Student playlists</h2>${pls.length?pls.slice(0,12).map(p=>`<div class="playlist"><div class="grow"><a class="title" href="${esc(safeUrl(p.url))}" target="_blank" rel="noopener">${esc(p.title)}</a><div class="sub parts">${p.vibe?`<span>${esc(p.vibe)}</span>`:""}${p.name?`<span>Shared by ${esc(p.name)}</span>`:""}</div></div>${p.uid===me.id||canAct()?`<button class="btn sm ghost" data-act="pl-remove" data-uid="${esc(p.uid)}" data-key="${esc(p.key)}">Remove</button>`:""}</div>`).join(""):`<p class="sub" style="margin:10px 0 0">No playlists yet. Share what you're listening to.</p>`}${canJoin()?`<div style="margin-top:12px"><button class="btn sm" data-act="add-playlist">+ Share a playlist</button></div>`:""}</section></div>`;
 }
 function openAlbum(aid,pid){const a=S.albums.find(x=>x.id===aid);if(!a||!(a.photos||[]).length){toast("This album has no photos yet.");return}
@@ -1285,7 +1294,7 @@ function aviatorForm(id){const a=id&&S.aviators.find(x=>x.id===id);
     onDelete:a?()=>save(()=>col("aviators").doc(id).delete(),"Removed",["removed Aviator of the Week","aviator",a.name]):null})}
 
 /* Grade Race: students pick answers; council marks the result and the points are written by council, so picks can't be changed for credit afterwards */
-const myPlay=()=>S.picks.find(d=>d.id===me.id)||{};
+const myPlay=()=>{const p=S.picks.find(d=>d.id===me.id)||{},r=RM();return r?{...p,name:r.name||p.name||me.name||"",grade:r.grade||p.grade||""}:p};
 function savePlay(patch){const p=myPlay();return db.doc("picks/"+me.id).set({name:p.name||"",grade:p.grade||"",picks:p.picks||{},clubs:p.clubs||{},...patch})}
 const ptsOf=d=>Object.values((d&&d.log)||{}).reduce((t,x)=>t+(Number(x&&x.p)||0),0);
 const scoreDocs=()=>S.scores.filter(d=>d.id!=="_settings");
@@ -1300,7 +1309,7 @@ function joinPrompt(){if(!canJoin())return`<div class="banner">${needAccess("pla
 function predictionsView(){
   const ps=[...S.predictions].sort((a,b)=>(b.created||"").localeCompare(a.created||"")),open=ps.filter(predOpen),done=ps.filter(p=>!predOpen(p)).slice(0,8),mine=S.scores.find(d=>d.id===me.id),g=myPlay().grade;
   return head("Call what happens at school this week. Every right answer earns points for you and for your grade.","Grade Race",canAct()?`<button class="btn" data-act="award">Award points</button><button class="btn primary" data-act="add-pred">+ New prediction</button>`:"")+joinPrompt()+
-  (g?`<div class="summary"><span>You have <b>${ptsOf(mine)}</b> points</span><span>Grade ${esc(g)} has <b>${gradeTotals()[g]||0}</b></span><a href="#leaderboard">See the leaderboard</a><button class="btn sm ghost" data-act="play-join">Change my grade</button></div>`:"")+
+  (g?`<div class="summary"><span>You have <b>${ptsOf(mine)}</b> points</span><span>Grade ${esc(g)} has <b>${gradeTotals()[g]||0}</b></span><a href="#leaderboard">See the leaderboard</a>${RM()&&RM().grade?"":`<button class="btn sm ghost" data-act="play-join">Change my grade</button>`}</div>`:"")+
   (open.length?`<div class="polls">${open.map(predCard).join("")}</div>`:empty("No predictions open right now",canAct()?"Post a few each Monday: who wins Friday's game, what's for lunch on Thursday, whether the fire alarm goes off.":"New ones go up each week.","add-pred","Post a prediction"))+
   (done.length?`<section class="panel"><h2>Results</h2><div class="polls" style="margin-top:12px">${done.map(predCard).join("")}</div></section>`:"");
 }
@@ -1348,10 +1357,53 @@ function playJoinForm(){const p=myPlay();
     submit:v=>save(()=>savePlay({name:v.name,grade:v.grade}),"You're in")})}
 
 /* clubs */
-function clubsView(){const cs=[...S.clubs].sort((a,b)=>(a.name||"").localeCompare(b.name||"")),mine=myPlay().clubs||{};
-  return head("Every club at Avenues: when it meets, who runs it, and how to join.","Clubs",addBtn("add-club","Add a club"))+
-  (cs.length?`<div class="opps">${cs.map(c=>{const link=safeUrl(c.link),n=S.picks.filter(d=>(d.clubs||{})[c.id]).length;return`<article class="opp"><h3>${esc(c.name)}</h3>${c.about?`<p>${esc(c.about)}</p>`:""}<div class="sub parts">${c.meets?`<span>Meets ${esc(c.meets)}</span>`:""}${c.leader?`<span>Run by ${esc(c.leader)}</span>`:""}</div>${c.news?`<div class="reply"><b>Latest:</b> ${esc(c.news)}</div>`:""}<div class="toolbar">${canJoin()?`<button class="btn sm" data-act="club-join" data-id="${c.id}" aria-pressed="${!!mine[c.id]}">${mine[c.id]?"You're interested":"I'm interested"}</button>`:""}${link?`<a class="btn sm ghost" href="${esc(link)}" target="_blank" rel="noopener">Club page</a>`:""}${council()&&n?`<span class="sub">${n} interested</span>`:""}${canAct()?`<button class="btn sm ghost" data-act="edit-club" data-id="${c.id}">Edit</button>`:""}</div></article>`}).join("")}</div>`
-  :empty("No clubs listed yet",canAct()?"Add each club with when it meets and who runs it. Students can tap I'm interested, and you see how many.":"Clubs will be listed here soon.","add-club","Add the first club"));
+/* ---------- student list (imported from a Google Sheet) and club posts ---------- */
+const myClubs=()=>(RM()&&RM().clubs)||[];
+const leads=c=>myClubs().includes(clubKey(c.name));
+function parseBday(s){if(!s)return null;let m;if((m=s.match(/^(\d{4})-(\d{1,2})-(\d{1,2})/)))return[+m[2],+m[3]];if((m=s.match(/^(\d{1,2})[\/\-.](\d{1,2})/)))return[+m[1],+m[2]];const d=new Date(s+" 2000");return isNaN(d)?null:[d.getMonth()+1,d.getDate()]}
+function parseRoster(text){
+  const rows=text.split(/\r?\n/).map(l=>l.trim()).filter(Boolean).map(l=>l.includes("\t")?l.split("\t"):l.split(","));if(!rows.length)return[];
+  let idx={email:0,name:1,grade:2,bday:3,council:4,club:5};const h=rows[0].map(x=>x.trim().toLowerCase());
+  if(!h.some(x=>x.includes("@"))){const f=re=>h.findIndex(x=>re.test(x));idx={email:f(/e-?mail/),name:f(/name/),grade:f(/grade|class|year/),bday:f(/birth|bday/),council:f(/stuco|council/),club:f(/club/)};rows.shift()}
+  const out=[];
+  for(const r of rows){const get=k=>idx[k]>=0?(r[idx[k]]||"").trim():"",email=get("email").toLowerCase();if(!/^[^@\s\/]+@[^@\s\/]+\.[^@\s\/]+$/.test(email))continue;
+    const b=parseBday(get("bday")),e={name:get("name"),grade:(get("grade").match(/\d+/)||[""])[0],council:/^(y|yes|true|x|1|stuco|council)/i.test(get("council")),clubs:get("club").split(/[;|]/).map(clubKey).filter(Boolean)};
+    if(b){e.bm=b[0];e.bd=b[1]}out.push([email,e])}
+  return out}
+function rosterSummary(){const n=S.roster.length;if(!n)return"No list imported yet.";return`${n} people on the list: ${GRADES.map(g=>`${S.roster.filter(d=>d.grade===g).length} in Grade ${g}`).join(", ")}. ${S.roster.filter(d=>d.council).length} on StuCo, ${S.roster.filter(d=>(d.clubs||[]).length).length} club leaders.`}
+async function importRoster(){
+  const rows=parseRoster($("#rosterPaste").value);if(!rows.length){toast("No rows with an email address found. Check that you copied the Email column.");return}
+  const bid=e=>{let h=0;for(const ch of e)h=(h*31+ch.charCodeAt(0))>>>0;return"r"+h.toString(36)},keep=new Set(rows.map(r=>r[0])),bkeep=new Set(),jobs=[];
+  for(const[email,e]of rows){jobs.push(()=>db.doc("roster/"+email).set(e));if(e.bm&&e.name){bkeep.add(bid(email));jobs.push(()=>db.doc("birthdays/"+bid(email)).set({name:e.name,month:e.bm,day:e.bd,show:true,roster:true}))}}
+  for(const d of S.roster)if(!keep.has(d.id))jobs.push(()=>db.doc("roster/"+d.id).delete());
+  for(const d of S.birthdays)if(d.roster&&!bkeep.has(d.id))jobs.push(()=>db.doc("birthdays/"+d.id).delete());
+  await save(async()=>{for(let i=0;i<jobs.length;i+=20){const st=$("#rosterStatus");if(st)st.textContent=`Importing ${Math.min(i+20,jobs.length)} of ${jobs.length}…`;await Promise.all(jobs.slice(i,i+20).map(j=>j()))}
+    await cfgSet(c=>{c.rosterOnly=true})},`Imported ${rows.length} people`,["imported the student list","settings",rows.length+" people"]);
+}
+function rosterPanel(){return`<div class="field"><label for="rosterPaste">Student list from your Google Sheet</label>
+  <span class="sub">Give your sheet these column headers: <b>Email, Name, Grade, Birthday, StuCo, Club leader</b>. Put "yes" under StuCo for council members, and the club's name under Club leader. Select all the cells, copy, and paste them here. Importing again replaces the old list.</span>
+  <textarea id="rosterPaste" rows="5" placeholder="Paste the cells from your sheet here"></textarea>
+  <div class="toolbar"><button class="btn sm primary" data-act="roster-import">Import list</button><span class="sub" id="rosterStatus">${rosterSummary()}</span></div>
+  <div class="field check"><input type="checkbox" id="rosterOnly" ${CFG.rosterOnly?"checked":""}><label for="rosterOnly">Only people on this list can join</label></div></div>`}
+
+function allDrafts(){const out=[];for(const d of S.clubdrafts)for(const[k,v]of Object.entries(d.items||{}))if(v&&v.text)out.push({...v,key:k,uid:d.id});return out.sort((a,b)=>(b.at||"").localeCompare(a.at||""))}
+function postHTML(p){return`<div class="clubpost">${(p.photos||[]).length?`<div class="cp-photos">${p.photos.slice(0,4).map(id=>`<img src="${blob(id)}" alt="" loading="lazy">`).join("")}</div>`:""}<p>${esc(p.text)}</p><div class="sub parts"><span>${esc(short((p.at||"").slice(0,10)))}</span>${p.byName?`<span>Posted by ${esc(p.byName)}</span>`:""}${canAct()&&p.id?`<button class="btn sm ghost" data-act="cp-delete" data-id="${p.id}">Remove</button>`:""}</div></div>`}
+function clubPostForm(cid){const c=S.clubs.find(x=>x.id===cid);if(!c)return;const direct=canAct();
+  openForm({title:"Post an update for "+c.name,submitLabel:direct?"Post":"Send for approval",note:direct?"":"Student Council checks each post before it goes up.",
+    fields:[{id:"text",label:"What's new",type:"textarea",required:true,placeholder:"A win, a recap, what's coming up"},{id:"photos",label:"Photos",type:"photos",multiple:true}],values:{photos:[]},
+    submit:v=>{const item={clubKey:clubKey(c.name),clubName:c.name,text:v.text,photos:v.photos,at:new Date().toISOString(),by:me.id,byName:(RM()&&RM().name)||me.name||""};
+      if(direct)return save(()=>col("clubposts").add(item),"Posted",["posted a club update for","club",c.name]);
+      return save(()=>upsert("clubdrafts",me.id,{items:{[Date.now().toString(36)]:{...item,status:"pending"}}}),"Sent to Student Council for approval")}})}
+function clubsView(){
+  const cs=[...S.clubs].sort((a,b)=>(a.name||"").localeCompare(b.name||"")),mine=myPlay().clubs||{},posts=[...S.clubposts].sort((a,b)=>(b.at||"").localeCompare(a.at||"")),drafts=allDrafts(),pending=drafts.filter(d=>d.status==="pending");
+  let out=head("Every club at Avenues: when it meets, who runs it, what it's been up to, and how to join.","Clubs",addBtn("add-club","Add a club"));
+  if(council()&&pending.length){resolveIds(pending.map(d=>d.uid));
+    out+=`<section class="panel"><h2>Club posts waiting for approval</h2><ul class="sugs" style="border-top:0">${pending.map(d=>`<li><div class="sug-head"><span class="title">${esc(d.clubName)}</span>${who(d.uid,"Club leader")}</div>${postHTML(d)}${canAct()?`<div class="toolbar"><button class="btn sm good" data-act="cp-approve" data-uid="${esc(d.uid)}" data-key="${esc(d.key)}">Approve and post</button><button class="btn sm ghost danger" data-act="cp-decline" data-uid="${esc(d.uid)}" data-key="${esc(d.key)}">Decline</button></div>`:""}</li>`).join("")}</ul></section>`}
+  if(!council()){const own=drafts.filter(d=>d.uid===me.id&&d.status!=="approved").slice(0,5);
+    if(own.length)out+=`<section class="panel"><h2>Your club posts</h2><ul class="sugs" style="border-top:0">${own.map(d=>`<li><div class="sug-head"><span class="title">${esc(d.clubName)}</span><span class="state ${d.status==="declined"?"wait":"todo"}">${d.status==="declined"?"Not approved":"Waiting for Student Council approval"}</span></div><p>${esc(d.text)}</p></li>`).join("")}</ul></section>`}
+  return out+(cs.length?`<div class="opps">${cs.map(c=>{const link=safeUrl(c.link),n=S.picks.filter(d=>(d.clubs||{})[c.id]).length,ps=posts.filter(p=>p.clubKey===clubKey(c.name)).slice(0,2);
+    return`<article class="opp"><h3>${esc(c.name)}</h3>${c.about?`<p>${esc(c.about)}</p>`:""}<div class="sub parts">${c.meets?`<span>Meets ${esc(c.meets)}</span>`:""}${c.leader?`<span>Run by ${esc(c.leader)}</span>`:""}</div>${c.news?`<div class="reply"><b>Latest:</b> ${esc(c.news)}</div>`:""}${ps.map(postHTML).join("")}<div class="toolbar">${leads(c)||canAct()?`<button class="btn sm primary" data-act="cp-new" data-id="${c.id}">Post an update</button>`:""}${canJoin()?`<button class="btn sm" data-act="club-join" data-id="${c.id}" aria-pressed="${!!mine[c.id]}">${mine[c.id]?"You're interested":"I'm interested"}</button>`:""}${link?`<a class="btn sm ghost" href="${esc(link)}" target="_blank" rel="noopener">Club page</a>`:""}${council()&&n?`<span class="sub">${n} interested</span>`:""}${canAct()?`<button class="btn sm ghost" data-act="edit-club" data-id="${c.id}">Edit</button>`:""}</div></article>`}).join("")}</div>`
+  :empty("No clubs listed yet",canAct()?"Add each club with when it meets and who runs it. Club leaders on your student list can then post updates for approval.":"Clubs will be listed here soon.","add-club","Add the first club"));
 }
 function sceneInfo(){const a=currentAviator(),p=sortedPosts()[0],now=new Date();
   return{aviator:a?"AVIATOR OF THE WEEK: "+a.name:"",news:p?p.title:"",bdays:S.birthdays.filter(b=>b.show!==false&&b.name&&Number(b.month)===now.getMonth()+1&&Number(b.day)===now.getDate()).map(b=>b.name)}}
@@ -1602,11 +1654,11 @@ function presPanel(){
         <label style="margin-top:12px">Join requests</label>
         ${pend.length?`<ul class="list" style="margin:0">${pend.map(d=>{const em=PROF[d.id]&&PROF[d.id].email;return`<li>${avatar(d.id,"lg")}<div class="grow"><div class="title">${esc(d.name||"Unnamed")}</div><div class="sub">${em?esc(em):"Email not shared"}${em&&(ADMIN.emails||[]).includes(em.toLowerCase())?", on your approved list":""}</div></div><button class="btn sm good" data-act="approve" data-id="${d.id}">Approve</button><button class="btn sm ghost danger" data-act="decline" data-id="${d.id}">Decline</button></li>`}).join("")}</ul>`:`<span class="sub">No one is waiting for approval.</span>`}
       </div>
-    </div></section>`;
+    </div>${rosterPanel()}</section>`;
 }
 async function autoApprove(){
-  if(!isPres||!U||!db||!adminExists||!loaded.has("config")||!loaded.has("members"))return;
-  const emails=(ADMIN.emails||[]).map(e=>e.toLowerCase());if(!emails.length)return;
+  if(!isPres||!U||!db||!loaded.has("admin")||!loaded.has("config")||!loaded.has("members"))return;
+  const emails=[...(ADMIN.emails||[]).map(e=>e.toLowerCase()),...S.roster.filter(d=>d.council).map(d=>d.id)];if(!emails.length)return;
   const pend=S.members.filter(d=>!isApproved(d)&&!autoTried.has(d.id));if(!pend.length)return;
   pend.forEach(d=>autoTried.add(d.id));
   const ps=await U.profiles(pend.map(d=>d.id));Object.assign(PROF,ps);
@@ -1751,6 +1803,11 @@ document.addEventListener("click",async e=>{
     case"add-club":return forms.club()(null);
     case"edit-club":return forms.club()(id);
     case"club-join":{const c={...(myPlay().clubs||{})};if(c[id])delete c[id];else c[id]=true;return save(()=>savePlay({clubs:c}))}
+    case"roster-import":b.disabled=true;await importRoster();b.disabled=false;return;
+    case"cp-new":return clubPostForm(id);
+    case"cp-approve":{const d=allDrafts().find(x=>x.uid===b.dataset.uid&&x.key===b.dataset.key);if(!d)return;const{key,uid,status,...post}=d;return save(async()=>{await col("clubposts").add(post);await db.doc("clubdrafts/"+uid).update({items:{[key]:{status:"approved"}}})},"Approved and posted",["approved a club post from","club",d.clubName])}
+    case"cp-decline":{const d=allDrafts().find(x=>x.uid===b.dataset.uid&&x.key===b.dataset.key);if(!d)return;return save(()=>db.doc("clubdrafts/"+d.uid).update({items:{[d.key]:{status:"declined"}}}),"Post declined",["declined a club post from","club",d.clubName])}
+    case"cp-delete":return save(()=>col("clubposts").doc(id).delete(),"Post removed");
     case"ev-toggle":openEvent=openEvent===id?null:id;return render();
     case"ev-filter":evFilter=b.dataset.to;return render();
     case"ev-join":{const ev=S.events.find(x=>x.id===id);if(!ev)return;const ok=ev.signup==="tickets"?"Ticket reserved":"You're signed up";
@@ -1817,7 +1874,8 @@ document.addEventListener("click",async e=>{
     case"sample":b.disabled=true;return loadSample();
   }
 });
-document.addEventListener("change",e=>{if(e.target.id==="sugFilter"){sugFilter=e.target.value;render()}
+document.addEventListener("change",e=>{if(e.target.id==="rosterOnly"){const on=e.target.checked;save(()=>cfgSet(c=>{c.rosterOnly=on}),on?"Only listed emails can join now":"Anyone who signs in can join now");return}
+  if(e.target.id==="sugFilter"){sugFilter=e.target.value;render()}
   if(e.target.dataset&&e.target.dataset.sug){const t=e.target,x=allSuggestions().find(s=>s.key===t.dataset.key);save(()=>db.doc("suggestions/"+t.dataset.sug).update({items:{[t.dataset.key]:{status:t.value,reviewedBy:me.id,reviewedAt:new Date().toISOString()}}}),"Status updated",["marked as "+label(SUG_STATUS,t.value).toLowerCase()+":","suggestion",x&&x.title])}
   if(e.target.id==="taskFilter"){taskFilter=e.target.value;render()}if(e.target.id==="histFilter"){histFilter=e.target.value;render()}});
 document.addEventListener("keydown",e=>{if(!$("#modal").hidden){if(e.key==="Escape")closeModal();return}if(gal){if(e.key==="Escape")closeGallery();else if(e.key==="ArrowLeft")galStep(-1);else if(e.key==="ArrowRight")galStep(1)}});

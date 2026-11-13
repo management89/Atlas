@@ -24,7 +24,7 @@
   const fs = firebase.firestore();
   try { fs.settings({ ignoreUndefinedProperties: true, merge: true }); } catch (e) {}
 
-  let user = null, isOwner = false, isCouncil = false;
+  let user = null, isOwner = false, isCouncil = false, isLeader = false;
 
   /* ---------- sign-in ---------- */
   window.__signIn = async () => {
@@ -47,9 +47,15 @@
           const approved = (c.exists && c.data().approved) || {};
           isCouncil = isOwner || approved[u.uid] === true;
         } catch (e) { isCouncil = isOwner; }
+        // The person's own row of the student list (grade, StuCo, clubs they lead), if they are on it.
+        let row = null;
+        if (u.email) { try { const r = await fs.doc("roster/" + u.email.toLowerCase()).get(); if (r.exists) row = r.data(); } catch (e) {} }
+        window.__rosterMe = row;
+        if (row && row.council) isCouncil = true;
+        isLeader = !!(row && (row.clubs || []).length);
         // Public profile (name and photo) so others see who signed up or posted.
         // The email goes in a private doc only the person and the president can read.
-        fs.doc("profiles/" + u.uid).set({ name: u.displayName || "", photo: u.photoURL || "" }, { merge: true }).catch(() => {});
+        fs.doc("profiles/" + u.uid).set({ name: (row && row.name) || u.displayName || "", photo: u.photoURL || "" }, { merge: true }).catch(() => {});
         if (u.email) fs.doc("private/" + u.uid).set({ email: u.email.toLowerCase() }, { merge: true }).catch(() => {});
         if (!OWNER_UID) showSetupId(u.uid);
       }
@@ -179,7 +185,7 @@
   }
   const assets = {
     upload: async (blob) => {
-      if (!isCouncil) throw { code: "not_granted", message: "Only council members can upload photos." };
+      if (!isCouncil && !isLeader) throw { code: "not_granted", message: "Only council members and club leaders can upload photos." };
       const url = await toSmallDataUrl(blob);
       const ref = fs.collection("photos").doc();
       await ref.set({ data: url, by: user.uid, at: new Date().toISOString() }).catch((e) => { throw toErr(e); });
@@ -207,7 +213,7 @@
       if (name === "db") return db;
       if (name === "user") return userNS;
       if (name === "downloads") return downloads;
-      if (name === "assets") return user && isCouncil ? assets : null;
+      if (name === "assets") return user && (isCouncil || isLeader) ? assets : null;
       return null;
     },
   };

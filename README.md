@@ -59,6 +59,23 @@ Optional: to let only school accounts sign up, vote and suggest, edit `allowedEm
 
 Firebase's file storage now needs a paid plan, so photos are shrunk and stored in Firestore instead, around 100 to 500 KB each. The free plan holds about 1 GB, a few thousand photos. If the site outgrows that, move photos to Firebase Storage on the Blaze plan.
 
+## The student list
+
+One Google Sheet drives who can join and what they can do. Give it these column headers (see `student-list-template.csv`):
+
+| Column | What goes in it |
+|---|---|
+| Email | The student's sign-in email |
+| Name | Shown on the leaderboard and birthday banners |
+| Grade | 9 to 12. Sets their Grade Race team |
+| Birthday | Month and day, like 3/14. Optional |
+| StuCo | "yes" for council members |
+| Club leader | The club's name, exactly as listed on the Clubs page. Separate several with a semicolon |
+
+To load it, the president selects the cells in the sheet, copies them, and pastes them under Members → President controls → Student list, then clicks Import list. Importing again replaces the old list. The site keeps its own copy, so the sheet is not read live; re-import after changes.
+
+Club leaders can post updates and photos for their club. Each post waits on the Clubs page until any council member approves it.
+
 ## Updating the website
 
 ```bash
