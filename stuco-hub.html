@@ -51,8 +51,8 @@ nav a[aria-current="page"] .count{background:var(--rail);color:var(--rail-ink)}
 .status.ok .dot{background:#1D7A45} .status.err .dot{background:#B3261E}
 
 /* work area */
-main{padding-block:40px 72px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));min-width:0}
-.wrap{max-width:1080px;margin:0 auto;display:flex;flex-direction:column;gap:28px;padding-inline:8px}
+main{padding:0;min-width:0}
+.wrap{max-width:1144px;margin:0 auto;display:flex;flex-direction:column;gap:28px;padding-block:28px 40px;padding-left:max(24px,env(safe-area-inset-left,0px));padding-right:max(24px,env(safe-area-inset-right,0px))}
 .head{display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:space-between;gap:14px}
 .head h1{font-size:46px;font-weight:800;letter-spacing:-.03em;line-height:1}
 .context{margin:8px 0 0;color:var(--muted);font-size:17px;max-width:62ch}
@@ -398,8 +398,34 @@ body.is-home .wrap{max-width:none;padding:0;gap:0}
 .home-foot{display:flex;flex-wrap:wrap;gap:8px 20px;align-items:center;padding-block:18px;padding-left:max(20px,env(safe-area-inset-left,0px));padding-right:max(20px,env(safe-area-inset-right,0px));font-size:14px;color:var(--muted);border-top:1px solid var(--rule)}
 .home-foot a{color:var(--ink);font-weight:600}
 a.brand{color:inherit;text-decoration:none}
-@media (max-width:980px){.home-links{display:none}}
 @media (max-width:700px){.home-live{grid-template-columns:minmax(0,1fr)}.home canvas{object-position:72% 100%}.home-shade{background:linear-gradient(180deg,rgba(14,26,48,.55) 0%,rgba(14,26,48,.2) 55%,rgba(14,26,48,0) 75%)}}
+
+/* inner pages continue the home page: the same pixel street in a shorter banner, the same glass menu, titles in white */
+body.is-site .rail{display:none}
+body.is-site .app{grid-template-columns:minmax(0,1fr)}
+.band{position:relative;isolation:isolate;overflow:hidden;color:#FFFFFF;background:#6DB3ED;min-height:250px;display:flex;flex-direction:column}
+.band canvas{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:66% 94%;image-rendering:pixelated;z-index:-2}
+.band-shade{position:absolute;inset:0;z-index:-1;background:linear-gradient(100deg,rgba(14,26,48,.66) 0%,rgba(14,26,48,.4) 42%,rgba(14,26,48,.1) 72%),linear-gradient(0deg,rgba(14,26,48,.42) 0%,rgba(14,26,48,0) 55%)}
+.band-top:empty{display:none}
+.band-title{margin-top:auto;padding:30px max(24px,env(safe-area-inset-right,0px)) 0 max(24px,env(safe-area-inset-left,0px));max-width:1144px;width:100%;margin-inline:auto}
+.band-title h1{font-size:clamp(34px,4.6vw,54px);font-weight:800;letter-spacing:-.03em;line-height:1.02;color:#FFFFFF;text-shadow:0 2px 0 rgba(14,26,48,.25)}
+.band-title p{margin:10px 0 0;max-width:62ch;font-size:17px;line-height:1.45;color:#FFFFFF;text-shadow:0 1px 0 rgba(14,26,48,.35)}
+.band-title p[hidden]{display:none}
+.band-sub{padding:16px max(24px,env(safe-area-inset-right,0px)) 18px max(24px,env(safe-area-inset-left,0px));max-width:1144px;width:100%;margin-inline:auto}
+.band-sub:empty{padding-top:0}
+.band .subnav{display:inline-flex;flex-wrap:nowrap;overflow-x:auto;max-width:100%;gap:2px;padding:4px;margin:0;border:1px solid rgba(255,255,255,.32);border-radius:12px;background:rgba(255,255,255,.16);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);scrollbar-width:none}
+.band .subnav a{color:#FFFFFF;font-size:15px;font-weight:600;padding:7px 14px;margin:0;border:0;border-radius:8px;white-space:nowrap}
+.band .subnav a:hover{background:rgba(255,255,255,.2);color:#FFFFFF}
+.band .subnav a[aria-current="page"]{background:#FFFFFF;color:#14202E}
+.band :focus-visible{outline:3px solid #F4B400;outline-offset:2px}
+.home-auth{display:flex;align-items:center;gap:8px}
+.me-glass{display:inline-flex;align-items:center;gap:8px;color:#FFFFFF;font-weight:600;font-size:15px;white-space:nowrap}
+.me-glass .avatar{width:30px;height:30px;border:2px solid rgba(255,255,255,.7)}
+.home-links a[aria-current="page"]{background:#FFFFFF;color:#14202E}
+.head:empty{display:none}
+.site-foot{margin-top:24px}
+@media (max-width:980px){.home-nav{flex-wrap:wrap}.home-links{order:3;flex-basis:100%;overflow-x:auto;scrollbar-width:none}}
+@media (max-width:560px){.me-glass span,.home-brand span{display:none}.band{min-height:230px}}
 
 /* history */
 .hday{font-size:17px;font-weight:800;margin-top:14px}
@@ -463,7 +489,7 @@ a.brand{color:inherit;text-decoration:none}
     <nav id="nav" aria-label="Sections"></nav>
     <div class="status" id="status"><span class="dot"></span><span id="statusText">Connecting to council records…</span></div>
   </aside>
-  <main><div class="wrap" id="main"></div></main>
+  <main><div class="band" id="band" hidden><canvas id="bandScene" aria-hidden="true"></canvas><div class="band-shade" aria-hidden="true"></div><div class="home-nav band-top" id="bandTop"></div><div class="band-title"><h1 id="bandH1"></h1><p id="bandCtx" hidden></p></div><div class="band-sub" id="bandSub"></div></div><div class="wrap" id="main"></div></main>
 </div>
 <div id="modal" hidden></div>
 <div id="gallery" hidden></div>
@@ -609,10 +635,13 @@ function renderMe(){
 function render(){
   renderNav();renderMe();
   if(editing&&shownView()==="proposals"&&$("#editor"))return;
-  const cur0=shownView();document.body.classList.toggle("is-home",cur0==="home");
-  if(cur0!=="home")stopScene();
-  else{if($("#homeHero")){$("#homeLive").innerHTML=homeLive();$("#homeAuth").innerHTML=homeAuth();return}
+  const cur0=shownView(),site=!council();
+  document.body.classList.toggle("is-home",cur0==="home");document.body.classList.toggle("is-site",site&&cur0!=="home");
+  $("#band").hidden=cur0==="home";
+  if(cur0==="home"){if($("#homeHero")){$("#homeLive").innerHTML=homeLive();$("#homeAuth").innerHTML=homeAuth();return}
     $("#main").innerHTML=homeView();startScene($("#homeScene"));return}
+  if(sceneCanvas!==$("#bandScene"))startScene($("#bandScene"));
+  pageHead={title:"",context:""};
   let banner="";
   if(!db&&dbState!=="connecting")banner=window.__setupMsg?`<div class="banner">${esc(window.__setupMsg)}</div>`:`<div class="banner">Saving is off in this view, so nothing you add here will be kept. Open the page on claude.ai while signed in to use the council's shared records.</div>`;
   else if(db&&dbState!=="connecting"&&me.id&&!council()){const d=myDoc();
@@ -622,9 +651,14 @@ function render(){
   const VIEWFN={hub:hubView,calendar:hubView,bulletin:hubView,events:eventsView,life:lifeView,opportunities:oppsView,voice:voiceView,suggestions:voiceView,working:voiceView,overview,tasks:()=>tasks(),proposals,attendance,members,history:historyView};
   const ae=document.activeElement,keep=ae&&ae.id&&$("#main").contains(ae)?{id:ae.id,val:ae.value,sel:ae.selectionStart!=null?[ae.selectionStart,ae.selectionEnd]:null}:null;
   $("#main").innerHTML=banner+VIEWFN[shownView()]();
+  $("#bandH1").innerHTML=pageHead.title||"";const bc=$("#bandCtx");bc.innerHTML=pageHead.context||"";bc.hidden=!pageHead.context;
+  const sn=$("#main .subnav"),bs=$("#bandSub");bs.innerHTML="";if(sn)bs.appendChild(sn);
+  $("#bandTop").innerHTML=site?siteNav():"";
+  if(site)$("#main").insertAdjacentHTML("beforeend",siteFoot());
   if(keep){const n=document.getElementById(keep.id);if(n){if(keep.val!=null&&"value"in n&&n.type!=="file"&&n.tagName!=="SELECT")n.value=keep.val;n.focus({preventScroll:true});if(keep.sel&&n.setSelectionRange)try{n.setSelectionRange(...keep.sel)}catch(e){}}}
 }
-function head(context,title,actions=""){return`<div class="head"><div><h1>${title}</h1>${context?`<p class="context">${context}</p>`:""}</div><div class="toolbar">${actions}</div></div>`}
+let pageHead={title:"",context:""};
+function head(context,title,actions=""){pageHead={title,context};return actions?`<div class="head"><div class="toolbar">${actions}</div></div>`:""}
 const addBtn=(act,txt,ok=canAct())=>ok?`<button class="btn primary" data-act="${act}">+ ${txt}</button>`:"";
 function empty(title,text,act,btn,ok=canAct()){return`<div class="empty"><strong>${title}</strong><span>${text}</span>${act&&ok?`<button class="btn" data-act="${act}">${btn}</button>`:""}</div>`}
 
@@ -967,7 +1001,7 @@ function resizeToBlob(file,max){return new Promise((res,rej)=>{const url=URL.cre
 
 /* ---------- home page: a pixel scene of the Avenues building ---------- */
 const SW=480,SH=270,GY=212;
-let sceneRAF=0;
+let sceneRAF=0,sceneCanvas=null;
 function seeded(n){let s=n>>>0;return()=>(s=(s*1664525+1013904223)>>>0)/4294967296}
 function isNight(){const t=document.documentElement.dataset.theme;return t?t==="dark":matchMedia("(prefers-color-scheme: dark)").matches}
 function makeCanvas(w,h){const c=document.createElement("canvas");c.width=w;c.height=h;const g=c.getContext("2d");g.imageSmoothingEnabled=false;return[c,g]}
@@ -1069,7 +1103,7 @@ function drawPed(g,p){const f=Math.floor(p.dist/2.5)%2,x=Math.round(p.x),y=p.y;
   box(g,x+(f?0:1),y-5,1,5,p.pants);box(g,x+(f?1:0),y-5,1,f?4:5,p.pants)}
 
 function startScene(canvas){
-  stopScene();if(!canvas)return;
+  stopScene();if(!canvas)return;sceneCanvas=canvas;
   const night=isNight(),r=Math.random;canvas.width=SW;canvas.height=SH;
   const g=canvas.getContext("2d");g.imageSmoothingEnabled=false;
   const[sky,sg]=makeCanvas(SW,SH);drawSky(sg,night);
@@ -1112,9 +1146,18 @@ function startScene(canvas){
   const loop=ts=>{const dt=Math.min(.05,last?(ts-last)/1000:0);last=ts;step(dt);draw(ts);sceneRAF=requestAnimationFrame(loop)};
   if(still)draw(0);else sceneRAF=requestAnimationFrame(loop);
 }
-function stopScene(){if(sceneRAF)cancelAnimationFrame(sceneRAF);sceneRAF=0}
+function stopScene(){if(sceneRAF)cancelAnimationFrame(sceneRAF);sceneRAF=0;sceneCanvas=null}
 
-function homeAuth(){if(!me.id&&window.__signIn)return`<button class="hbtn sm" data-act="signin">Sign in</button>`;return`<a class="hbtn sm" href="#hub">Open the hub</a>`}
+function homeAuth(){
+  let h=canCouncil()?`<button class="hbtn sm glass" data-act="mode" data-to="council">Council view</button>`:"";
+  if(me.id){const d=myDoc(),pic=d&&typeof d.photo==="string"&&d.photo.startsWith("data:image/")?d.photo:me.avatarUrl;
+    h+=`<span class="me-glass">${pic?`<img class="avatar" src="${esc(pic)}" alt="">`:""}<span>${esc(((d&&d.name)||me.name||"You").split(" ")[0])}</span></span>`;
+    if(window.__signOut)h+=`<button class="hbtn sm glass" data-act="signout">Sign out</button>`}
+  else if(window.__signIn)h+=`<button class="hbtn sm" data-act="signin">Sign in</button>`;
+  else if(shownView()==="home")h+=`<a class="hbtn sm" href="#hub">Open the hub</a>`;
+  return h}
+function siteNav(){const sec=ROUTES[shownView()];return`<a class="home-brand" href="#home">Avenues <span>Student Hub</span></a><nav class="home-links" aria-label="Sections">${STUDENT_NAV.map(([k,l])=>`<a href="#${k}" ${sec===k?'aria-current="page"':""}>${k==="hub"?"This week":l}</a>`).join("")}</nav><div class="home-auth" id="homeAuth">${homeAuth()}</div>`}
+function siteFoot(){return`<footer class="home-foot site-foot"><span><b>Avenues Student Hub</b>, run by the Avenues The World School Student Council</span><span class="sp"></span>${canJoin()&&!canCouncil()?`<a href="#members">On Student Council? Set up your profile</a>`:""}<a href="#suggestions">Contact Student Council</a></footer>`}
 function homeLive(){
   const next=S.events.filter(e=>e.date>=TODAY&&e.type!=="deadline").sort(byDate)[0],post=sortedPosts()[0];
   const polls=S.polls.filter(pollOpen).length,soon=S.opps.filter(o=>o.deadline&&o.deadline>=TODAY&&o.deadline<=iso(addDays(new Date(),14))).length;
@@ -1126,9 +1169,7 @@ function homeLive(){
 function homeView(){
   return`<section class="home" id="homeHero">
     <canvas id="homeScene" aria-hidden="true"></canvas><div class="home-shade" aria-hidden="true"></div>
-    <header class="home-nav"><a class="home-brand" href="#home">Avenues <span>Student Hub</span></a>
-      <nav class="home-links" aria-label="Sections">${STUDENT_NAV.map(([k,l])=>`<a href="#${k}">${k==="hub"?"This week":l}</a>`).join("")}</nav>
-      <div id="homeAuth">${homeAuth()}</div></header>
+    <header class="home-nav">${siteNav()}</header>
     <div class="home-copy"><h1>Everything happening at Avenues, in one place.</h1>
       <p>Events and sign-ups, the weekly bulletin, opportunities, and a direct line to Student Council.</p>
       <div class="home-actions"><a class="hbtn" href="#hub">See this week</a><a class="hbtn glass" href="#suggestions">Make a suggestion</a></div></div>
