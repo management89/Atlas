@@ -602,6 +602,13 @@ body.is-site .app{grid-template-columns:minmax(0,1fr)}
 .rv-photo img{max-width:100%;max-height:100%;display:block}
 .rv-out h2{font-size:clamp(28px,5vw,46px);font-weight:800;letter-spacing:-.025em;color:#F4B400}
 .rv-out p{margin:6px 0 0;font-size:18px}
+.turf canvas{display:block;width:100%;aspect-ratio:320/150;image-rendering:pixelated;background:#5A6068}
+.turf-names{display:flex;justify-content:space-between;gap:16px;margin-top:12px;font-weight:800;font-size:clamp(18px,3.2vw,30px);letter-spacing:-.02em}
+.tn-a{color:#F4B400}.tn-b{color:#8EA9FF;text-align:right}
+.turf-bar{position:relative;height:44px;background:#0B1119;margin-top:6px;overflow:hidden}
+.tb-a,.tb-b{position:absolute;top:0;bottom:0;width:0;display:flex;align-items:center;overflow:hidden;white-space:nowrap}
+.tb-a{left:0;background:#F4B400;color:#14202E}.tb-b{right:0;background:#2446C7;color:#FFFFFF;justify-content:flex-end}
+.tb-a b,.tb-b b{font-size:22px;font-weight:800;padding:0 10px}
 #reveal :focus-visible{outline:3px solid #FFFFFF;outline-offset:4px}
 @media (max-width:560px){.vs{grid-template-columns:minmax(0,1fr)}.vs-or{text-align:center}.vs button{min-height:90px}}
 
@@ -1691,13 +1698,59 @@ function resultHTML(g){const r=gameResult(g),pts=Number(g.points)||10;if(!r)retu
   if(g.type==="versus"){const tot=r.a+r.b||1,pa=Math.round(r.a/tot*100);return`<div class="vs-bar"><i style="width:${pa}%"></i></div><div class="parts"><b>${r.win==="tie"?"It was a tie":esc(g[r.win])+" won"}</b><span class="sub">${esc(g.a)} ${pa}%, ${esc(g.b)} ${100-pa}%</span></div>`}
   if(g.type==="photo")return r.none?`<p class="sub" style="margin:8px 0 0">No photos were entered.</p>`:`<div class="win-photo"><img src="${blob(r.photo)}" alt="The winning photo"><div><b>${esc(r.name||"A student")}${r.grade?", Grade "+esc(r.grade):""} won</b><div class="sub">${r.votes} vote${r.votes===1?"":"s"} out of ${r.entries} photos. ${esc(g.prompt)}</div></div></div>`;
   return`<p style="white-space:pre-wrap;margin:8px 0 0">${esc(r.answers||"")}</p><div class="sub">${r.solved} of ${r.played} players got everything.</div>`}
-function closeReveal(){const el=$("#reveal");if(el){clearInterval(el._t);el.remove()}}
+/* This or That reveal: an overhead map of the block gets covered in the two sides' colors, the eagle judge looks
+   back and forth, the two bars race in from each end, then the flag goes up for the winner. All drawn here. */
+const TURF_A="#F4B400",TURF_B="#2446C7";
+function drawEagle(g,x,y,look,raise){
+  const brown="#6B4423",dark="#4A2E16",white="#F4F1E8",ink="#14202E";
+  const flag=(px,up,col,dir)=>{if(up){box(g,px,y-16,1,22,"#FFFFFF");box(g,dir>0?px:px-14,y-17,15,11,"#FFFFFF");box(g,dir>0?px+1:px-13,y-16,13,9,col);box(g,dir>0?px+5:px-9,y-13,5,3,"#14202E")}else{box(g,px,y+15,1,13,"#FFFFFF");box(g,dir>0?px:px-10,y+19,11,8,"#FFFFFF");box(g,dir>0?px+1:px-9,y+20,9,6,col)}};
+  const upA=raise==="a"||raise==="tie",upB=raise==="b"||raise==="tie";
+  flag(x+1,upA,TURF_A,-1);flag(x+26,upB,TURF_B,1);
+  box(g,x+2,upA?y+3:y+13,4,upA?11:9,dark);box(g,x+22,upB?y+3:y+13,4,upB?11:9,dark);
+  box(g,x+6,y+12,16,14,brown);box(g,x+10,y+15,8,9,"#8A5A30");
+  box(g,x+8,y+2,12,11,white);box(g,x+7,y+1,14,3,"#5B3A1E");box(g,x+7,y+4,1,6,"#5B3A1E");box(g,x+20,y+4,1,6,"#5B3A1E");
+  box(g,x+8,y+5,12,2,ink);box(g,x+9+look,y+4,4,4,ink);box(g,x+15+look,y+4,4,4,ink);box(g,x+10+look,y+5,2,2,"#7EC3E8");box(g,x+16+look,y+5,2,2,"#7EC3E8");
+  box(g,x+12+look,y+9,4,3,"#F2A900");box(g,x+13+look,y+12,2,1,"#D08F00");
+  box(g,x+9,y+26,4,2,"#F2A900");box(g,x+15,y+26,4,2,"#F2A900");
+}
+function turfReveal(el,g,r,pa,still){
+  const cv=el.querySelector("#turf"),ctx=cv.getContext("2d"),W=320,H=150,CS=4,cols=W/CS,rows=H/CS,rnd=Math.random;ctx.imageSmoothingEnabled=false;
+  // the block from above: streets, roofs, trees, crosswalks
+  const[base,bg]=makeCanvas(W,H),[lines,lg]=makeCanvas(W,H),[bird,eg]=makeCanvas(64,52);
+  box(bg,0,0,W,H,"#5A6068");for(let k=0;k<500;k++)box(bg,Math.floor(rnd()*W),Math.floor(rnd()*H),1,1,"#636A73");
+  const roofs=[[18,14,70,44,"#B9A27A"],[104,10,112,62,"#D9C596"],[232,14,72,40,"#A9B4BD"],[18,92,58,44,"#A9604A"],[92,96,96,40,"#C9CDD2"],[204,90,100,46,"#B9A27A"]];
+  for(const[x,y,w,h,c]of roofs){box(bg,x,y,w,h,c);box(lg,x,y,w,1,"#14202E");box(lg,x,y+h-1,w,1,"#14202E");box(lg,x,y,1,h,"#14202E");box(lg,x+w-1,y,1,h,"#14202E");box(lg,x+6,y+6,10,7,"rgba(20,32,46,.55)");box(lg,x+w-18,y+h-14,10,7,"rgba(20,32,46,.55)")}
+  box(lg,150,34,22,14,"rgba(20,32,46,.55)");
+  for(let x=0;x<W;x+=14)box(bg,x,75,7,1,"#E8E3C8");for(let y=64;y<88;y+=4)box(bg,196,y,6,2,"#E6E6E6");
+  [[8,70],[90,70],[226,70],[310,70],[84,120],[196,120]].forEach(([x,y])=>{box(lg,x-3,y-3,7,7,"#2E6A39");box(lg,x-2,y-4,5,1,"#3F8A45");box(lg,x-1,y-1,2,2,"#6DB356")});
+  // who ends up owning each square: two sets of splat centres, then the top pa% of squares go to side A
+  const cA=[],cB=[];for(let k=0;k<4;k++){cA.push([rnd()*cols*.6,rnd()*rows]);cB.push([cols*.4+rnd()*cols*.6,rnd()*rows])}
+  const near=(cs,x,y)=>Math.min(...cs.map(([cx,cy])=>Math.hypot(x-cx,y-cy)));
+  const cells=[];for(let y=0;y<rows;y++)for(let x=0;x<cols;x++)cells.push({x,y,v:near(cB,x,y)-near(cA,x,y)+(rnd()-.5)*5});
+  cells.sort((p,q)=>q.v-p.v);const nA=Math.round(cells.length*pa/100);
+  cells.forEach((c,i)=>{c.a=i<nA;c.t=.25+near(c.a?cA:cB,c.x,c.y)/cols*4.2+rnd()*.35;c.d=rnd()<.12});
+  const tA=el.querySelector("#tbA"),tB=el.querySelector("#tbB"),pA=el.querySelector("#tpA"),pB=el.querySelector("#tpB"),lo=Math.min(pa,100-pa);
+  const INK=2.9,BARS=5.2,END=5.6;
+  const frame=t=>{
+    ctx.drawImage(base,0,0);
+    for(const c of cells)if(t>=c.t){box(ctx,c.x*CS,c.y*CS,CS,CS,c.a?(c.d?"#D99A00":TURF_A):(c.d?"#1B369E":TURF_B))}
+    ctx.drawImage(lines,0,0);
+    const k=Math.max(0,Math.min(1,(t-INK)/(BARS-INK))),rate=k*Math.max(pa,100-pa),a=Math.min(pa,rate<lo?rate:rate),b=Math.min(100-pa,rate);
+    tA.style.width=a+"%";tB.style.width=b+"%";pA.textContent=a.toFixed(1)+"%";pB.textContent=b.toFixed(1)+"%";
+    const done=t>=END,look=done?0:(Math.floor(t*2.4)%2?1:-1),bob=done?0:Math.floor(t*4)%2;
+    eg.clearRect(0,0,64,52);drawEagle(eg,18,20,look,done?r.win:null);box(ctx,128,128,64,6,"rgba(20,32,46,.4)");ctx.drawImage(bird,0,0,64,52,96,34+bob*2,128,104);
+    return done};
+  const finish=()=>{frame(99);el.querySelector("#rvOut").hidden=false};
+  if(still)return finish();
+  let t0=0;const loop=ts=>{if(!t0)t0=ts;if(frame((ts-t0)/1000))return finish();el._r=requestAnimationFrame(loop)};el._r=requestAnimationFrame(loop);
+}
+function closeReveal(){const el=$("#reveal");if(el){clearInterval(el._t);cancelAnimationFrame(el._r);el.remove()}}
 function showReveal(g){const r=gameResult(g);if(!r)return;closeReveal();
   const el=document.createElement("div"),mine=myV(g.id),pts=Number(g.points)||10,still=matchMedia("(prefers-reduced-motion: reduce)").matches;let body="",after=null;
   el.id="reveal";el.setAttribute("role","dialog");el.setAttribute("aria-modal","true");el.setAttribute("aria-label","Yesterday's result");
-  if(g.type==="versus"){const tot=r.a+r.b||1,pa=Math.round(r.a/tot*100);
-    body=`<div class="rv-vs"><div class="rv-a" id="rvA" style="width:50%"><span>${esc(g.a)}</span></div><div class="rv-b"><span>${esc(g.b)}</span></div></div><div class="rv-out" id="rvOut" hidden><h2>${r.win==="tie"?"It's a tie!":esc(g[r.win])+" wins"}</h2><p>${pa}% to ${100-pa}%${mine.pick?(r.win==="tie"||mine.pick===r.win?`. You called it: +${pts} points.`:". Not your side this time."):"."}</p></div>`;
-    after=()=>{const a=el.querySelector("#rvA"),done=()=>{a.style.width=Math.max(10,Math.min(90,pa))+"%";el.querySelector("#rvOut").hidden=false};if(still)return done();let n=0;el._t=setInterval(()=>{a.style.width=(22+Math.random()*56)+"%";if(++n>9){clearInterval(el._t);setTimeout(done,380)}},330)}}
+  if(g.type==="versus"){const tot=r.a+r.b||1,pa=Math.round(r.a/tot*1000)/10,pb=Math.round((100-pa)*10)/10;
+    body=`<div class="turf"><canvas id="turf" width="320" height="150" role="img" aria-label="A map of the block being covered in the two sides' colors"></canvas><div class="turf-names"><span class="tn-a">${esc(g.a)}</span><span class="tn-b">${esc(g.b)}</span></div><div class="turf-bar"><div class="tb-a" id="tbA"><b id="tpA">0%</b></div><div class="tb-b" id="tbB"><b id="tpB">0%</b></div></div></div><div class="rv-out" id="rvOut" hidden><h2>${r.win==="tie"?"It's a tie!":esc(g[r.win])+" wins"}</h2><p>${pa}% to ${pb}%${mine.pick?(r.win==="tie"||mine.pick===r.win?`. You called it: +${pts} points.`:". Not your side this time."):"."}</p></div>`;
+    after=()=>turfReveal(el,g,r,pa,still)}
   else if(g.type==="photo"){if(r.none)body=`<div class="rv-out"><h2>No photos this time</h2></div>`;
     else{const all=r.all&&r.all.length?r.all:[r.photo];all.forEach(blob);
       body=`<div class="rv-photo"><img id="rvImg" src="${blob(all[0])}" alt=""></div><div class="rv-out" id="rvOut" hidden><h2>${esc(r.name||"A student")} wins</h2><p>${r.votes} vote${r.votes===1?"":"s"} out of ${r.entries} photos${r.winner===me.id?`. That's you: +${pts*5} points.`:"."}</p></div>`;
