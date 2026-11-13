@@ -4,12 +4,12 @@
 //    and copy the values from the firebaseConfig snippet into FIREBASE_CONFIG below.
 //    These values are meant to be public. Your security rules (firestore.rules) protect the data.
 window.FIREBASE_CONFIG = {
-  apiKey: "",
-  authDomain: "",
-  projectId: "",
-  storageBucket: "",
-  messagingSenderId: "",
-  appId: ""
+  apiKey: "AIzaSyCPA2ICaYJ40uGqaWG-n0ux1qvLX4ofFlw",
+  authDomain: "atlas-bae05.firebaseapp.com",
+  projectId: "atlas-bae05",
+  storageBucket: "atlas-bae05.firebasestorage.app",
+  messagingSenderId: "623407772478",
+  appId: "1:623407772478:web:04136855ffb5fcaf50b26f"
 };
 
 // 2. After you sign in to the site once, it shows your user ID. Paste it here
