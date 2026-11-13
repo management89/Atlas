@@ -88,6 +88,8 @@ service cloud.firestore {
     match /replies/{uid}     { allow read: if member(); allow write: if isSelf(uid) || isCouncil(); }
     // "I did it" claims for challenges; council confirms and awards the points
     match /done/{uid}        { allow read: if isSelf(uid) || isCouncil(); allow write: if isSelf(uid); }
+    // Lost and found items show right away; the poster or council marks them returned
+    match /lostfound/{uid}   { allow read: if member(); allow write: if isSelf(uid) || isCouncil(); }
     match /profiles/{uid} { allow read: if member(); allow write: if signedIn() && request.auth.uid == uid; }
     match /private/{uid}  { allow read: if isOwner() || (signedIn() && request.auth.uid == uid); allow write: if signedIn() && request.auth.uid == uid; }
 

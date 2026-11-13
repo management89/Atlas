@@ -545,6 +545,13 @@ body.is-site .app{grid-template-columns:minmax(0,1fr)}
 .proof{display:block;max-width:160px;margin-top:6px}
 @media (max-width:700px){.home-feat{grid-template-columns:1fr 1fr;gap:16px}.feat.big{grid-row:auto;grid-column:1/-1}.feat.big .feat-img{min-height:170px}}
 
+.mix{columns:320px 3;column-gap:28px}
+.mix>*{break-inside:avoid;margin:3px 3px 32px}
+.feed-cover{display:block;position:relative;width:100%;border:0;padding:0;background:#14202E;overflow:hidden;cursor:zoom-in;aspect-ratio:4/3}
+.feed-cover.r1{aspect-ratio:1}
+.feed-cover.r2{aspect-ratio:4/5}
+.feed-cover img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:block}
+
 /* history */
 .hday{font-size:17px;font-weight:800;margin-top:14px}
 .hday:first-child{margin-top:0}
@@ -616,16 +623,16 @@ body.is-site .app{grid-template-columns:minmax(0,1fr)}
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
 <script>
-const STUDENT_NAV=[["hub","Bulletin"],["community","Community"],["create","Create"],["connect","Connect"],["challenges","Challenges"]];
+const STUDENT_NAV=[["hub","Bulletin"],["community","Community"],["clubs","Clubs"],["challenges","Challenges"],["stuco","StuCo"]];
 const COUNCIL_NAV=[["overview","Overview"],["tasks","Tasks"],["proposals","Proposals"],["attendance","Attendance"],["members","Members"],["history","History"]];
-const ROUTES={home:"home",hub:"hub",events:"hub",calendar:"hub",bulletin:"hub",community:"community",life:"community",voice:"community",suggestions:"community",working:"community",create:"create",connect:"connect",clubs:"connect",opportunities:"connect",collabs:"connect",challenges:"challenges",play:"challenges",leaderboard:"challenges",overview:"overview",tasks:"tasks",proposals:"proposals",attendance:"attendance",members:"members",history:"history"};
-const STUDENT_ROUTES=["home","hub","events","calendar","bulletin","community","life","voice","suggestions","working","create","connect","clubs","opportunities","collabs","challenges","play","leaderboard"];
-const COLS=["members","events","tasks","claims","bulletin","suggestions","albums","stories","opps","polls","votes","signups","birthdays","playlists","aviators","predictions","picks","scores","clubs","clubposts","clubdrafts","posts","submissions","replies","challenges","done","roster","proposals","meetings","history"];
+const ROUTES={home:"home",hub:"hub",events:"hub",calendar:"hub",bulletin:"hub",community:"community",create:"community",collabs:"community",opportunities:"community",life:"community",clubs:"clubs",connect:"clubs",challenges:"challenges",play:"challenges",leaderboard:"challenges",stuco:"stuco",suggestions:"stuco",lost:"stuco",voice:"stuco",working:"stuco",overview:"overview",tasks:"tasks",proposals:"proposals",attendance:"attendance",members:"members",history:"history"};
+const STUDENT_ROUTES=["home","hub","events","calendar","bulletin","community","create","collabs","opportunities","life","clubs","connect","challenges","play","leaderboard","stuco","suggestions","lost","voice","working"];
+const COLS=["members","events","tasks","claims","bulletin","suggestions","albums","stories","opps","polls","votes","signups","birthdays","playlists","aviators","predictions","picks","scores","clubs","clubposts","clubdrafts","posts","submissions","replies","challenges","done","lostfound","roster","proposals","meetings","history"];
 const COUNCIL_ONLY=["proposals","meetings","history","roster"];
 const SCHOOL="Avenues The World School";
 const SUG_CATS=["Events","Spirit","Vending machine","Facilities","Food","Clubs","School policy","Report a problem","Other"];
 const SUG_STATUS=[["new","New"],["review","Under review"],["planned","Planned"],["done","Done"],["declined","Not this time"]];
-const S={members:[],events:[],tasks:[],claims:[],bulletin:[],suggestions:[],albums:[],stories:[],opps:[],polls:[],votes:[],signups:[],birthdays:[],playlists:[],aviators:[],predictions:[],picks:[],scores:[],clubs:[],clubposts:[],clubdrafts:[],posts:[],submissions:[],replies:[],challenges:[],done:[],roster:[],proposals:[],meetings:[],history:[]};
+const S={members:[],events:[],tasks:[],claims:[],bulletin:[],suggestions:[],albums:[],stories:[],opps:[],polls:[],votes:[],signups:[],birthdays:[],playlists:[],aviators:[],predictions:[],picks:[],scores:[],clubs:[],clubposts:[],clubdrafts:[],posts:[],submissions:[],replies:[],challenges:[],done:[],lostfound:[],roster:[],proposals:[],meetings:[],history:[]};
 let CFG={approved:{},roles:{},school:"",president:null}, cfgExists=false, ADMIN={emails:[]}, adminExists=false;
 const EV_TYPES=[["meeting","StuCo meeting"],["event","School event"],["dance","Dance"],["trip","Trip"],["competition","Competition or tournament"],["fundraiser","Fundraiser"],["deadline","Deadline"]];
 const TASK_STATUS=[["todo","To do"],["doing","In progress"],["done","Done"]];
@@ -737,7 +744,7 @@ function setStatus(s){
 
 /* ---------- render ---------- */
 function renderNav(){
-  const counts={tasks:S.tasks.filter(t=>taskState(t).status!=="done").length,proposals:S.proposals.filter(p=>p.status==="voting").length,members:isPres?S.members.filter(d=>!isApproved(d)).length:0,community:council()?allSuggestions().filter(x=>x.status==="new").length+pendSubs(["post","rec"]).length:0,create:council()?pendSubs(["create"]).length:0,connect:council()?allDrafts().filter(d=>d.status==="pending").length+pendSubs(["collab"]).length:0,challenges:council()?waitingClaims():0};
+  const counts={tasks:S.tasks.filter(t=>taskState(t).status!=="done").length,proposals:S.proposals.filter(p=>p.status==="voting").length,members:isPres?S.members.filter(d=>!isApproved(d)).length:0,community:council()?pendSubs(FEED_KINDS).length:0,clubs:council()?allDrafts().filter(d=>d.status==="pending").length:0,stuco:council()?allSuggestions().filter(x=>x.status==="new").length:0,challenges:council()?waitingClaims():0};
   const sec=ROUTES[shownView()];
   const link=([k,l])=>`<a href="#${k}" ${k===sec?'aria-current="page"':""}>${l}${counts[k]?`<span class="count">${counts[k]}</span>`:""}</a>`;
   let h=council()?`<div class="navgroup">School site</div>${STUDENT_NAV.map(link).join("")}<div class="navgroup">Council</div>${COUNCIL_NAV.map(link).join("")}`:STUDENT_NAV.map(link).join("");
@@ -771,7 +778,7 @@ function render(){
     else if(d&&isApproved(d)&&!isEditor)banner=`<div class="banner">You're an approved council member. Ask the president to give you Editor access to this page so you can make changes.</div>`;}
   if(preview&&canCouncil())banner=`<div class="banner preview"><span>You're seeing the site the way students see it.</span><button class="btn sm" data-act="mode" data-to="council">Back to council view</button></div>`+banner;
   if(lockedOut())banner+=`<div class="banner">You're signed in as ${esc(me.email||"an account")}, which isn't on the Avenues student list. Sign in with your school email, or ask Student Council to add you.</div>`;
-  const VIEWFN={hub:hubView,events:hubView,calendar:hubView,bulletin:hubView,community:communityHub,life:communityHub,voice:communityHub,suggestions:communityHub,working:communityHub,create:createView,connect:connectHub,clubs:connectHub,opportunities:connectHub,collabs:connectHub,challenges:challengeHub,play:challengeHub,leaderboard:challengeHub,overview,tasks:()=>tasks(),proposals,attendance,members,history:historyView};
+  const VIEWFN={hub:hubView,events:hubView,calendar:hubView,bulletin:hubView,community:communityHub,create:communityHub,collabs:communityHub,opportunities:communityHub,life:communityHub,clubs:clubsView,connect:clubsView,challenges:challengeHub,play:challengeHub,leaderboard:challengeHub,stuco:stucoHub,suggestions:stucoHub,lost:stucoHub,voice:stucoHub,working:stucoHub,overview,tasks:()=>tasks(),proposals,attendance,members,history:historyView};
   const ae=document.activeElement,keep=ae&&ae.id&&$("#main").contains(ae)?{id:ae.id,val:ae.value,sel:ae.selectionStart!=null?[ae.selectionStart,ae.selectionEnd]:null}:null;
   $("#main").innerHTML=banner+VIEWFN[shownView()]();
   $("#bandH1").innerHTML=pageHead.title||"";const bc=$("#bandCtx");bc.innerHTML=pageHead.context||"";bc.hidden=!pageHead.context;
@@ -905,7 +912,7 @@ function sortedPosts(){return[...S.bulletin].sort((a,b)=>(b.pinned?1:0)-(a.pinne
 function allSuggestions(){const out=[];for(const d of S.suggestions)for(const[k,v]of Object.entries(d.items||{}))if(v&&v.title)out.push({...v,key:k,uid:d.id});return out.sort((a,b)=>(b.at||"").localeCompare(a.at||""))}
 function suggestions(){
   const all=allSuggestions(),formUrl=safeUrl(CFG.formUrl),can=canJoin();
-  let out=head(`Ideas, vending machine requests and problems around school. Council reads every one and replies here.`,"Suggestions and reports",can?`<button class="btn" data-act="add-suggestion" data-cat="Report a problem">Report a problem</button><button class="btn primary" data-act="add-suggestion">+ Make a suggestion</button>`:"");
+  let out=head(`Feedback, ideas, vending machine requests and problems around school. Student Council reads every one and replies here.`,"Feedback",can?`<button class="btn" data-act="add-suggestion" data-cat="Report a problem">Report a problem</button><button class="btn primary" data-act="add-suggestion">+ Give feedback</button>`:"");
   if(!can)out+=`<div class="banner">${formUrl?`Send your idea using the <a href="${esc(formUrl)}" target="_blank" rel="noopener">Student Council suggestion form</a>.`:needAccess("send a suggestion")}</div>`;
   else if(formUrl&&!council())out+=`<p class="sub" style="margin:0">You can also use the <a href="${esc(formUrl)}" target="_blank" rel="noopener">Student Council suggestion form</a>.</p>`;
   if(council()){
@@ -1064,7 +1071,7 @@ function oppList(){
 }
 function oppCard(o){
   const days=o.deadline?Math.round((parse(o.deadline)-parse(TODAY))/864e5):null,soon=days!=null&&days>=0&&days<=7,link=safeUrl(o.link),saved=savedOpps.has(o.id);
-  return`<article class="opp"><div class="opp-top"><span class="chip">${label(OPP_GROUPS,oppGroup(o.category))}</span>${o.deadline?`<span class="${soon?"overdue":"sub"}">${days<0?"Closed":`Apply by ${esc(short(o.deadline))}${soon?`, ${days===0?"today":days===1?"tomorrow":days+" days left"}`:""}`}</span>`:`<span class="sub">No deadline</span>`}</div><h3>${esc(o.title)}</h3>${o.org?`<div class="sub">${esc(o.org)}</div>`:""}${o.details?`<p>${esc(o.details)}</p>`:""}${o.who?`<div class="sub">Who can apply: ${esc(o.who)}</div>`:""}<div class="toolbar">${link?`<a class="btn sm primary" href="${esc(link)}" target="_blank" rel="noopener">How to apply</a>`:""}<button class="btn sm" data-act="opp-save" data-id="${o.id}" aria-pressed="${saved}">${saved?"Saved":"Save"}</button>${canAct()?`<button class="btn sm ghost" data-act="edit-opp" data-id="${o.id}">Edit</button>`:""}</div></article>`;
+  return`<article class="opp"><div class="opp-top"><span class="chip">${label(OPP_GROUPS,oppGroup(o.category))}</span>${o.deadline?`<span class="${soon?"overdue":"sub"}">${days<0?"Closed":`Apply by ${esc(short(o.deadline))}${soon?`, ${days===0?"today":days===1?"tomorrow":days+" days left"}`:""}`}</span>`:`<span class="sub">No deadline</span>`}</div><h3>${esc(o.title)}</h3>${o.org?`<div class="sub">${esc(o.org)}</div>`:""}${o.details?`<p>${esc(o.details)}</p>`:""}${o.who?`<div class="sub">Who can apply: ${esc(o.who)}</div>`:""}${o.byName?`<div class="sub">Posted by ${esc(o.byName)}</div>`:""}<div class="toolbar">${link?`<a class="btn sm primary" href="${esc(link)}" target="_blank" rel="noopener">How to apply</a>`:""}<button class="btn sm" data-act="opp-save" data-id="${o.id}" aria-pressed="${saved}">${saved?"Saved":"Save"}</button>${canAct()?`<button class="btn sm ghost" data-act="edit-opp" data-id="${o.id}">Edit</button>`:""}</div></article>`;
 }
 
 /* Student Voice */
@@ -1317,10 +1324,10 @@ function homeView(){
   <div class="home-strip"><div class="home-live" id="homeLive">${homeLive()}</div></div>
   <section class="home-about"><div><h2>The community hub for Avenues students</h2><ul class="about-list">
     <li><a href="#hub">Bulletin</a><span>Official announcements, events, sign-ups and deadlines.</span></li>
-    <li><a href="#community">Community</a><span>Student posts, discussions, recommendations and the Aviator of the Week.</span></li>
-    <li><a href="#create">Create</a><span>Art, music, photography, film, writing and projects by students.</span></li>
-    <li><a href="#connect">Connect</a><span>Clubs, collaborations and opportunities.</span></li>
+    <li><a href="#community">Community</a><span>Opinions, accomplishments and opportunities posted by students.</span></li>
+    <li><a href="#clubs">Clubs</a><span>Every club, when it meets, and what it's been up to.</span></li>
     <li><a href="#challenges">Challenges</a><span>Daily and weekly challenges that win points for your grade.</span></li>
+    <li><a href="#stuco">StuCo</a><span>Give feedback, check the lost and found, vote in polls.</span></li>
   </ul></div><div id="homeAv">${homeAviator()}</div></section>
   <footer class="home-foot"><span><b>Avenues Student Hub</b>, run by the Avenues The World School Student Council</span><span class="sp"></span>${canCouncil()?`<a href="#overview">Council workspace</a>`:""}<a href="#suggestions">Contact Student Council</a></footer>`;
 }
@@ -1459,7 +1466,9 @@ function homeAviator(){return aviatorBlock()+raceMini()}
    Student submissions wait in the student's own submissions document until a council member approves them. */
 const MEDIA=[["art","Art"],["photo","Photography"],["music","Music"],["film","Film and video"],["writing","Writing"],["project","Project"]];
 const MEDIA_GROUP={art:"visual",photo:"visual",music:"sound",film:"sound",writing:"words",project:"words"};
-const POST_KIND={post:"Discussion",rec:"Recommendation",collab:"Collaboration",create:"Work"};
+const POST_KIND={post:"Opinion",rec:"Recommendation",collab:"Looking for people",create:"Accomplishment",opp:"Opportunity"};
+const FEED_KINDS=["post","rec","collab","create","opp"];
+let lostFilter="all";
 let feedFilter="all",createFilter="all",openPost=null;
 const myName=()=>(RM()&&RM().name)||(myDoc()&&myDoc().name)||me.name||"";
 const ytId=u=>{const m=String(u||"").match(/(?:youtube\.com\/(?:watch\?(?:.*&)?v=|shorts\/|embed\/)|youtu\.be\/)([\w-]{11})/);return m?m[1]:null};
@@ -1477,40 +1486,34 @@ function modPanel(kinds){
     return`<section class="panel"><h2>Waiting for approval</h2><ul class="sugs" style="border-top:0">${p.map(d=>`<li><div class="sug-head"><span class="title">${esc(d.title||POST_KIND[d.kind])}</span><span class="sub parts"><span>${POST_KIND[d.kind]}${d.medium?", "+label(MEDIA,d.medium):""}</span><span>${byLine(d)}</span></span></div>${workBody(d)}${canAct()?`<div class="toolbar"><button class="btn sm good" data-act="sub-approve" data-uid="${esc(d.uid)}" data-key="${esc(d.key)}">Approve and post</button><button class="btn sm ghost danger" data-act="sub-decline" data-uid="${esc(d.uid)}" data-key="${esc(d.key)}">Decline</button></div>`:""}</li>`).join("")}</ul></section>`}
   const own=allSubs().filter(d=>d.uid===me.id&&kinds.includes(d.kind)&&d.status!=="approved").slice(0,4);if(!own.length)return"";
   return`<section class="panel"><h2>Your submissions</h2><ul class="sugs" style="border-top:0">${own.map(d=>`<li><div class="sug-head"><span class="title">${esc(d.title||POST_KIND[d.kind])}</span><span class="state ${d.status==="declined"?"wait":"todo"}">${d.status==="declined"?"Not approved":"Waiting for Student Council approval"}</span></div></li>`).join("")}</ul></section>`}
-function feedCard(p){const rs=allReplies(p.id),open=openPost===p.id;
-  return`<article class="post"><div class="meta"><span class="chip ${p.kind==="rec"?"gold":p.kind==="collab"?"good":"accent"}">${POST_KIND[p.kind]}</span><span>${byLine(p)}</span><span>${esc(short((p.at||"").slice(0,10)))}</span></div>${p.title?`<h3>${esc(p.title)}</h3>`:""}${workBody(p)}
+function feedCard(p){const rs=allReplies(p.id),open=openPost===p.id,win=p.kind==="create"&&((p.photos||[]).length||ytId(p.link));let h=0;for(const ch of p.id)h=(h*31+ch.charCodeAt(0))>>>0;
+  return`<article class="post">${win?`<button class="feed-cover r${h%3}" data-act="work" data-id="${p.id}" aria-label="Open ${esc(p.title)}">${workCover(p)}${playTag(p)}</button>`:""}<div class="meta"><span class="chip ${p.kind==="create"?"gold":p.kind==="collab"?"good":"accent"}">${POST_KIND[p.kind]||"Post"}</span><span>${byLine(p)}</span><span>${esc(short((p.at||"").slice(0,10)))}</span></div>${p.title?`<h3>${esc(p.title)}</h3>`:""}${win?(p.text?`<p>${esc(p.text)}</p>`:""):workBody(p)}
   <div class="meta">${heartBtn(p.id)}<button class="btn sm ghost" data-act="post-toggle" data-id="${p.id}" aria-expanded="${open}">${rs.length?`${rs.length} repl${rs.length===1?"y":"ies"}`:"Reply"}</button><span class="sp"></span>${canAct()?`<button class="btn sm ghost" data-act="post-delete" data-id="${p.id}">Remove</button>`:""}</div>
   ${open?`<div class="replies">${rs.map(r=>`<div class="reply"><b>${esc(r.name||"Student")}</b> ${esc(r.text)}${r.uid===me.id||canAct()?` <button class="btn sm ghost" data-act="reply-delete" data-uid="${esc(r.uid)}" data-key="${esc(r.key)}">Remove</button>`:""}</div>`).join("")}${canJoin()?`<div class="reply-form"><input id="rp-${p.id}" aria-label="Write a reply" placeholder="Write a reply" maxlength="400"><button class="btn sm" data-act="reply-send" data-id="${p.id}">Reply</button></div>`:""}</div>`:""}</article>`}
 const chips=(opts,cur,act)=>`<div class="fchips">${opts.map(([k,l])=>`<button class="fchip" data-act="${act}" data-to="${k}" aria-pressed="${cur===k}">${l}</button>`).join("")}</div>`;
-function feedView(){const ps=postsOf(["post","rec"]).filter(p=>feedFilter==="all"||p.kind===feedFilter);
-  return head("Posts, discussions and recommendations from students.","Community",canJoin()?`<button class="btn" data-act="new-post" data-kind="rec">+ Recommend something</button><button class="btn primary" data-act="new-post" data-kind="post">+ Write a post</button>`:"")+
-  (canJoin()?"":`<div class="banner">${needAccess("post and reply")}</div>`)+modPanel(["post","rec"])+chips([["all","All"],["post","Discussions"],["rec","Recommendations"]],feedFilter,"feed-filter")+
-  (ps.length?`<div class="feed">${ps.map(feedCard).join("")}</div>`:empty("Nothing here yet","Start a discussion, or recommend a book, a show, or somewhere to eat near school.","new-post","Write the first post",canJoin()))}
-function collabView(){const ps=postsOf(["collab"]);
-  return head("Looking for bandmates, teammates, a film crew or a study group? Ask here.","Collaborations",canJoin()?`<button class="btn primary" data-act="new-post" data-kind="collab">+ Start a collaboration</button>`:"")+modPanel(["collab"])+
-  (ps.length?`<div class="feed">${ps.map(feedCard).join("")}</div>`:empty("No collaborations yet","Say what you're making and who you need.","new-post","Post the first one",false))}
-function postForm(kind){kind=kind||"post";const L={post:["Start a discussion","Topic","What do you want to talk about?"],rec:["Recommend something","What are you recommending?","Why is it good?"],collab:["Start a collaboration","What are you making?","Who do you need, and how do they reach you?"]}[kind];
-  openForm({title:L[0],submitLabel:canAct()?"Post":"Send for approval",note:canAct()?"":"Student Council checks each post before it goes up. Your name is shown with it.",
-    fields:[{id:"title",label:L[1],required:true,full:true},{id:"text",label:L[2],type:"textarea",required:true},{id:"photos",label:"Photos (optional)",type:"photos",multiple:true},{id:"link",label:"Link (optional)",full:true,placeholder:"https://"}],values:{photos:[]},
-    submit:v=>{if(v.link&&!safeUrl(v.link)){$("#merr").textContent="Links need to start with https://";return false}return submitItem({kind,...v})}})}
+function feedView(){
+  const ps=postsOf(["post","rec","collab","create"]).filter(p=>feedFilter==="all"||(feedFilter==="wins")===(p.kind==="create")).map(p=>({t:p.at||"",h:feedCard(p)}));
+  const os=feedFilter==="all"?S.opps.filter(o=>!o.deadline||o.deadline>=TODAY).map(o=>({t:o.created||"",h:oppCard(o)})):[];
+  const items=[...ps,...os].sort((a,b)=>b.t.localeCompare(a.t));
+  return head("Opinions, accomplishments and opportunities, posted by students.","Community",canJoin()?`<button class="btn primary" data-act="new-post">+ Post something</button>`:"")+
+  (canJoin()?"":`<div class="banner">${needAccess("post and reply")}</div>`)+modPanel(FEED_KINDS)+chips([["all","Everything"],["talk","Opinions"],["wins","Accomplishments"]],feedFilter,"feed-filter")+
+  (items.length?`<div class="mix">${items.map(x=>x.h).join("")}</div>`:empty("Nothing here yet","Share an opinion, show something you made or won, or post an opportunity.","new-post","Post the first thing",canJoin()))}
+function postForm(kind){
+  openForm({title:"Post to Community",submitLabel:canAct()?"Post":"Send for approval",note:canAct()?"":"Student Council checks each post before it goes up. Your name is shown with it.",
+    fields:[{id:"kind",label:"What is it?",type:"select",full:true,options:[["post","An opinion or discussion"],["create","An accomplishment, or something I made"],["opp","An opportunity for other students"]]},{id:"title",label:"Title",required:true,full:true},{id:"text",label:"Say more",type:"textarea",placeholder:"Your take, what you made or won, or what the opportunity is and who it's for"},{id:"photos",label:"Photos",type:"photos",multiple:true},{id:"link",label:"Link (optional)",placeholder:"https://, or a YouTube link for video"},{id:"deadline",label:"Deadline, for an opportunity",type:"date"}],values:{kind:["post","create","opp"].includes(kind)?kind:"post",photos:[]},
+    submit:v=>{if(v.link&&!safeUrl(v.link)){$("#merr").textContent="Links need to start with https://";return false}if(!v.text&&!v.photos.length&&!v.link){$("#merr").textContent="Add some text, a photo or a link.";return false}
+      if(v.kind!=="opp")delete v.deadline;
+      if(v.kind==="opp"&&canAct())return save(()=>col("opps").add({title:v.title,details:v.text,link:v.link,deadline:v.deadline||"",category:"career",byName:myName(),created:new Date().toISOString()}),"Opportunity posted",["posted","opportunity",v.title]);
+      return submitItem(v)}})}
 
 /* Create */
 function workCover(p){const y=ytId(p.link);if((p.photos||[]).length)return`<img src="${blob(p.photos[0])}" alt="" loading="lazy">`;if(y&&HOSTED)return`<img src="https://i.ytimg.com/vi/${y}/hqdefault.jpg" alt="" loading="lazy">`;return`<span class="cover-text">${esc((p.text||p.title||"").slice(0,150))}</span>`}
 const playTag=p=>ytId(p.link)?`<span class="playtag">Video</span>`:"";
-function workTile(p){return`<button class="work" data-act="work" data-id="${p.id}"><span class="work-img">${workCover(p)}${playTag(p)}</span><span class="title">${esc(p.title)}</span><span class="sub">${byLine(p)}</span></button>`}
-function createView(){const ws=postsOf(["create"]).filter(p=>createFilter==="all"||MEDIA_GROUP[p.medium]===createFilter);
-  return head("Art, music, photography, film, writing and projects made by Avenues students.","Create",canJoin()?`<button class="btn primary" data-act="new-work">+ Share your work</button>`:"")+
-  (canJoin()?"":`<div class="banner">${needAccess("share your work")}</div>`)+modPanel(["create"])+chips([["all","All"],["visual","Art and photography"],["sound","Music and film"],["words","Writing and projects"]],createFilter,"create-filter")+
-  (ws.length?`<div class="works">${ws.map(workTile).join("")}</div>`:empty("Nothing here yet","Share a painting, a song, a short film, a photo series, a story or something you built.","new-work","Share the first piece",canJoin()))}
-function workForm(){
-  openForm({title:"Share your work",submitLabel:canAct()?"Post":"Send for approval",note:canAct()?"":"Student Council checks each piece before it goes up. Your name is shown with it.",
-    fields:[{id:"title",label:"Title",required:true,full:true},{id:"medium",label:"What is it?",type:"select",options:MEDIA},{id:"photos",label:"Images",type:"photos",multiple:true},{id:"link",label:"Video or audio link",full:true,placeholder:"A YouTube, SoundCloud or Google Drive link"},{id:"text",label:"About it, or the writing itself",type:"textarea"}],values:{medium:"art",photos:[]},
-    submit:v=>{if(v.link&&!safeUrl(v.link)){$("#merr").textContent="Links need to start with https://";return false}if(!v.photos.length&&!v.link&&!v.text){$("#merr").textContent="Add an image, a link or some text.";return false}return submitItem({kind:"create",...v})}})}
 function workBar(p){const y=ytId(p.link),link=safeUrl(p.link);return`${heartBtn(p.id)}${link&&!(y&&HOSTED)?`<a class="btn" href="${esc(link)}" target="_blank" rel="noopener">${y?"Watch the video":"Open the link"}</a>`:""}${canAct()?`<button class="btn" data-act="work-feature" data-id="${p.id}" aria-pressed="${!!p.featured}">${p.featured?"On the home page":"Feature on the home page"}</button><button class="btn ghost danger" data-act="post-delete" data-id="${p.id}">Remove</button>`:""}`}
 function openWork(id){if(!S.posts.some(p=>p.id===id))return;gal={work:id,idx:0,ret:document.activeElement};drawWork();document.body.style.overflow="hidden";const c=$("#gallery [data-act=gal-close]");c&&c.focus()}
 function drawWork(){const p=S.posts.find(x=>x.id===gal.work);if(!p){closeGallery();return}
   const ph=p.photos||[],i=Math.min(gal.idx,Math.max(0,ph.length-1)),y=ytId(p.link),g=$("#gallery");g.hidden=false;
-  g.innerHTML=`<div class="gal" role="dialog" aria-modal="true" aria-labelledby="galt"><div class="gal-head"><div><h2 id="galt">${esc(p.title)}</h2><div class="sub parts"><span>${byLine(p)}</span><span>${label(MEDIA,p.medium)}</span></div></div><button class="btn" data-act="gal-close">Close</button></div>
+  g.innerHTML=`<div class="gal" role="dialog" aria-modal="true" aria-labelledby="galt"><div class="gal-head"><div><h2 id="galt">${esc(p.title)}</h2><div class="sub parts"><span>${byLine(p)}</span><span>${p.medium?label(MEDIA,p.medium):"Accomplishment"}</span></div></div><button class="btn" data-act="gal-close">Close</button></div>
     ${y&&HOSTED?`<div class="video"><iframe src="https://www.youtube-nocookie.com/embed/${y}" title="${esc(p.title)}" allow="encrypted-media; picture-in-picture; fullscreen" allowfullscreen></iframe></div>`:""}
     ${ph.length?`<div class="stage">${ph.length>1?`<button class="stage-nav prev" data-act="gal-prev" aria-label="Previous image">‹</button>`:""}<img src="${blob(ph[i])}" alt="Image ${i+1} of ${ph.length}">${ph.length>1?`<button class="stage-nav next" data-act="gal-next" aria-label="Next image">›</button><span class="stage-count">${i+1} of ${ph.length}</span>`:""}</div>`:""}
     ${p.text?`<p class="gal-cap" style="white-space:pre-wrap">${esc(p.text)}</p>`:""}<div class="toolbar" id="workBar">${workBar(p)}</div></div>`}
@@ -1548,8 +1551,18 @@ function awardChal(cid,uids){const c=S.challenges.find(x=>x.id===cid);if(!c)retu
 
 /* section pages */
 function hubView(){const cur=shownView();return subnav([["hub","This week"],["events","Events"],["calendar","Calendar"],["bulletin","Announcements"]])+(cur==="calendar"?calendar():cur==="bulletin"?bulletin():cur==="events"?eventsView():weekView())}
-function communityHub(){const cur=shownView();return subnav([["community","Posts"],["life","Spotlight"],["voice","Student Voice",["suggestions","working"]]])+(cur==="life"?lifeView():cur==="community"?feedView():voiceView())}
-function connectHub(){const cur=shownView();return subnav([["connect","Clubs",["clubs"]],["opportunities","Opportunities"],["collabs","Collaborations"]])+(cur==="opportunities"?oppsView():cur==="collabs"?collabView():clubsView())}
+function communityHub(){const cur=shownView();return subnav([["community","Feed",["create","collabs"]],["opportunities","Opportunities"],["life","Spotlight"]])+(cur==="life"?lifeView():cur==="opportunities"?oppsView():feedView())}
+function stucoHub(){const cur=shownView();return subnav([["stuco","Feedback",["suggestions"]],["lost","Lost and found"],["voice","Polls"],["working","What we're doing"]])+(cur==="lost"?lostView():cur==="voice"?pollsView():cur==="working"?tasks(true):suggestions())}
+/* lost and found: each person's items live in their own document and show right away */
+function allLost(){const out=[];for(const d of S.lostfound)for(const[k,v]of Object.entries(d.items||{}))if(v&&v.what)out.push({...v,key:k,uid:d.id});return out.sort((a,b)=>(b.at||"").localeCompare(a.at||""))}
+function lostView(){const items=allLost().filter(x=>x.status!=="returned"&&(lostFilter==="all"||x.type===lostFilter));
+  return head("Lost a jacket? Found a water bottle? Post it here so it gets back to its owner.","Lost and found",canJoin()?`<button class="btn" data-act="lost-new" data-kind="found">I found something</button><button class="btn primary" data-act="lost-new" data-kind="lost">I lost something</button>`:"")+
+  (canJoin()?"":`<div class="banner">${needAccess("post a lost or found item")}</div>`)+chips([["all","Everything"],["lost","Lost"],["found","Found"]],lostFilter,"lost-filter")+
+  (items.length?`<div class="opps">${items.map(x=>`<article class="opp"><div class="opp-top"><span class="chip ${x.type==="found"?"good":"bad"}">${x.type==="found"?"Found":"Lost"}</span><span class="sub">${esc(short((x.at||"").slice(0,10)))}</span></div><h3>${esc(x.what)}</h3>${x.photo?`<div class="cp-photos"><img src="${blob(x.photo)}" alt=""></div>`:""}<div class="sub parts">${x.where?`<span>${x.type==="found"?"Found":"Last seen"}: ${esc(x.where)}</span>`:""}${x.date?`<span>${esc(short(x.date))}</span>`:""}</div>${x.details?`<p>${esc(x.details)}</p>`:""}<div class="sub">${x.type==="found"?"Ask":"Tell"} ${esc(x.name||"Student Council")} if it's yours${x.type==="found"?"":" or you've seen it"}.</div>${x.uid===me.id||canAct()?`<div class="toolbar"><button class="btn sm good" data-act="lost-done" data-uid="${esc(x.uid)}" data-key="${esc(x.key)}">Mark as returned</button></div>`:""}</article>`).join("")}</div>`
+  :empty("Nothing lost or found right now","If you lose or find something at school, post it here.",null,""))}
+function lostForm(kind){const found=kind==="found";
+  openForm({title:found?"I found something":"I lost something",submitLabel:"Post it",fields:[{id:"what",label:found?"What did you find?":"What did you lose?",required:true,full:true,placeholder:"e.g. Black North Face jacket"},{id:"where",label:found?"Where did you find it?":"Where did you last have it?"},{id:"date",label:"When",type:"date"},{id:"photo",label:"Photo (optional)",type:"photos"},{id:"details",label:"Anything else",type:"textarea",placeholder:found?"Where it is now, how to get it back":"Size, color, name inside"}],values:{date:TODAY},
+    submit:v=>save(()=>upsert("lostfound",me.id,{items:{[Date.now().toString(36)]:{...v,type:found?"found":"lost",status:"open",at:new Date().toISOString(),name:myName()}}}),"Posted to Lost and found")})}
 function challengeHub(){const cur=shownView();return subnav([["challenges","Challenges"],["play","Predictions"],["leaderboard","Leaderboard"]])+(cur==="leaderboard"?leaderboardView():cur==="play"?predictionsView():challengesView())}
 
 
@@ -1952,14 +1965,17 @@ document.addEventListener("click",async e=>{
     case"cp-decline":{const d=allDrafts().find(x=>x.uid===b.dataset.uid&&x.key===b.dataset.key);if(!d)return;return save(()=>db.doc("clubdrafts/"+d.uid).update({items:{[d.key]:{status:"declined"}}}),"Post declined",["declined a club post from","club",d.clubName])}
     case"cp-delete":return save(()=>col("clubposts").doc(id).delete(),"Post removed");
     case"new-post":return postForm(b.dataset.kind);
-    case"new-work":return workForm();
+    case"new-work":return postForm("create");
+    case"lost-new":return lostForm(b.dataset.kind);
+    case"lost-filter":lostFilter=b.dataset.to;return render();
+    case"lost-done":return save(()=>db.doc("lostfound/"+b.dataset.uid).update({items:{[b.dataset.key]:{status:"returned"}}}),"Marked as returned");
     case"work":return openWork(id);
     case"work-feature":{const w=S.posts.find(x=>x.id===id);if(!w)return;return save(()=>col("posts").doc(id).update({featured:!w.featured}),w.featured?"Taken off the home page":"Featured on the home page")}
     case"feed-filter":feedFilter=b.dataset.to;return render();
     case"create-filter":createFilter=b.dataset.to;return render();
     case"post-toggle":openPost=openPost===id?null:id;return render();
     case"post-delete":{const w=S.posts.find(x=>x.id===id);if(gal)closeGallery();return save(()=>col("posts").doc(id).delete(),"Removed",["removed","post",w&&w.title])}
-    case"sub-approve":{const d=allSubs().find(x=>x.uid===b.dataset.uid&&x.key===b.dataset.key);if(!d)return;const{key,uid,status,...post}=d;return save(async()=>{await col("posts").add(post);await db.doc("submissions/"+uid).update({items:{[key]:{status:"approved"}}})},"Approved and posted",["approved","post",d.title])}
+    case"sub-approve":{const d=allSubs().find(x=>x.uid===b.dataset.uid&&x.key===b.dataset.key);if(!d)return;const{key,uid,status,...post}=d;return save(async()=>{if(d.kind==="opp")await col("opps").add({title:d.title,details:d.text||"",link:d.link||"",deadline:d.deadline||"",category:"career",byName:d.byName||"",created:d.at});else await col("posts").add(post);await db.doc("submissions/"+uid).update({items:{[key]:{status:"approved"}}})},"Approved and posted",["approved","post",d.title])}
     case"sub-decline":{const d=allSubs().find(x=>x.uid===b.dataset.uid&&x.key===b.dataset.key);if(!d)return;return save(()=>db.doc("submissions/"+d.uid).update({items:{[d.key]:{status:"declined"}}}),"Declined",["declined","post",d.title])}
     case"reply-send":{const inp=$("#rp-"+id),v=inp.value.trim();if(!v){inp.focus();return}inp.value="";return save(()=>upsert("replies",me.id,{items:{[Date.now().toString(36)]:{postId:id,text:v.slice(0,400),at:new Date().toISOString(),name:myName()}}}))}
     case"reply-delete":{const d=S.replies.find(x=>x.id===b.dataset.uid);if(!d)return;const items={...d.items};delete items[b.dataset.key];return save(()=>db.doc("replies/"+d.id).set({items}),"Reply removed")}
