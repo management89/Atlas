@@ -183,6 +183,8 @@
     }
     throw { code: "too_large", message: "Image too large" };
   }
+  // full image data for building slide decks (the gallery uses the cached copy when it has one)
+  window.__assetData = async (id) => { if (assetCache[id] && assetCache[id] !== PIXEL) return assetCache[id]; const d = await fs.doc("photos/" + id).get(); return d.exists ? d.data().data : null; };
   const assets = {
     upload: async (blob) => {
       if (!user) throw { code: "not_granted", message: "Sign in to upload photos." };
