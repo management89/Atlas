@@ -14,4 +14,4 @@ window.FIREBASE_CONFIG = {
 
 // 2. After you sign in to the site once, it shows your user ID. Paste it here
 //    (and into firestore.rules) so the site knows you are the president.
-window.OWNER_UID = "";
+window.OWNER_UID = "4Dtjya2UUbdNGnynIZ8zCKRzfdT2";
