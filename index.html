@@ -679,6 +679,23 @@ body.is-site .app{grid-template-columns:minmax(0,1fr)}
 .lf-foot{margin-top:auto!important;font-weight:800}
 @media (max-width:860px){.stuco-layout{grid-template-columns:minmax(0,1fr);gap:20px}.side-nav{position:static;flex-direction:row;overflow-x:auto;border-left:0;border-bottom:1px solid var(--rule);scrollbar-width:none}.side-nav a{margin:0 0 -1px;border-left:0;border-bottom:3px solid transparent;white-space:nowrap}.side-nav a[aria-current="page"]{border-bottom-color:var(--rail)}.frame{width:160px}}
 
+.frame.empty{display:grid;place-items:center;background:#1E2735;outline:2px dashed #4A5566;outline-offset:-8px;cursor:default}
+.frame.empty span{position:static;background:none;color:#A9B4C2;text-align:center;padding:16px;font-size:13px}
+.shelf{background:#3B2A1E;padding:16px 16px 0;box-shadow:inset 0 -10px 0 #2A1E15}
+.shelf-label{color:#E9D9C4;font-size:13px;font-weight:700;margin-bottom:10px}
+.tapes{display:flex;gap:14px;overflow-x:auto;padding-bottom:14px;scrollbar-width:thin}
+.tape{flex:none;width:200px;border:0;padding:10px;background:#16191F;cursor:pointer;display:flex;flex-direction:column;gap:8px;text-align:left;transition:transform .15s}
+.tape:hover{transform:translateY(-4px)}
+.tape[aria-pressed="true"]{transform:translateY(-8px);box-shadow:0 0 0 3px #F4B400}
+.tape-win{display:flex;justify-content:space-around;align-items:center;background:#2B2F36;height:34px}
+.tape-win i{width:24px;height:24px;border-radius:50%;background:radial-gradient(circle,#16191F 0 30%,#D9D2C3 32% 60%,#8A8273 62%)}
+.tape-label{background:#F7F3EA;color:#14202E;padding:6px 8px;display:flex;flex-direction:column;border-top:4px solid #C8373B}
+.tape[aria-pressed="true"] .tape-label{border-top-color:#F4B400}
+.tape-label b{font-size:22px;font-weight:900;letter-spacing:-.02em}
+.tape-label small{font-size:12px;color:#56606C}
+.now-playing{display:flex;align-items:center;gap:10px;flex-wrap:wrap;font-size:18px}
+@media (prefers-reduced-motion:reduce){.tape,.tape:hover,.tape[aria-pressed="true"]{transition:none;transform:none}}
+
 /* history */
 .hday{font-size:17px;font-weight:800;margin-top:14px}
 .hday:first-child{margin-top:0}
@@ -1453,7 +1470,7 @@ function homeView(){
     <div class="home-copy"><h1>Made at Avenues</h1><div class="home-feat" id="homeFeat">${homeFeat()}</div></div>
   </section>
   <div class="home-strip"><div class="home-live" id="homeLive">${homeLive()}</div></div>
-  <div id="homeReel">${winReel()?`<section class="home-reel"><div class="home-reel-head"><h2>Student Council lately</h2><a href="#working">See everything we've done</a></div>${winReel()}</section>`:""}</div>
+  <div id="homeReel">${winReel(THIS_YEAR,true)?`<section class="home-reel"><div class="home-reel-head"><h2>Student Council lately</h2><a href="#working">See everything we've done</a></div>${winReel(THIS_YEAR,true)}</section>`:""}</div>
   <section class="home-about"><div><h2>The community hub for Avenues students</h2><ul class="about-list">
     <li><a href="#hub">Bulletin</a><span>Official announcements, events, sign-ups and deadlines.</span></li>
     <li><a href="#community">Community</a><span>Opinions, accomplishments and opportunities posted by students.</span></li>
@@ -1895,19 +1912,28 @@ const SC_SECTIONS=[["working","Our work"],["voice","Polls"],["suggestions","Feed
 let scrollTo_=(location.hash.slice(1)&&["working","voice","suggestions","lost"].includes(location.hash.slice(1)))?location.hash.slice(1):null;
 const tilt=id=>{let h=0;for(const ch of String(id))h=(h*31+ch.charCodeAt(0))>>>0;return((h%7)-3)*.7};
 function cutout(text){return`<h2 class="cutout" aria-label="${esc(text)}">${[...text].map(c=>c===" "?`<span class="gap"></span>`:`<span>${esc(c)}</span>`).join("")}</h2>`}
-const winsDone=()=>S.wins.filter(w=>w.status!=="doing").sort((a,b)=>(b.date||"").localeCompare(a.date||""));
+/* each school year (August to July) is one tape in the archive */
+const schoolYear=d=>{const x=parse(d)||new Date();return x.getMonth()>=7?x.getFullYear():x.getFullYear()-1};
+const yearLabel=y=>`${y}–${String((y+1)%100).padStart(2,"0")}`;
+const THIS_YEAR=schoolYear(TODAY);
+let workYear=THIS_YEAR;
+const winsDone=(y=THIS_YEAR)=>S.wins.filter(w=>w.status!=="doing"&&schoolYear(w.date)===y).sort((a,b)=>(b.date||"").localeCompare(a.date||""));
 const winsDoing=()=>S.wins.filter(w=>w.status==="doing").sort((a,b)=>(a.date||"").localeCompare(b.date||""));
-function winReel(){const ws=winsDone().filter(w=>(w.photos||[]).length);if(!ws.length)return"";
-  let set=ws.map(w=>({w,p:w.photos[0]}));while(set.length<6)set=set.concat(set);
+function winReel(y=THIS_YEAR,home){const ws=winsDone(y).filter(w=>(w.photos||[]).length);if(!ws.length&&home)return"";
+  let set=ws.length?ws.map(w=>({w,p:w.photos[0]})):Array.from({length:6},()=>null);while(set.length<6)set=set.concat(set);
   const dur=Math.max(24,set.length*5),delay=-((performance.now()/1000)%dur);
-  const fr=(x,hid)=>`<button class="frame" data-act="win" data-id="${x.w.id}" ${hid?'tabindex="-1"':`aria-label="${esc(x.w.title)}"`}><img src="${blob(x.p)}" alt="" loading="lazy"><span>${esc(x.w.title)}</span></button>`;
+  const fr=(x,hid)=>x?`<button class="frame" data-act="win" data-id="${x.w.id}" ${hid?'tabindex="-1"':`aria-label="${esc(x.w.title)}"`}><img src="${blob(x.p)}" alt="" loading="lazy"><span>${esc(x.w.title)}</span></button>`:`<div class="frame empty"><span>${canAct()?"Add an accomplishment with photos to fill the reel":"Photos coming soon"}</span></div>`;
   return`<div class="reel-wrap"><div class="reel"><div class="reel-track" style="--dur:${dur}s;animation-delay:${delay.toFixed(2)}s"><div class="reel-set">${set.map(x=>fr(x)).join("")}</div><div class="reel-set" aria-hidden="true">${set.map(x=>fr(x,1)).join("")}</div></div></div></div>`}
+function tapeShelf(){const ys=[...new Set([THIS_YEAR,...S.wins.filter(w=>w.status!=="doing").map(w=>schoolYear(w.date))])].sort((a,b)=>b-a);
+  return`<div class="shelf"><div class="shelf-label">The archive: one tape for every year of Student Council</div><div class="tapes">${ys.map(y=>{const n=winsDone(y).length;return`<button class="tape" data-act="work-year" data-to="${y}" aria-pressed="${y===workYear}"><span class="tape-win"><i></i><i></i></span><span class="tape-label"><b>${yearLabel(y)}</b><small>${y===THIS_YEAR?"This year":"Student Council"}, ${n} ${n===1?"memory":"memories"}</small></span></button>`}).join("")}</div></div>`}
 function pinCard(w){return`<article class="pin" style="--r:${tilt(w.id)}deg">${(w.photos||[]).length?`<button class="pin-img" data-act="win" data-id="${w.id}" aria-label="Open ${esc(w.title)}"><img src="${blob(w.photos[0])}" alt="" loading="lazy">${w.photos.length>1?`<span class="pin-n">${w.photos.length} photos</span>`:""}</button>`:""}<h3>${esc(w.title)}</h3>${w.who?`<div class="pin-who">By ${esc(w.who)}</div>`:""}${w.date?`<div class="pin-date">${esc(fmt(w.date,{month:"long",day:"numeric",year:"numeric"}))}</div>`:""}${w.description?`<p>${esc(w.description)}</p>`:""}<div class="toolbar">${heartBtn(w.id)}${canAct()?`<button class="btn sm ghost" data-act="edit-win" data-id="${w.id}">Edit</button>`:""}</div></article>`}
-function workSection(){const done=winsDone(),doing=winsDoing(),tk=S.tasks.filter(t=>taskState(t).status!=="done").slice(0,6);
+function workSection(){const y=workYear,cur=y===THIS_YEAR,done=winsDone(y),doing=cur?winsDoing():[],tk=cur?S.tasks.filter(t=>taskState(t).status!=="done").slice(0,6):[];
   return`<div class="toolbar">${canAct()?`<button class="btn" data-act="add-win" data-to="doing">+ Something we're working on</button><button class="btn primary" data-act="add-win" data-to="done">+ Add an accomplishment</button>`:""}</div>
-  ${winReel()}
+  ${tapeShelf()}
+  <div class="now-playing"><span class="av-tag">Now playing</span> <b>${yearLabel(y)}</b>${cur?"":` <button class="btn sm" data-act="work-year" data-to="${THIS_YEAR}">Back to this year</button>`}</div>
+  ${winReel(y)}
   ${doing.length||tk.length?`<div>${cutout("In the works")}<div class="notes">${doing.map(w=>`<div class="note" style="--r:${tilt(w.id)}deg"><b>${esc(w.title)}</b>${w.who?`<span>${esc(w.who)}</span>`:""}${w.description?`<p>${esc(w.description)}</p>`:""}${canAct()?`<button class="btn sm ghost" data-act="edit-win" data-id="${w.id}">Edit</button>`:""}</div>`).join("")}${tk.map(t=>{const st=taskState(t);return`<div class="note" style="--r:${tilt(t.id)}deg"><b>${esc(t.title)}</b><span>${st.owner?esc(nameOf(st.owner)):"Open"}${t.due?", due "+esc(short(t.due)):""}</span></div>`}).join("")}</div></div>`:""}
-  <div>${cutout("What we've done")}${done.length?`<div class="board">${done.map(pinCard).join("")}</div>`:empty("Nothing posted yet",canAct()?"Add what Student Council has pulled off, with photos and who made it happen. It shows on this page and on the home page.":"Student Council's accomplishments will show up here.","add-win","Add the first one")}</div>`}
+  <div>${cutout(cur?"What we've done":"What we did in "+yearLabel(y))}${done.length?`<div class="board">${done.map(pinCard).join("")}</div>`:empty(cur?"Nothing posted yet":"Nothing on this tape yet",canAct()?(cur?"Add what Student Council has pulled off, with photos and who made it happen. It shows here and on the home page.":"Add past accomplishments with a date in "+yearLabel(y)+" and they go on this tape."):"Student Council's accomplishments will show up here.","add-win","Add one")}</div>`}
 function winForm(id,status){const w=id&&S.wins.find(x=>x.id===id);
   openForm({title:w?"Edit":status==="doing"?"Something we're working on":"Add an accomplishment",submitLabel:"Save",
     fields:[{id:"title",label:"What was it?",required:true,full:true,placeholder:"e.g. New water bottle station by the gym"},{id:"status",label:"Status",type:"select",options:[["done","Done"],["doing","In progress"]]},{id:"date",label:"Date",type:"date"},{id:"who",label:"Who made it happen",full:true,placeholder:"e.g. Maya Chen, Leo Park and the Events committee"},{id:"photos",label:"Photos",type:"photos",multiple:true},{id:"description",label:"What happened",type:"textarea"}],
@@ -2364,6 +2390,7 @@ document.addEventListener("click",async e=>{
     case"new-post":return postForm(b.dataset.kind);
     case"new-work":return postForm("create");
     case"win":return openWin(id);
+    case"work-year":workYear=+b.dataset.to;render();{const sc=$("#sec-working");sc&&sc.scrollIntoView({block:"start"})}return;
     case"add-win":return winForm(null,b.dataset.to);
     case"edit-win":return winForm(id);
     case"lf-present":return openDeck();
