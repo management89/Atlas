@@ -17,7 +17,7 @@
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
 <script src="firebase-config.js?v=761b57f4"></script>
-<script src="firebase-adapter.js?v=cc36bd4a"></script>
+<script src="firebase-adapter.js?v=fff6d176"></script>
 </head>
 <body>
 <noscript><p style="padding:16px">Avenues Student Hub needs JavaScript. It lists events, sign-ups, the weekly bulletin, opportunities and Student Council news for Avenues The World School.</p></noscript>
@@ -612,6 +612,73 @@ body.is-site .app{grid-template-columns:minmax(0,1fr)}
 #reveal :focus-visible{outline:3px solid #FFFFFF;outline-offset:4px}
 @media (max-width:560px){.vs{grid-template-columns:minmax(0,1fr)}.vs-or{text-align:center}.vs button{min-height:90px}}
 
+.stuco-layout{display:grid;grid-template-columns:190px minmax(0,1fr);gap:40px;align-items:start}
+.side-nav{position:sticky;top:calc(env(safe-area-inset-top,0px) + 16px);display:flex;flex-direction:column;border-left:3px solid var(--rule)}
+.side-nav a{display:flex;justify-content:space-between;align-items:center;gap:8px;padding:9px 14px;margin-left:-3px;border-left:3px solid transparent;color:var(--muted);font-weight:700;font-size:16px;text-decoration:none}
+.side-nav a:hover{color:var(--ink)}
+.side-nav a[aria-current="page"]{color:var(--ink);background:none;border-left-color:var(--rail)}
+.side-nav a{border-radius:0;letter-spacing:0}
+.side-nav .count{font-size:12px;font-weight:800;background:var(--rail);color:var(--rail-ink);padding:0 6px;min-width:20px;text-align:center}
+.stuco-main{display:flex;flex-direction:column;gap:64px;min-width:0}
+.sc-sec{scroll-margin-top:20px;display:flex;flex-direction:column;gap:20px;min-width:0}
+.sc-h{font-size:32px;font-weight:800;letter-spacing:-.025em}
+.reel-wrap{overflow:hidden;padding:18px 0;margin-inline:-8px}
+.reel{background:#14202E;padding:22px 0;position:relative;transform:rotate(-1.4deg);margin-inline:-20px}
+.reel::before,.reel::after{content:"";position:absolute;left:0;right:0;height:10px;background:repeating-linear-gradient(90deg,transparent 0 8px,#EDE8DA 8px 20px,transparent 20px 28px)}
+.reel::before{top:6px}.reel::after{bottom:6px}
+.reel-track{display:flex;width:max-content;animation:belt var(--dur,40s) linear infinite}
+.reel-set{display:flex;gap:10px;padding-right:10px}
+@media (hover:hover){.reel:hover .reel-track{animation-play-state:paused}}
+.frame{flex:none;width:210px;aspect-ratio:4/3;border:0;padding:0;background:#2B3642;cursor:pointer;position:relative;overflow:hidden}
+.frame img{width:100%;height:100%;object-fit:cover;display:block}
+.frame span{position:absolute;left:0;right:0;bottom:0;padding:16px 8px 6px;background:linear-gradient(transparent,rgba(10,14,22,.85));color:#FFFFFF;font-weight:700;font-size:13px;text-align:left;line-height:1.25}
+.frame:hover,.frame:focus-visible{outline:3px solid #F4B400;outline-offset:-3px}
+@media (prefers-reduced-motion:reduce){.reel{overflow-x:auto}.reel-track{animation:none}.reel-set[aria-hidden]{display:none}}
+.cutout{display:flex;flex-wrap:wrap;gap:4px;margin:0 0 18px}
+.cutout span{display:inline-block;font-weight:900;font-size:clamp(22px,3vw,34px);line-height:1;padding:4px 7px;text-transform:uppercase}
+.cutout span:nth-child(5n+1){background:#F4B400;color:#14202E;transform:rotate(-3deg)}
+.cutout span:nth-child(5n+2){background:#14202E;color:#FFFFFF;transform:rotate(2deg)}
+.cutout span:nth-child(5n+3){background:#FFFFFF;color:#C8373B;outline:2px solid #14202E;outline-offset:-2px;transform:rotate(-1deg)}
+.cutout span:nth-child(5n+4){background:#2446C7;color:#FFFFFF;transform:rotate(3deg)}
+.cutout span:nth-child(5n+5){background:#C8373B;color:#FFFFFF;transform:rotate(-2deg)}
+.cutout .gap{background:none!important;outline:0!important;width:10px;padding:0}
+.board{columns:250px 3;column-gap:28px}
+.pin{break-inside:avoid;margin:14px 2px 30px;background:#FFFFFF;color:#14202E;padding:10px 10px 12px;position:relative;transform:rotate(var(--r));box-shadow:0 3px 0 rgba(20,32,46,.16)}
+.pin::before{content:"";position:absolute;top:-11px;left:50%;width:76px;height:22px;margin-left:-38px;background:rgba(244,180,0,.62);transform:rotate(-4deg)}
+.pin-img{display:block;width:100%;border:0;padding:0;background:#14202E;cursor:zoom-in;position:relative}
+.pin-img img{display:block;width:100%;aspect-ratio:4/3;object-fit:cover}
+.pin-n{position:absolute;right:6px;bottom:6px;background:#14202E;color:#FFFFFF;font-size:12px;font-weight:700;padding:1px 6px}
+.pin h3{font-size:20px;font-weight:800;letter-spacing:-.01em;margin-top:10px;overflow-wrap:anywhere}
+.pin-who{font-weight:700;font-size:14px;margin-top:4px}
+.pin-date{font-size:13px;color:#56606C}
+.pin p{margin:6px 0 0;font-size:15px;overflow-wrap:anywhere}
+.pin .heart{color:#56606C}
+.pin .btn{color:#14202E;border-color:#14202E}
+.notes{display:flex;flex-wrap:wrap;gap:20px}
+.note{width:200px;min-height:140px;background:#FCE38A;color:#14202E;padding:14px;transform:rotate(var(--r));box-shadow:0 3px 0 rgba(20,32,46,.18);display:flex;flex-direction:column;gap:4px}
+.note b{font-size:17px;line-height:1.2}
+.note span{font-size:14px;font-weight:600;color:#5A4A12}
+.note p{margin:4px 0 0;font-size:14px}
+.note .btn{color:#14202E;border-color:#14202E;align-self:flex-start;margin-top:auto}
+.home-reel{padding-block:30px 6px}
+.home-reel-head{display:flex;justify-content:space-between;align-items:baseline;gap:12px;flex-wrap:wrap;padding-left:max(27px,env(safe-area-inset-left,0px));padding-right:max(27px,env(safe-area-inset-right,0px))}
+.home-reel-head h2{font-size:28px;font-weight:800;letter-spacing:-.02em}
+.home-reel-head a{color:var(--info);font-weight:700}
+.deck-stage{position:relative}
+.lf-slide{aspect-ratio:16/9;background:#FFFFFF;color:#14202E;display:flex;flex-direction:column;padding:3% 4% 0;border-bottom:3% solid #F4B400;box-shadow:inset 0 -14px 0 #F4B400;overflow:hidden}
+.lf-title{text-align:center;font-weight:900;font-size:clamp(16px,3vw,34px);letter-spacing:-.01em}
+.lf-body{flex:1;display:grid;grid-template-columns:1.15fr 1fr;gap:5%;padding:3% 0 6%;min-height:0}
+.lf-photo{display:grid;place-items:center;min-height:0;overflow:hidden;background:#F2F4F7}
+.lf-photo img{max-width:100%;max-height:100%;object-fit:contain;display:block}
+.lf-photo span{color:#56606C;font-weight:600}
+.lf-text{display:flex;flex-direction:column;gap:8px;min-width:0;overflow:hidden}
+.lf-tag{align-self:flex-start;font-weight:900;font-size:clamp(11px,1.4vw,15px);padding:2px 8px;color:#FFFFFF}
+.lf-tag.f{background:#1D7A45}.lf-tag.l{background:#B3261E}
+.lf-text h3{font-size:clamp(18px,3vw,34px);font-weight:800;letter-spacing:-.02em;line-height:1.1;overflow-wrap:anywhere}
+.lf-text p{margin:0;font-size:clamp(12px,1.6vw,18px)}
+.lf-foot{margin-top:auto!important;font-weight:800}
+@media (max-width:860px){.stuco-layout{grid-template-columns:minmax(0,1fr);gap:20px}.side-nav{position:static;flex-direction:row;overflow-x:auto;border-left:0;border-bottom:1px solid var(--rule);scrollbar-width:none}.side-nav a{margin:0 0 -1px;border-left:0;border-bottom:3px solid transparent;white-space:nowrap}.side-nav a[aria-current="page"]{border-bottom-color:var(--rail)}.frame{width:160px}}
+
 /* history */
 .hday{font-size:17px;font-weight:800;margin-top:14px}
 .hday:first-child{margin-top:0}
@@ -687,12 +754,12 @@ const STUDENT_NAV=[["hub","Bulletin"],["community","Community"],["clubs","Clubs"
 const COUNCIL_NAV=[["overview","Overview"],["tasks","Tasks"],["proposals","Proposals"],["attendance","Attendance"],["members","Members"],["history","History"]];
 const ROUTES={home:"home",hub:"hub",events:"hub",calendar:"hub",bulletin:"hub",community:"community",create:"community",collabs:"community",opportunities:"community",life:"community",clubs:"clubs",connect:"clubs",challenges:"challenges",play:"challenges",dares:"challenges",leaderboard:"challenges",stuco:"stuco",suggestions:"stuco",lost:"stuco",voice:"stuco",working:"stuco",overview:"overview",tasks:"tasks",proposals:"proposals",attendance:"attendance",members:"members",history:"history"};
 const STUDENT_ROUTES=["home","hub","events","calendar","bulletin","community","create","collabs","opportunities","life","clubs","connect","challenges","play","dares","leaderboard","stuco","suggestions","lost","voice","working"];
-const COLS=["members","events","tasks","claims","bulletin","suggestions","albums","stories","opps","polls","votes","signups","birthdays","playlists","aviators","predictions","picks","scores","clubs","clubposts","clubdrafts","posts","submissions","replies","challenges","done","lostfound","games","gamevotes","plays","gamekeys","roster","proposals","meetings","history"];
+const COLS=["members","events","tasks","claims","bulletin","suggestions","albums","stories","opps","polls","votes","signups","birthdays","playlists","aviators","predictions","picks","scores","clubs","clubposts","clubdrafts","posts","submissions","replies","challenges","done","lostfound","wins","games","gamevotes","plays","gamekeys","roster","proposals","meetings","history"];
 const COUNCIL_ONLY=["proposals","meetings","history","roster","gamekeys"];
 const SCHOOL="Avenues The World School";
 const SUG_CATS=["Events","Spirit","Vending machine","Facilities","Food","Clubs","School policy","Report a problem","Other"];
 const SUG_STATUS=[["new","New"],["review","Under review"],["planned","Planned"],["done","Done"],["declined","Not this time"]];
-const S={members:[],events:[],tasks:[],claims:[],bulletin:[],suggestions:[],albums:[],stories:[],opps:[],polls:[],votes:[],signups:[],birthdays:[],playlists:[],aviators:[],predictions:[],picks:[],scores:[],clubs:[],clubposts:[],clubdrafts:[],posts:[],submissions:[],replies:[],challenges:[],done:[],lostfound:[],games:[],gamevotes:[],plays:[],gamekeys:[],roster:[],proposals:[],meetings:[],history:[]};
+const S={members:[],events:[],tasks:[],claims:[],bulletin:[],suggestions:[],albums:[],stories:[],opps:[],polls:[],votes:[],signups:[],birthdays:[],playlists:[],aviators:[],predictions:[],picks:[],scores:[],clubs:[],clubposts:[],clubdrafts:[],posts:[],submissions:[],replies:[],challenges:[],done:[],lostfound:[],wins:[],games:[],gamevotes:[],plays:[],gamekeys:[],roster:[],proposals:[],meetings:[],history:[]};
 let CFG={approved:{},roles:{},school:"",president:null}, cfgExists=false, ADMIN={emails:[]}, adminExists=false;
 const EV_TYPES=[["meeting","StuCo meeting"],["event","School event"],["dance","Dance"],["trip","Trip"],["competition","Competition or tournament"],["fundraiser","Fundraiser"],["deadline","Deadline"]];
 const TASK_STATUS=[["todo","To do"],["doing","In progress"],["done","Done"]];
@@ -705,7 +772,7 @@ const ATT=[["present","Present"],["late","Late"],["excused","Excused"],["absent"
 const VOTES=[["aye","Aye"],["nay","Nay"],["abstain","Abstain"]];
 const PALETTE=["#2446C7","#B4442F","#1C8250","#8A4FBF","#9A6500","#0F7C8C","#C2407A","#5A6B2E"];
 const KINDS=[["all","Everything"],["task","Tasks"],["proposal","Proposals"],["event","Calendar"],["post","Bulletin"],["meeting","Attendance"],["member","Members"],["suggestion","Suggestions"],["album","Photos"],["story","Stories"],["opportunity","Opportunities"],["poll","Polls"]];
-const KIND_NOUN={task:"task",proposal:"proposal",event:"event",post:"bulletin post",meeting:"meeting",member:"member",settings:"settings",suggestion:"suggestion",album:"photo album",story:"story",opportunity:"opportunity",poll:"poll",prediction:"prediction",club:"club",post:"post",challenge:"challenge"};
+const KIND_NOUN={task:"task",proposal:"proposal",event:"event",post:"bulletin post",meeting:"meeting",member:"member",settings:"settings",suggestion:"suggestion",album:"photo album",story:"story",opportunity:"opportunity",poll:"poll",prediction:"prediction",club:"club",post:"post",challenge:"challenge",win:"accomplishment"};
 const HINT={
   summary:"One or two sentences: what you want the council to approve.",
   background:"What problem does this solve? Who asked for it? Include any facts, such as survey results or how many students it affects.",
@@ -793,7 +860,7 @@ function cfgSet(mut){if(!loaded.has("config"))return Promise.reject({code:"unava
 /* ---------- routing ---------- */
 function current(){const h=location.hash.slice(1);return ROUTES[h]?h:null}
 let view=current();
-addEventListener("hashchange",()=>{view=current();if(view!=="proposals")editing=null;render();window.scrollTo(0,0)});
+addEventListener("hashchange",()=>{view=current();if(view!=="proposals")editing=null;render();const sc=document.getElementById("sec-"+view);if(sc)sc.scrollIntoView();else window.scrollTo(0,0)});
 
 function setStatus(s){
   dbState=s;const el=$("#status"),t=$("#statusText");el.className="status";
@@ -838,13 +905,14 @@ function render(){
     else if(d&&isApproved(d)&&!isEditor)banner=`<div class="banner">You're an approved council member. Ask the president to give you Editor access to this page so you can make changes.</div>`;}
   if(preview&&canCouncil())banner=`<div class="banner preview"><span>You're seeing the site the way students see it.</span><button class="btn sm" data-act="mode" data-to="council">Back to council view</button></div>`+banner;
   if(lockedOut())banner+=`<div class="banner">You're signed in as ${esc(me.email||"an account")}, which isn't on the Avenues student list. Sign in with your school email, or ask Student Council to add you.</div>`;
-  const VIEWFN={hub:hubView,events:hubView,calendar:hubView,bulletin:hubView,community:communityHub,create:communityHub,collabs:communityHub,opportunities:communityHub,life:communityHub,clubs:clubsView,connect:clubsView,challenges:challengeHub,play:challengeHub,dares:challengeHub,leaderboard:challengeHub,stuco:stucoHub,suggestions:stucoHub,lost:stucoHub,voice:stucoHub,working:stucoHub,overview,tasks:()=>tasks(),proposals,attendance,members,history:historyView};
+  const VIEWFN={hub:hubView,events:hubView,calendar:hubView,bulletin:hubView,community:communityHub,create:communityHub,collabs:communityHub,opportunities:communityHub,life:communityHub,clubs:clubsView,connect:clubsView,challenges:challengeHub,play:challengeHub,dares:challengeHub,leaderboard:challengeHub,stuco:stucoPage,suggestions:stucoPage,lost:stucoPage,voice:stucoPage,working:stucoPage,overview,tasks:()=>tasks(),proposals,attendance,members,history:historyView};
   const ae=document.activeElement,keep=ae&&ae.id&&$("#main").contains(ae)?{id:ae.id,val:ae.value,sel:ae.selectionStart!=null?[ae.selectionStart,ae.selectionEnd]:null}:null;
   $("#main").innerHTML=banner+VIEWFN[shownView()]();
   $("#bandH1").innerHTML=pageHead.title||"";const bc=$("#bandCtx");bc.innerHTML=pageHead.context||"";bc.hidden=!pageHead.context;
   const sn=$("#main .subnav"),bs=$("#bandSub");bs.innerHTML="";if(sn)bs.appendChild(sn);
   $("#bandTop").innerHTML=site?siteNav():"";
   if(site)$("#main").insertAdjacentHTML("beforeend",siteFoot());
+  if(scrollTo_){const sc=document.getElementById("sec-"+scrollTo_);if(sc){sc.scrollIntoView();scrollTo_=null}}
   if(keep){const n=document.getElementById(keep.id);if(n){if(keep.val!=null&&"value"in n&&n.type!=="file"&&n.tagName!=="SELECT")n.value=keep.val;n.focus({preventScroll:true});if(keep.sel&&n.setSelectionRange)try{n.setSelectionRange(...keep.sel)}catch(e){}}}
 }
 let pageHead={title:"",context:""};
@@ -1097,9 +1165,10 @@ function lifeView(){
 function openAlbum(aid,pid){const a=S.albums.find(x=>x.id===aid);if(!a||!(a.photos||[]).length){toast("This album has no photos yet.");return}
   if(!gal)gal={ret:document.activeElement};gal.aid=aid;gal.idx=pid?Math.max(0,a.photos.indexOf(pid)):0;drawGallery();document.body.style.overflow="hidden";const c=$("#gallery [data-act=gal-close]");c&&c.focus()}
 function closeGallery(){const g=$("#gallery");g.hidden=true;g.innerHTML="";document.body.style.overflow="";const r=gal&&gal.ret;gal=null;if(r&&r.isConnected&&r.focus)r.focus()}
-function galStep(n){if(gal.work){const w=S.posts.find(x=>x.id===gal.work),len=((w&&w.photos)||[]).length;if(len>1){gal.idx=(gal.idx+n+len)%len;drawWork()}return}
+function galStep(n){if(gal.deck){const len=lfItems().length;if(len){gal.idx=(gal.idx+n+len)%len;drawDeck()}return}if(gal.win){const w=S.wins.find(x=>x.id===gal.win),len=((w&&w.photos)||[]).length;if(len>1){gal.idx=(gal.idx+n+len)%len;drawWin()}return}
+  if(gal.work){const w=S.posts.find(x=>x.id===gal.work),len=((w&&w.photos)||[]).length;if(len>1){gal.idx=(gal.idx+n+len)%len;drawWork()}return}
   const a=S.albums.find(x=>x.id===gal.aid);if(!a)return;const len=a.photos.length;gal.idx=(gal.idx+n+len)%len;drawGallery()}
-function drawGallery(){if(gal.work)return drawWork();
+function drawGallery(){if(gal.work)return drawWork();if(gal.win)return drawWin();if(gal.deck)return drawDeck();
   const a=S.albums.find(x=>x.id===gal.aid);if(!a){closeGallery();return}
   const ph=a.photos||[],i=Math.min(gal.idx,ph.length-1),story=S.stories.find(s=>s.albumId===a.id),others=sortedAlbums().filter(x=>x.id!==a.id).slice(0,8);
   const g=$("#gallery");g.hidden=false;
@@ -1384,6 +1453,7 @@ function homeView(){
     <div class="home-copy"><h1>Made at Avenues</h1><div class="home-feat" id="homeFeat">${homeFeat()}</div></div>
   </section>
   <div class="home-strip"><div class="home-live" id="homeLive">${homeLive()}</div></div>
+  <div id="homeReel">${winReel()?`<section class="home-reel"><div class="home-reel-head"><h2>Student Council lately</h2><a href="#working">See everything we've done</a></div>${winReel()}</section>`:""}</div>
   <section class="home-about"><div><h2>The community hub for Avenues students</h2><ul class="about-list">
     <li><a href="#hub">Bulletin</a><span>Official announcements, events, sign-ups and deadlines.</span></li>
     <li><a href="#community">Community</a><span>Opinions, accomplishments and opportunities posted by students.</span></li>
@@ -1613,16 +1683,15 @@ function awardChal(cid,uids){const c=S.challenges.find(x=>x.id===cid);if(!c)retu
 /* section pages */
 function hubView(){const cur=shownView();return subnav([["hub","This week"],["events","Events"],["calendar","Calendar"],["bulletin","Announcements"]])+(cur==="calendar"?calendar():cur==="bulletin"?bulletin():cur==="events"?eventsView():weekView())}
 function communityHub(){const cur=shownView();return subnav([["community","Feed",["create","collabs"]],["opportunities","Opportunities"],["life","Spotlight"]])+(cur==="life"?lifeView():cur==="opportunities"?oppsView():feedView())}
-function stucoHub(){const cur=shownView();return subnav([["stuco","Feedback",["suggestions"]],["lost","Lost and found"],["voice","Polls"],["working","What we're doing"]])+(cur==="lost"?lostView():cur==="voice"?pollsView():cur==="working"?tasks(true):suggestions())}
 /* lost and found: each person's items live in their own document and show right away */
 function allLost(){const out=[];for(const d of S.lostfound)for(const[k,v]of Object.entries(d.items||{}))if(v&&v.what)out.push({...v,key:k,uid:d.id});return out.sort((a,b)=>(b.at||"").localeCompare(a.at||""))}
 function lostView(){const items=allLost().filter(x=>x.status!=="returned"&&(lostFilter==="all"||x.type===lostFilter));
-  return head("Lost a jacket? Found a water bottle? Post it here so it gets back to its owner.","Lost and found",canJoin()?`<button class="btn" data-act="lost-new" data-kind="found">I found something</button><button class="btn primary" data-act="lost-new" data-kind="lost">I lost something</button>`:"")+
+  return head("Lost a jacket? Found a water bottle? Post it here so it gets back to its owner.","Lost and found",canJoin()?`<button class="btn" data-act="lost-new" data-kind="found">I found something</button><button class="btn primary" data-act="lost-new" data-kind="lost">I lost something</button>`:"")+`<div class="toolbar"><button class="btn" data-act="lf-present">View as slides</button><button class="btn" data-act="lf-deck">Download slides</button>${canAct()?`<span class="sub">Opens in Google Slides: upload to Drive, then share the link.</span>`:""}</div>`+
   (canJoin()?"":`<div class="banner">${needAccess("post a lost or found item")}</div>`)+chips([["all","Everything"],["lost","Lost"],["found","Found"]],lostFilter,"lost-filter")+
   (items.length?`<div class="opps">${items.map(x=>`<article class="opp"><div class="opp-top"><span class="chip ${x.type==="found"?"good":"bad"}">${x.type==="found"?"Found":"Lost"}</span><span class="sub">${esc(short((x.at||"").slice(0,10)))}</span></div><h3>${esc(x.what)}</h3>${x.photo?`<div class="cp-photos"><img src="${blob(x.photo)}" alt=""></div>`:""}<div class="sub parts">${x.where?`<span>${x.type==="found"?"Found":"Last seen"}: ${esc(x.where)}</span>`:""}${x.date?`<span>${esc(short(x.date))}</span>`:""}</div>${x.details?`<p>${esc(x.details)}</p>`:""}<div class="sub">${x.type==="found"?"Ask":"Tell"} ${esc(x.name||"Student Council")} if it's yours${x.type==="found"?"":" or you've seen it"}.</div>${x.uid===me.id||canAct()?`<div class="toolbar"><button class="btn sm good" data-act="lost-done" data-uid="${esc(x.uid)}" data-key="${esc(x.key)}">Mark as returned</button></div>`:""}</article>`).join("")}</div>`
   :empty("Nothing lost or found right now","If you lose or find something at school, post it here.",null,""))}
 function lostForm(kind){const found=kind==="found";
-  openForm({title:found?"I found something":"I lost something",submitLabel:"Post it",fields:[{id:"what",label:found?"What did you find?":"What did you lose?",required:true,full:true,placeholder:"e.g. Black North Face jacket"},{id:"where",label:found?"Where did you find it?":"Where did you last have it?"},{id:"date",label:"When",type:"date"},{id:"photo",label:"Photo (optional)",type:"photos"},{id:"details",label:"Anything else",type:"textarea",placeholder:found?"Where it is now, how to get it back":"Size, color, name inside"}],values:{date:TODAY},
+  openForm({title:found?"I found something":"I lost something",submitLabel:"Post it",fields:[{id:"what",label:found?"What did you find?":"What did you lose?",required:true,full:true,placeholder:"e.g. Black North Face jacket"},{id:"where",label:found?"Where did you find it?":"Where did you last have it?"},{id:"date",label:"When",type:"date"},{id:"photo",label:"Photo (this helps the most)",type:"photos"},{id:"details",label:"Description",type:"textarea",placeholder:found?"Where it is now, how to get it back":"Size, color, name inside"}],values:{date:TODAY},
     submit:v=>save(()=>upsert("lostfound",me.id,{items:{[Date.now().toString(36)]:{...v,type:found?"found":"lost",status:"open",at:new Date().toISOString(),name:myName()}}}),"Posted to Lost and found")})}
 function challengeHub(){const cur=shownView();return subnav([["challenges","Today",["leaderboard"]],["dares","Challenges"],["play","Predictions"]])+(cur==="dares"?challengesView():cur==="play"?predictionsView():gamesView())}
 
@@ -1820,6 +1889,79 @@ async function settleGames(){
   catch(e){}finally{settling=false}
 }
 
+
+/* ---------- StuCo: one page with a side menu ---------- */
+const SC_SECTIONS=[["working","Our work"],["voice","Polls"],["suggestions","Feedback"],["lost","Lost and found"]];
+let scrollTo_=(location.hash.slice(1)&&["working","voice","suggestions","lost"].includes(location.hash.slice(1)))?location.hash.slice(1):null;
+const tilt=id=>{let h=0;for(const ch of String(id))h=(h*31+ch.charCodeAt(0))>>>0;return((h%7)-3)*.7};
+function cutout(text){return`<h2 class="cutout" aria-label="${esc(text)}">${[...text].map(c=>c===" "?`<span class="gap"></span>`:`<span>${esc(c)}</span>`).join("")}</h2>`}
+const winsDone=()=>S.wins.filter(w=>w.status!=="doing").sort((a,b)=>(b.date||"").localeCompare(a.date||""));
+const winsDoing=()=>S.wins.filter(w=>w.status==="doing").sort((a,b)=>(a.date||"").localeCompare(b.date||""));
+function winReel(){const ws=winsDone().filter(w=>(w.photos||[]).length);if(!ws.length)return"";
+  let set=ws.map(w=>({w,p:w.photos[0]}));while(set.length<6)set=set.concat(set);
+  const dur=Math.max(24,set.length*5),delay=-((performance.now()/1000)%dur);
+  const fr=(x,hid)=>`<button class="frame" data-act="win" data-id="${x.w.id}" ${hid?'tabindex="-1"':`aria-label="${esc(x.w.title)}"`}><img src="${blob(x.p)}" alt="" loading="lazy"><span>${esc(x.w.title)}</span></button>`;
+  return`<div class="reel-wrap"><div class="reel"><div class="reel-track" style="--dur:${dur}s;animation-delay:${delay.toFixed(2)}s"><div class="reel-set">${set.map(x=>fr(x)).join("")}</div><div class="reel-set" aria-hidden="true">${set.map(x=>fr(x,1)).join("")}</div></div></div></div>`}
+function pinCard(w){return`<article class="pin" style="--r:${tilt(w.id)}deg">${(w.photos||[]).length?`<button class="pin-img" data-act="win" data-id="${w.id}" aria-label="Open ${esc(w.title)}"><img src="${blob(w.photos[0])}" alt="" loading="lazy">${w.photos.length>1?`<span class="pin-n">${w.photos.length} photos</span>`:""}</button>`:""}<h3>${esc(w.title)}</h3>${w.who?`<div class="pin-who">By ${esc(w.who)}</div>`:""}${w.date?`<div class="pin-date">${esc(fmt(w.date,{month:"long",day:"numeric",year:"numeric"}))}</div>`:""}${w.description?`<p>${esc(w.description)}</p>`:""}<div class="toolbar">${heartBtn(w.id)}${canAct()?`<button class="btn sm ghost" data-act="edit-win" data-id="${w.id}">Edit</button>`:""}</div></article>`}
+function workSection(){const done=winsDone(),doing=winsDoing(),tk=S.tasks.filter(t=>taskState(t).status!=="done").slice(0,6);
+  return`<div class="toolbar">${canAct()?`<button class="btn" data-act="add-win" data-to="doing">+ Something we're working on</button><button class="btn primary" data-act="add-win" data-to="done">+ Add an accomplishment</button>`:""}</div>
+  ${winReel()}
+  ${doing.length||tk.length?`<div>${cutout("In the works")}<div class="notes">${doing.map(w=>`<div class="note" style="--r:${tilt(w.id)}deg"><b>${esc(w.title)}</b>${w.who?`<span>${esc(w.who)}</span>`:""}${w.description?`<p>${esc(w.description)}</p>`:""}${canAct()?`<button class="btn sm ghost" data-act="edit-win" data-id="${w.id}">Edit</button>`:""}</div>`).join("")}${tk.map(t=>{const st=taskState(t);return`<div class="note" style="--r:${tilt(t.id)}deg"><b>${esc(t.title)}</b><span>${st.owner?esc(nameOf(st.owner)):"Open"}${t.due?", due "+esc(short(t.due)):""}</span></div>`}).join("")}</div></div>`:""}
+  <div>${cutout("What we've done")}${done.length?`<div class="board">${done.map(pinCard).join("")}</div>`:empty("Nothing posted yet",canAct()?"Add what Student Council has pulled off, with photos and who made it happen. It shows on this page and on the home page.":"Student Council's accomplishments will show up here.","add-win","Add the first one")}</div>`}
+function winForm(id,status){const w=id&&S.wins.find(x=>x.id===id);
+  openForm({title:w?"Edit":status==="doing"?"Something we're working on":"Add an accomplishment",submitLabel:"Save",
+    fields:[{id:"title",label:"What was it?",required:true,full:true,placeholder:"e.g. New water bottle station by the gym"},{id:"status",label:"Status",type:"select",options:[["done","Done"],["doing","In progress"]]},{id:"date",label:"Date",type:"date"},{id:"who",label:"Who made it happen",full:true,placeholder:"e.g. Maya Chen, Leo Park and the Events committee"},{id:"photos",label:"Photos",type:"photos",multiple:true},{id:"description",label:"What happened",type:"textarea"}],
+    values:w||{status:status||"done",date:TODAY,photos:[]},
+    submit:v=>w?save(()=>col("wins").doc(id).update(v),"Saved",["edited","win",v.title]):save(()=>col("wins").add({...v,created:new Date().toISOString()}),"Posted",["posted","win",v.title]),
+    onDelete:w?()=>save(()=>col("wins").doc(id).delete(),"Removed",["removed","win",w.title]):null})}
+function openWin(id){if(!S.wins.some(w=>w.id===id))return;gal={win:id,idx:0,ret:document.activeElement};drawWin();document.body.style.overflow="hidden";const c=$("#gallery [data-act=gal-close]");c&&c.focus()}
+function drawWin(){const w=S.wins.find(x=>x.id===gal.win);if(!w){closeGallery();return}const ph=w.photos||[],i=Math.min(gal.idx,Math.max(0,ph.length-1)),g=$("#gallery");g.hidden=false;
+  g.innerHTML=`<div class="gal" role="dialog" aria-modal="true" aria-labelledby="galt"><div class="gal-head"><div><h2 id="galt">${esc(w.title)}</h2><div class="sub parts">${w.who?`<span>By ${esc(w.who)}</span>`:""}${w.date?`<span>${esc(fulld(w.date))}</span>`:""}</div></div><button class="btn" data-act="gal-close">Close</button></div>
+  ${ph.length?`<div class="stage">${ph.length>1?`<button class="stage-nav prev" data-act="gal-prev" aria-label="Previous photo">‹</button>`:""}<img src="${blob(ph[i])}" alt="Photo ${i+1} of ${ph.length}">${ph.length>1?`<button class="stage-nav next" data-act="gal-next" aria-label="Next photo">›</button><span class="stage-count">${i+1} of ${ph.length}</span>`:""}</div>`:""}
+  ${w.description?`<p class="gal-cap" style="white-space:pre-wrap">${esc(w.description)}</p>`:""}</div>`}
+function stucoPage(){
+  const sec={working:workSection(),voice:pollsView(),suggestions:suggestions(),lost:lostView()};
+  const counts={voice:S.polls.filter(pollOpen).length,lost:allLost().filter(x=>x.status!=="returned").length,suggestions:council()?allSuggestions().filter(x=>x.status==="new").length:0};
+  const intro={working:"Everything Student Council has done this year, and what's in progress now.",voice:"Vote on what happens next. Results are posted when each poll closes.",suggestions:"Ideas, problems around school, vending requests. Student Council reads every one and replies.",lost:"Lost a jacket? Found a water bottle? Post it with a photo so it gets back to its owner."};
+  pageHead={title:"Student Council",context:"What we've done, what we're working on, and how to reach us."};
+  const cur=view&&SC_SECTIONS.some(s=>s[0]===view)?view:"working";
+  return`<div class="stuco-layout"><nav class="side-nav" aria-label="Student Council sections">${SC_SECTIONS.map(([k,l])=>`<a href="#${k}" ${k===cur?'aria-current="page"':""}>${l}${counts[k]?`<span class="count">${counts[k]}</span>`:""}</a>`).join("")}</nav>
+  <div class="stuco-main">${SC_SECTIONS.map(([k,l])=>`<section class="sc-sec" id="sec-${k}"><div><h2 class="sc-h">${l}</h2><p class="sub" style="margin:4px 0 0">${intro[k]}</p></div>${sec[k]}</section>`).join("")}</div></div>`}
+
+/* lost and found as slides: shown on the site and downloaded as a deck that opens in Google Slides */
+const lfItems=()=>allLost().filter(x=>x.status!=="returned");
+const lfMonth=()=>new Date().toLocaleDateString(undefined,{month:"long"}).toUpperCase();
+function lfSlide(x){return`<div class="lf-slide"><div class="lf-title">${esc(lfMonth())} LOST AND FOUND</div><div class="lf-body"><div class="lf-photo">${x.photo?`<img src="${blob(x.photo)}" alt="">`:`<span>No photo</span>`}</div><div class="lf-text"><span class="lf-tag ${x.type==="found"?"f":"l"}">${x.type==="found"?"FOUND":"LOST"}</span><h3>${esc(x.what)}</h3>${x.where||x.date?`<p>${x.type==="found"?"Found":"Last seen"}${x.where?": "+esc(x.where):""}${x.date?", "+esc(short(x.date)):""}</p>`:""}${x.details?`<p>${esc(x.details)}</p>`:""}<p class="lf-foot">${x.type==="found"?"Is this yours? Tell Student Council.":"Seen it? Tell Student Council."}</p></div></div></div>`}
+function openDeck(){const it=lfItems();if(!it.length){toast("No items to show yet.");return}gal={deck:true,idx:0,ret:document.activeElement};drawDeck();document.body.style.overflow="hidden";const c=$("#gallery [data-act=gal-close]");c&&c.focus()}
+function drawDeck(){const it=lfItems();if(!it.length){closeGallery();return}const i=Math.min(gal.idx,it.length-1),g=$("#gallery");g.hidden=false;
+  g.innerHTML=`<div class="gal" role="dialog" aria-modal="true" aria-labelledby="galt"><div class="gal-head"><div><h2 id="galt">Lost and found</h2><div class="sub">Slide ${i+1} of ${it.length}</div></div><div class="toolbar"><button class="btn" data-act="lf-deck">Download slides</button><button class="btn" data-act="gal-close">Close</button></div></div>
+  <div class="deck-stage">${it.length>1?`<button class="stage-nav prev" data-act="gal-prev" aria-label="Previous slide">‹</button>`:""}${lfSlide(it[i])}${it.length>1?`<button class="stage-nav next" data-act="gal-next" aria-label="Next slide">›</button>`:""}</div></div>`}
+function loadScript(src,test){return new Promise((res,rej)=>{if(test())return res();const s=document.createElement("script");s.src=src;s.onload=()=>test()?res():rej(new Error("load"));s.onerror=rej;document.head.appendChild(s)})}
+async function photoData(id){if(!id)return null;if(String(id).startsWith("data:"))return id;
+  if(window.__assetData)return await window.__assetData(id);
+  const b=await (await fetch(blob(id))).blob();return await new Promise(r=>{const f=new FileReader();f.onload=()=>r(f.result);f.onerror=()=>r(null);f.readAsDataURL(b)})}
+const imgSize=src=>new Promise(r=>{const i=new Image();i.onload=()=>r([i.naturalWidth,i.naturalHeight]);i.onerror=()=>r(null);i.src=src});
+async function downloadDeck(){const it=lfItems();if(!it.length){toast("No items to put in the deck yet.");return}
+  toast("Building the slides…");
+  try{await loadScript("https://cdn.jsdelivr.net/npm/pptxgenjs@3.12.0/dist/pptxgen.bundle.js",()=>!!window.PptxGenJS)}catch(e){toast("The slides tool didn't load. Check your connection and try again.");return}
+  const p=new PptxGenJS();p.layout="LAYOUT_WIDE";const F="Libre Franklin",NAVY="14202E",GOLD="F4B400",month=lfMonth();
+  const s0=p.addSlide();s0.background={color:"FFFFFF"};s0.addShape(p.ShapeType.rect,{x:0,y:0,w:13.33,h:0.35,fill:{color:GOLD},line:{color:GOLD}});
+  s0.addText(month+" LOST AND FOUND",{x:0.6,y:2.4,w:12.1,h:1.3,fontFace:F,fontSize:54,bold:true,color:NAVY,align:"center"});
+  s0.addText(`${it.length} item${it.length===1?"":"s"}. If something here is yours, tell Student Council.`,{x:0.6,y:3.8,w:12.1,h:0.6,fontFace:F,fontSize:20,color:"56606C",align:"center"});
+  for(const x of it){const s=p.addSlide();s.background={color:"FFFFFF"};
+    s.addText(month+" LOST AND FOUND",{x:0.5,y:0.3,w:12.3,h:0.8,fontFace:F,fontSize:32,bold:true,color:NAVY,align:"center"});
+    const bx=0.6,by=1.35,bw=6.3,bh=5.6,data=await photoData(x.photo).catch(()=>null),dim=data&&await imgSize(data);
+    if(data&&dim){const k=Math.min(bw/dim[0],bh/dim[1]),w=dim[0]*k,h=dim[1]*k;s.addImage({data,x:bx+(bw-w)/2,y:by+(bh-h)/2,w,h})}
+    else{s.addShape(p.ShapeType.rect,{x:bx,y:by,w:bw,h:bh,fill:{color:"E8ECF1"},line:{color:"E8ECF1"}});s.addText("No photo",{x:bx,y:by+bh/2-0.3,w:bw,h:0.6,fontFace:F,fontSize:18,color:"56606C",align:"center"})}
+    const found=x.type==="found",lines=[{text:found?"FOUND":"LOST",options:{fontSize:16,bold:true,color:found?"1D7A45":"B3261E",breakLine:true}},{text:x.what,options:{fontSize:30,bold:true,color:NAVY,breakLine:true}}];
+    if(x.where||x.date)lines.push({text:`${found?"Found":"Last seen"}${x.where?": "+x.where:""}${x.date?", "+short(x.date):""}`,options:{fontSize:18,color:"56606C",breakLine:true}});
+    if(x.details)lines.push({text:x.details,options:{fontSize:18,color:NAVY,breakLine:true}});
+    s.addText(lines,{x:7.4,y:1.6,w:5.4,h:4.4,fontFace:F,valign:"top",paraSpaceAfter:10});
+    s.addText(found?"Is this yours? Tell Student Council.":"Seen it? Tell Student Council.",{x:7.4,y:6.2,w:5.4,h:0.5,fontFace:F,fontSize:16,bold:true,color:NAVY});
+    s.addShape(p.ShapeType.rect,{x:0,y:7.2,w:13.33,h:0.3,fill:{color:GOLD},line:{color:GOLD}})}
+  const data=await p.write({outputType:"blob"});
+  await offer(`Lost and found ${new Date().toLocaleDateString(undefined,{month:"long",year:"numeric"})}.pptx`,data);
+}
 
 /* ---------- proposals ---------- */
 function tally(p){const v=p.votes||{},t={aye:0,nay:0,abstain:0};for(const k in v)if(t[v[k]]!=null&&isApproved(S.members.find(m=>m.id===k)))t[v[k]]++;return t}
@@ -2221,6 +2363,11 @@ document.addEventListener("click",async e=>{
     case"cp-delete":return save(()=>col("clubposts").doc(id).delete(),"Post removed");
     case"new-post":return postForm(b.dataset.kind);
     case"new-work":return postForm("create");
+    case"win":return openWin(id);
+    case"add-win":return winForm(null,b.dataset.to);
+    case"edit-win":return winForm(id);
+    case"lf-present":return openDeck();
+    case"lf-deck":b.disabled=true;try{await downloadDeck()}finally{b.disabled=false}return;
     case"lost-new":return lostForm(b.dataset.kind);
     case"lost-filter":lostFilter=b.dataset.to;return render();
     case"lost-done":return save(()=>db.doc("lostfound/"+b.dataset.uid).update({items:{[b.dataset.key]:{status:"returned"}}}),"Marked as returned");
