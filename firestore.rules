@@ -48,6 +48,13 @@ service cloud.firestore {
     match /tasks/{id}    { allow read: if signedIn(); allow write: if isOwner(); }
     match /claims/{uid}  { allow read: if signedIn(); allow write: if isOwner() || (isSelf(uid) && isCouncil()); }
 
+    // Community: clubs are public; names and scores need sign-in
+    match /clubs/{id}       { allow read: if true; allow write: if isCouncil(); }
+    match /aviators/{id}    { allow read: if signedIn(); allow write: if isCouncil(); }
+    match /predictions/{id} { allow read: if signedIn(); allow write: if isCouncil(); }
+    match /scores/{id}      { allow read: if signedIn(); allow write: if isCouncil(); }
+    match /picks/{uid}      { allow read: if isSelf(uid) || isCouncil(); allow write: if isSelf(uid); }
+
     // Each person's own entries
     match /signups/{uid}     { allow read: if signedIn(); allow write: if isSelf(uid) || isCouncil(); }
     match /birthdays/{uid}   { allow read: if signedIn(); allow write: if isSelf(uid) || isCouncil(); }
