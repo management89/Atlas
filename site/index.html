@@ -10,14 +10,21 @@
 <meta property="og:title" content="Avenues Student Hub">
 <meta property="og:description" content="Events, sign-ups, the weekly bulletin, opportunities and Student Council news for students at Avenues The World School.">
 <meta property="og:url" content="https://alexanderhuang.codeberg.page/Atlas/">
-<meta name="theme-color" content="#F4B400">
-<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='8' fill='%23F4B400'/%3E%3Ctext x='32' y='44' font-family='Arial' font-weight='800' font-size='30' text-anchor='middle' fill='%2314202E'%3ESH%3C/text%3E%3C/svg%3E">
+<meta name="theme-color" content="#14202E">
+<link rel="icon" href="icons/favicon-32.png" type="image/png">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Student Hub">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <style>:root{color-scheme:light;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0;font:14px system-ui,sans-serif}img{max-width:100%}[hidden]{display:none!important}</style>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
 <script src="firebase-config.js?v=761b57f4"></script>
 <script src="firebase-adapter.js?v=fff6d176"></script>
+<script>if("serviceWorker"in navigator)addEventListener("load",()=>navigator.serviceWorker.register("sw.js").catch(()=>{}))</script>
 </head>
 <body>
 <noscript><p style="padding:16px">Avenues Student Hub needs JavaScript. It lists events, sign-ups, the weekly bulletin, opportunities and Student Council news for Avenues The World School.</p></noscript>
@@ -904,6 +911,29 @@ a.fchip{text-decoration:none;display:inline-block}
 .streak-line{display:flex;flex-wrap:wrap;gap:6px 10px;align-items:center}
 .streak-line .sub{display:inline-flex;align-items:center;gap:6px}
 .live-card .streak{align-self:flex-start;margin-top:6px}
+
+/* inbox */
+.bell{position:relative;display:inline-grid;place-items:center;width:38px;height:38px;border:0;background:rgba(20,32,46,.55);color:#FFFFFF;cursor:pointer;margin-right:2px}
+.bell:hover{background:rgba(20,32,46,.8)}
+.bell-i{width:18px;height:18px}
+.bell-n{position:absolute;top:-4px;right:-4px;min-width:18px;height:18px;padding:0 4px;background:#C8373B;color:#FFFFFF;font-size:11px;font-weight:800;display:grid;place-items:center;line-height:1}
+#inbox{position:fixed;top:72px;right:max(16px,env(safe-area-inset-right,0px));z-index:60;width:min(380px,calc(100vw - 32px))}
+.inbox{background:var(--surface);color:var(--ink);box-shadow:0 -3px 0 var(--surface),0 3px 0 var(--surface),-3px 0 0 var(--surface),3px 0 0 var(--surface),0 6px 0 var(--rail),-3px 3px 0 var(--rail),3px 3px 0 var(--rail),0 18px 40px rgba(0,0,0,.25);max-height:min(70vh,560px);overflow:auto}
+.inbox-head{display:flex;justify-content:space-between;align-items:center;padding:12px 16px;border-bottom:1px solid var(--rule);position:sticky;top:0;background:var(--surface)}
+.inbox-head h2{font-size:19px;font-weight:800}
+.inbox-list{list-style:none;margin:0;padding:0}
+.inbox-list li a{display:flex;gap:10px;padding:11px 16px;border-bottom:1px solid var(--rule);color:var(--ink);text-decoration:none}
+.inbox-list li a:hover{background:var(--ground)}
+.inbox-list li.new a{background:var(--warn-soft)}
+.inbox-list b{display:block;font-size:15px;line-height:1.3}
+.inbox-list .sub{display:block;font-size:13px}
+.ib-t{margin-top:2px}
+.ib-dot{width:8px;height:8px;margin-top:6px;flex:none;background:var(--info)}
+.ib-dot.k-good{background:var(--good)}.ib-dot.k-bad{background:var(--bad)}.ib-dot.k-warn{background:var(--rail)}
+@media (max-width:560px){#inbox{top:64px;left:16px;right:16px;width:auto}}
+
+.install .ios-steps{margin:4px 0 0;padding-left:20px}
+.install h2 .btn{font-size:13px}
 </style>
 
 <div class="app">
@@ -1066,6 +1096,7 @@ function renderMe(){
   b.innerHTML=`${img}<div class="grow"><div class="title">${esc((d&&d.name)||me.name||"You")}</div><div class="sub">${esc(role)}</div></div>${window.__signOut?`<button class="btn sm ghost" data-act="signout">Sign out</button>`:""}`;
 }
 function render(){
+  if(inboxOpen)drawInbox();
   renderNav();renderMe();maybeReveal();if(archiveYear!=null)drawArchive();
   {const wb=$("#workBar"),w=gal&&gal.work&&S.posts.find(x=>x.id===gal.work);if(wb&&w)wb.innerHTML=workBar(w)}
   if(editing&&shownView()==="proposals"&&$("#editor"))return;
@@ -1273,7 +1304,7 @@ function eventsView(){
   const up=S.events.filter(e=>e.type!=="meeting"&&e.type!=="deadline"&&e.date>=TODAY).sort(byDate);
   const opts=[["all","All events"],["open","Sign-ups open"],["mine","I'm going"]];
   const list=up.filter(e=>evFilter==="all"||(evFilter==="open"?e.signup&&e.signup!=="none":!!mySignups()[e.id]));
-  return head("Dances, trips, tournaments and competitions. See the details and sign up in one place.","Events",`<a class="btn" href="#calendar">Month view</a>`+addBtn("add-event","Add event"))+
+  return head("Dances, trips, tournaments and competitions. See the details and sign up in one place.","Events",`<a class="btn" href="#calendar">Month view</a>`+subscribeBtns()+addBtn("add-event","Add event"))+
   `<div class="fchips">${opts.map(([k,l])=>`<button class="fchip" data-act="ev-filter" data-to="${k}" aria-pressed="${evFilter===k}">${l}</button>`).join("")}</div>`+
   (list.length?`<div class="evlist">${list.map(eventCard).join("")}</div>`:empty(up.length?"Nothing in this category":"No upcoming events",up.length?"Try another filter.":canAct()?"Add a dance, trip or competition and turn on sign-ups.":"Check back soon.",up.length?null:"add-event","Add an event"));
 }
@@ -1294,8 +1325,8 @@ function eventCard(e){
     <div class="sub parts"><span>${esc(longd(e.date))}${e.time?", "+esc(fmtTime(e.time)):""}</span>${e.location?`<span>${esc(e.location)}</span>`:""}${e.price?`<span>${esc(e.price)}</span>`:""}</div>
     ${e.change?`<div class="changenote">Changed: ${esc(e.change)}</div>`:""}
     ${has?`<div class="sub parts"><span>${sus.length} signed up</span>${cap?`<span>${Math.max(0,cap-sus.length)} of ${cap} spots left</span>`:""}${e.closes?`<span>${closed?"Closed":"Closes"} ${esc(short(e.closes))}</span>`:""}</div>`:""}
-    ${x?`<div class="ev-more">${e.details||e.notes?`<div><b>Details</b><p>${esc(e.details||e.notes)}</p></div>`:""}${e.schedule?`<div><b>Schedule</b><p>${esc(e.schedule)}</p></div>`:""}${has&&sus.length?`<div><b>Who's going</b><div class="going">${council()?`<ul class="list" style="margin:0">${sus.map(s=>`<li>${who(s.uid,"Someone")}${s.team?`<span class="sub">${esc(s.team)}</span>`:""}</li>`).join("")}</ul>`:sus.slice(0,24).map(s=>avatar(s.uid)).join("")+(sus.length>24?`<span class="sub">and ${sus.length-24} more</span>`:"")}</div></div>`:""}</div>`:""}
-    <div class="toolbar">${act}${e.details||e.notes||e.schedule||(has&&sus.length)?`<button class="btn sm ghost" data-act="ev-toggle" data-id="${e.id}" aria-expanded="${x}">${x?"Hide details":"Details"}</button>`:""}${canAct()?`<button class="btn sm ghost" data-act="edit-event" data-id="${e.id}">Edit</button>`:""}</div>
+    ${x?`<div class="ev-more"><div><b>Add to your calendar</b><div class="toolbar" style="margin-top:6px"><a class="btn sm" href="${esc(gcalLink(e))}" target="_blank" rel="noopener">Google Calendar</a><button class="btn sm" data-act="ev-ics" data-id="${e.id}">Apple or Outlook (.ics)</button></div></div>${e.details||e.notes?`<div><b>Details</b><p>${esc(e.details||e.notes)}</p></div>`:""}${e.schedule?`<div><b>Schedule</b><p>${esc(e.schedule)}</p></div>`:""}${has&&sus.length?`<div><b>Who's going</b><div class="going">${council()?`<ul class="list" style="margin:0">${sus.map(s=>`<li>${who(s.uid,"Someone")}${s.team?`<span class="sub">${esc(s.team)}</span>`:""}</li>`).join("")}</ul>`:sus.slice(0,24).map(s=>avatar(s.uid)).join("")+(sus.length>24?`<span class="sub">and ${sus.length-24} more</span>`:"")}</div></div>`:""}</div>`:""}
+    <div class="toolbar">${act}<button class="btn sm ghost" data-act="ev-toggle" data-id="${e.id}" aria-expanded="${x}">${x?"Hide details":e.details||e.notes||e.schedule||(has&&sus.length)?"Details and add to calendar":"Add to calendar"}</button>${canAct()?`<button class="btn sm ghost" data-act="edit-event" data-id="${e.id}">Edit</button>`:""}</div>
   </div></article>`;
 }
 
@@ -1582,6 +1613,7 @@ function homeAuth(){
   let h=canCouncil()?`<button class="hbtn sm glass" data-act="mode" data-to="council">Council view</button>`:"";
   if(me.id){const d=myDoc(),pic=d&&typeof d.photo==="string"&&d.photo.startsWith("data:image/")?d.photo:me.avatarUrl;
     const nm=(d&&d.name)||me.name||"You";
+    if(canJoin()){const n=inboxUnread();h+=`<button class="bell" data-act="inbox" aria-haspopup="dialog" aria-expanded="${inboxOpen}" aria-label="Notifications${n?`, ${n} new`:""}">${BELL}${n?`<span class="bell-n">${n>9?"9+":n}</span>`:""}</button>`}
     h+=`<a class="me-glass" href="#myspace" title="My page">${pic?`<img class="avatar" src="${esc(pic)}" alt="">`:`<span class="avatar" style="background:${colorFor(me.id)}">${esc(initials(nm))}</span>`}<span>${esc(nm.split(" ")[0])}</span></a>`;
     if(window.__signOut)h+=`<button class="hbtn sm glass" data-act="signout">Sign out</button>`}
   else if(window.__signIn)h+=`<button class="hbtn sm" data-act="signin">Sign in</button>`;
@@ -1623,7 +1655,7 @@ function todayItems(){const in14=iso(addDays(new Date(),14)),out=[];
   if(me.id&&canJoin())for(const x of Object.values(myMine().items||{}))if(x.date>=TODAY&&x.date<=in14)out.push({date:x.date,time:x.time,title:x.title,href:"#myspace",sub:[x.time?fmtTime(x.time):"","Only you"].filter(Boolean).join(", "),chip:"",chipL:""});
   return out.sort((a,b)=>(a.date+(a.time||"")).localeCompare(b.date+(b.time||"")))}
 function comingUp(){const it=todayItems().slice(0,7),signed=!!me.id&&canJoin();
-  return`<section class="panel" id="sec-upcoming"><h2>Coming up <a href="#calendar">Month view</a></h2>${it.length?`<ul class="list">${it.map(x=>`<li>${datebox(x.date)}<div class="grow"><a class="title" href="${x.href}">${esc(x.title)}</a>${x.sub?`<div class="sub">${esc(x.sub)}</div>`:""}</div>${x.chipL?`<span class="chip ${esc(x.chip)}">${esc(x.chipL)}</span>`:""}</li>`).join("")}</ul>`:`<p class="sub" style="margin:10px 0 0">Nothing in the next two weeks.</p>`}${signed?`<div style="margin-top:10px"><button class="btn sm" data-act="my-add" data-date="${TODAY}">+ Add a reminder only you see</button></div>`:""}</section>`}
+  return`<section class="panel" id="sec-upcoming"><h2>Coming up <a href="${calFeed()?`https://calendar.google.com/calendar/render?cid=${encodeURIComponent(webcal(calFeed()))}`:"#calendar"}" ${calFeed()?'target="_blank" rel="noopener"':""}>${calFeed()?"Add to my calendar":"Month view"}</a></h2>${it.length?`<ul class="list">${it.map(x=>`<li>${datebox(x.date)}<div class="grow"><a class="title" href="${x.href}">${esc(x.title)}</a>${x.sub?`<div class="sub">${esc(x.sub)}</div>`:""}</div>${x.chipL?`<span class="chip ${esc(x.chip)}">${esc(x.chipL)}</span>`:""}</li>`).join("")}</ul>`:`<p class="sub" style="margin:10px 0 0">Nothing in the next two weeks.</p>`}${signed?`<div style="margin-top:10px"><button class="btn sm" data-act="my-add" data-date="${TODAY}">+ Add a reminder only you see</button></div>`:""}</section>`}
 function bdayPanel(){const bd=S.birthdays.filter(b=>b.show!==false&&b.name&&b.month&&b.day).map(b=>({...b,next:nextBday(b)})).filter(b=>(b.next-parse(TODAY))/864e5<=7).sort((a,b)=>a.next-b.next),mineB=S.birthdays.find(b=>b.id===me.id),canAdd=canJoin()&&!CFG.rosterOnly;
   if(!bd.length&&!canAdd)return"";
   return`<section class="panel"><h2>Birthdays this week</h2>${bd.length?bd.map(b=>{const today=iso(b.next)===TODAY;return`<div class="bday"><b>${esc(b.name)}</b><span class="sub">${today?"":esc(b.next.toLocaleDateString(undefined,{weekday:"long"}))}</span>${today?`<span class="chip gold">Today</span>`:""}${canAct()?`<span class="sp"></span><button class="btn sm ghost" data-act="bday-remove" data-id="${b.id}">Remove</button>`:""}</div>`}).join(""):`<p class="sub" style="margin:10px 0 0">No birthdays in the next 7 days.</p>`}${canAdd?`<div style="margin-top:10px"><button class="btn sm" data-act="bday">${mineB?"Edit my birthday":"Add my birthday"}</button></div>`:""}</section>`}
@@ -1642,7 +1674,7 @@ function todayBody(){
     ${feat?`<section class="panel"><h2>Made at Avenues</h2><div class="home-feat">${feat}</div></section>`:""}
     <section class="panel today-feed"><h2>Community</h2>${feed}</section>
   </div>
-  <div class="t-rest">${winnersPanel()}<section class="panel">${raceMini()}</section>${bdayPanel()}${playlistPanel()}</div>
+  <div class="t-rest">${installCard("today")}${winnersPanel()}<section class="panel">${raceMini()}</section>${bdayPanel()}${playlistPanel()}</div>
   </div>
   ${albums.length?`<section class="panel" id="sec-photos"><h2>Around Avenues</h2><div style="margin-top:12px">${beltsHTML(2)}</div>${canAct()?`<div class="albums">${albums.map(albumCard).join("")}</div>`:""}</section>`:`<span id="sec-photos"></span>`}
   ${reel?`<section class="home-reel"><div class="home-reel-head"><h2>Student Council lately</h2><a href="#working">See everything we've done</a></div>${reel}</section>`:""}`;
@@ -2236,7 +2268,7 @@ const myGrade=()=>(RM()&&RM().grade)||myPlay().grade||"";
 /* StuCo meetings only show to council members (not in student preview) */
 const evVisible=e=>council()||((e.type!=="meeting"||(amMember()&&!preview))&&(!e.grade||e.grade===myGrade()));
 const accentOf=sp=>ACCENTS.some(a=>a[0]===sp.accent)?sp.accent:"#F4B400";
-function saveMine(patch){const m=myMine();return db.doc("mine/"+me.id).set({pins:m.pins||{},items:m.items||{},...patch})}
+function saveMine(patch){const{id,...m}=myMine();return db.doc("mine/"+me.id).set({...m,pins:m.pins||{},items:m.items||{},...patch})}
 function myShouts(){const n=gnorm(myName());if(!n||n.length<3)return[];const out=[];
   S.aviators.forEach(a=>{if(gnorm(a.name)===n)out.push({k:"Aviator of the Week",t:a.why||"",d:a.date||""})});
   S.wins.forEach(w=>{if(w.who&&gnorm(w.who).includes(n))out.push({k:"Student Council shout-out",t:w.title,d:w.date||""})});
@@ -2271,6 +2303,7 @@ function mySpaceView(){
     <section class="panel"><h2>My posts <a href="#community">Post something</a></h2>${pending.length?`<p class="sub" style="margin:8px 0 0">${pending.length} waiting for Student Council approval.</p>`:""}${own.length?`<ul class="list">${own.map(p=>`<li><div class="grow"><div class="title">${pins[p.id]?"📌 ":""}${esc(p.title||POST_KIND[p.kind])}</div><div class="sub">${POST_KIND[p.kind]||"Post"}, ${esc(short((p.at||"").slice(0,10)))}</div></div><button class="btn sm" data-act="my-pin" data-id="${p.id}" aria-pressed="${!!pins[p.id]}">${pins[p.id]?"Pinned":"Pin"}</button></li>`).join("")}</ul>`:`<p class="sub" style="margin:8px 0 0">Nothing posted yet. Your approved posts show here, and you can pin your favorites to the top.</p>`}</section>
     <section class="panel"><h2>Shout-outs</h2>${shouts.length?`<ul class="list">${shouts.map(x=>`<li><span class="chip gold">${esc(x.k)}</span><div class="grow"><div class="title">${esc(x.t)}</div><div class="sub">${x.d?esc(fmt(x.d,{month:"long",day:"numeric",year:"numeric"})):""}</div></div></li>`).join("")}</ul>`:`<p class="sub" style="margin:8px 0 0">When you're named Aviator of the Week, credited on a Student Council win or featured on the home page, it's saved here.</p>`}</section>
   </div><div class="my-col">
+    ${installCard("me")}
     <section class="panel"><h2>Book a room</h2>${roomsHTML()}</section>
     <section class="panel"><h2>Saved opportunities <a href="#opportunities">Find more</a></h2>${saved.length?`<ul class="list">${saved.map(o=>`<li><div class="grow"><div class="title">${esc(o.title)}</div><div class="sub">${o.deadline?(o.deadline<TODAY?"Closed":"Apply by "+esc(short(o.deadline))):"No deadline"}</div></div>${safeUrl(o.link)?`<a class="btn sm" href="${esc(o.link)}" target="_blank" rel="noopener">Apply</a>`:""}<button class="btn sm ghost" data-act="opp-save" data-id="${o.id}">Unsave</button></li>`).join("")}</ul>`:`<p class="sub" style="margin:8px 0 0">Tap Save on any opportunity and it's pinned here.</p>`}</section>
     <section class="panel"><h2>Who can help</h2>${helpHTML()}</section>
@@ -2290,6 +2323,60 @@ function bookForm(){const rooms=CFG.rooms||[];
       const clash=allBookings().find(b=>b.room===v.room&&b.date===v.date&&v.start<b.end&&b.start<v.end);if(clash){$("#merr").textContent=`${v.room} is already booked ${fmtTime(clash.start)} to ${fmtTime(clash.end)} that day.`;return false}
       const cur=(S.bookings.find(d=>d.id===me.id)||{}).items||{};roomDate=v.date;
       return save(()=>db.doc("bookings/"+me.id).set({items:{...cur,[Date.now().toString(36)]:{...v,name:myName(),grade:myGrade(),at:new Date().toISOString()}}}),`${v.room} booked`)}})}
+
+/* ---------- Inbox: built from data the site already has; "seen" is a time saved in your private mine/ doc ---------- */
+const BELL=`<svg class="bell-i" viewBox="0 0 8 8" aria-hidden="true" shape-rendering="crispEdges"><path d="M3 0h2v1h1v1h1v3h1v1h-8v-1h1v-3h1v-1h1z" fill="currentColor"/><path d="M3 7h2v1h-2z" fill="currentColor"/></svg>`;
+let inboxOpen=false;
+const dayAt=(d,h)=>{const x=parse(d);if(!x)return"";x.setHours(h,0,0,0);return x.toISOString()};
+function inboxItems(){if(!me.id||!canJoin())return[];const out=[],now=new Date().toISOString(),ago=iso(addDays(new Date(),-30)),in2=iso(addDays(new Date(),2));
+  const add=(id,t,title,sub,href,kind)=>{if(t&&t.slice(0,10)>=ago&&t<=now)out.push({id,t,title,sub,href,kind})};
+  for(const d of allSubs())if(d.uid===me.id&&(d.status==="approved"||d.status==="declined"))add("sub"+d.key,d.decidedAt||d.at,d.status==="approved"?`Your post “${d.title||"post"}” is up`:`Your post “${d.title||"post"}” wasn't approved`,d.status==="approved"?"Student Council approved it.":"Ask a council member if you'd like to know why.",d.kind==="opp"?"#opportunities":"#home",d.status==="approved"?"good":"bad");
+  for(const d of allDrafts())if(d.uid===me.id&&(d.status==="approved"||d.status==="declined"))add("cp"+d.key,d.decidedAt||d.at,d.status==="approved"?`Your ${d.clubName} update is posted`:`Your ${d.clubName} update wasn't approved`,"",  "#clubs",d.status==="approved"?"good":"bad");
+  for(const x of allSuggestions())if(x.uid===me.id){if(x.reply)add("sr"+x.key,x.repliedAt||x.at,`Student Council replied to “${x.title}”`,x.reply.slice(0,120),"#suggestions","info");
+    if(x.status&&x.status!=="new"&&x.status!=="review"&&x.reviewedAt)add("ss"+x.key+x.status,x.reviewedAt,`“${x.title}” is now ${label(SUG_STATUS,x.status).toLowerCase()}`,"","#suggestions",x.status==="declined"?"bad":"good")}
+  const mine=new Set(S.posts.filter(p=>p.by===me.id).map(p=>p.id));
+  for(const d of S.replies)if(d.id!==me.id)for(const[k,v]of Object.entries(d.items||{}))if(v&&mine.has(v.postId)){const p=S.posts.find(x=>x.id===v.postId);add("rp"+k,v.at,`${v.name||"Someone"} replied to “${(p&&p.title)||"your post"}”`,(v.text||"").slice(0,120),"#home","info")}
+  const sc=S.scores.find(d=>d.id===me.id),games={};
+  for(const[k,x]of Object.entries((sc&&sc.log)||{})){const p=Number(x&&x.p)||0,dt=logDate(k,x);if(!p||!dt)continue;
+    if(k[0]==="g"){(games[dt]=games[dt]||{p:0,why:x.why}).p+=p;continue}
+    add("lg"+k,dayAt(k[0]==="s"||k[0]==="b"?dt:iso(addDays(parse(dt),0)),k[0]==="s"||!S.challenges.some(c=>c.id===k)?8:16),k[0]==="s"?`+${p} points for a ${x.why}`:S.challenges.some(c=>c.id===k)?`Challenge confirmed: +${p} points`:`+${p} points: ${x.why||"bonus"}`,S.challenges.some(c=>c.id===k)?x.why||"":"","#play","good")}
+  for(const[dt,g]of Object.entries(games))add("gm"+dt,dayAt(iso(addDays(parse(dt),1)),7),`Results are in: +${g.p} points`,`From ${g.why||"the daily game"} on ${longd(dt)}.`,"#play","good");
+  const lw=weekBoard(lastWeek()).slice(0,3).findIndex(d=>d.id===me.id);if(lw>=0)add("wk"+lastWeek(),dayAt(weekStart(TODAY),7),`You placed #${lw+1} last week`,`Top 3 win ${weekPrize()}. Student Council will get it to you.`,"#play","good");
+  for(const x of myShouts())if(x.d)add("sh"+x.k+x.d,dayAt(x.d,9),x.k,x.t.slice(0,120),"#myspace","good");
+  /* reminders appear the morning before */
+  for(const o of S.opps)if(savedOpps.has(o.id)&&o.deadline&&o.deadline>=TODAY&&o.deadline<=in2)add("op"+o.id,dayAt(iso(addDays(parse(o.deadline),-2)),7),`Saved opportunity closes ${dueIn(o.deadline).toLowerCase()}`,o.title,"#opportunities","warn");
+  const su=mySignups();for(const e of S.events)if(su[e.id]&&e.date>=TODAY&&e.date<=in2)add("ev"+e.id,dayAt(iso(addDays(parse(e.date),-1)),7),`${dueIn(e.date)}: ${e.title}`,[e.time?fmtTime(e.time):"",e.location||""].filter(Boolean).join(", "),"#events","warn");
+  return out.sort((a,b)=>b.t.localeCompare(a.t)).slice(0,30)}
+/* first time: only the last 3 days count as new */
+const inboxSeen=()=>myMine().inboxSeen||new Date(Date.now()-3*864e5).toISOString();
+function inboxUnread(){const s=inboxSeen();return inboxItems().filter(x=>x.t>s).length}
+function drawInbox(){let el=$("#inbox");if(!inboxOpen){if(el)el.remove();return}
+  if(!el){el=document.createElement("div");el.id="inbox";document.body.appendChild(el)}
+  const items=inboxItems(),seen=el.dataset.seen||inboxSeen();
+  el.innerHTML=`<div class="inbox" role="dialog" aria-modal="false" aria-labelledby="inboxT"><div class="inbox-head"><h2 id="inboxT">Notifications</h2><button class="btn sm ghost" data-act="inbox-close">Close</button></div>${items.length?`<ul class="inbox-list">${items.map(x=>`<li class="${x.t>seen?"new":""}"><a href="${x.href}" data-act="inbox-go"><span class="ib-dot k-${x.kind}"></span><span class="grow"><b>${esc(x.title)}</b>${x.sub?`<span class="sub">${esc(x.sub)}</span>`:""}<span class="sub ib-t">${esc(ago_(x.t))}</span></span></a></li>`).join("")}</ul>`:`<p class="sub" style="padding:14px 16px;margin:0">Nothing yet. When your posts are approved, council replies to you, or you win points, it shows up here.</p>`}</div>`}
+function ago_(t){const d=(Date.now()-new Date(t))/6e4;if(d<60)return Math.max(1,Math.round(d))+" min ago";if(d<1440)return Math.round(d/60)+" h ago";const n=Math.round(d/1440);return n===1?"Yesterday":n+" days ago"}
+function openInbox(){inboxOpen=!inboxOpen;if(inboxOpen){const el0=$("#inbox");drawInbox();const el=$("#inbox");el.dataset.seen=inboxSeen();const top=inboxItems()[0];if(top&&top.t>inboxSeen()&&db)saveMine({inboxSeen:new Date().toISOString()}).catch(()=>{});const c=el.querySelector("[data-act=inbox-close]");c&&c.focus()}else drawInbox();render()}
+
+/* ---------- installable app ---------- */
+let installEvt=null;addEventListener("beforeinstallprompt",e=>{e.preventDefault();installEvt=e;render()});addEventListener("appinstalled",()=>{installEvt=null;render()});
+const isStandalone=()=>{try{return matchMedia("(display-mode: standalone)").matches||navigator.standalone===true}catch(e){return false}};
+const isIOS=()=>/iPhone|iPad|iPod/.test(navigator.userAgent)||(navigator.platform==="MacIntel"&&navigator.maxTouchPoints>1);
+function installCard(where){if(!HOSTED||isStandalone()||!(installEvt||isIOS()))return"";if(where==="today"){try{if(localStorage.getItem("hub-install-hide"))return""}catch(e){}}
+  return`<section class="panel install"><h2>Get the app${where==="today"?`<button class="btn sm ghost" data-act="install-hide" aria-label="Hide this">Hide</button>`:""}</h2><p class="sub" style="margin:8px 0">Put Student Hub on your home screen. It opens like an app, straight to Today.</p>${installEvt?`<button class="btn primary" data-act="install">Install Student Hub</button>`:`<ol class="ios-steps"><li>Tap the <b>Share</b> button in Safari</li><li>Choose <b>Add to Home Screen</b></li></ol>`}</section>`}
+
+/* ---------- calendar: add one event, or subscribe to all school events ---------- */
+const icsEsc=t=>String(t||"").replace(/\\/g,"\\\\").replace(/\n/g,"\\n").replace(/([,;])/g,"\\$1");
+function icsEvent(e){const d=(e.date||"").replace(/-/g,"");if(!d)return"";const L=["BEGIN:VEVENT","UID:"+e.id+"@avenues-student-hub","DTSTAMP:"+new Date().toISOString().replace(/[-:]/g,"").slice(0,15)+"Z","SUMMARY:"+icsEsc(e.title)];
+  if(e.time){const t=e.time.replace(":","")+"00",end=new Date(parse(e.date));const[h,m]=e.time.split(":").map(Number);end.setHours(h+1,m);L.push("DTSTART:"+d+"T"+t,"DTEND:"+iso(end).replace(/-/g,"")+"T"+pad(end.getHours())+pad(end.getMinutes())+"00")}
+  else{L.push("DTSTART;VALUE=DATE:"+d,"DTEND;VALUE=DATE:"+iso(addDays(parse(e.date),1)).replace(/-/g,""))}
+  if(e.location)L.push("LOCATION:"+icsEsc(e.location));const desc=[e.details||e.notes||"",e.change?"Changed: "+e.change:""].filter(Boolean).join("\n");if(desc)L.push("DESCRIPTION:"+icsEsc(desc));L.push("END:VEVENT");return L.join("\r\n")}
+const icsWrap=body=>["BEGIN:VCALENDAR","VERSION:2.0","PRODID:-//Avenues Student Hub//EN","CALSCALE:GREGORIAN",body,"END:VCALENDAR"].join("\r\n")+"\r\n";
+function gcalLink(e){const d=(e.date||"").replace(/-/g,"");let dates;if(e.time){const[h,m]=e.time.split(":").map(Number),t=pad(h)+pad(m)+"00",eh=new Date(parse(e.date));eh.setHours(h+1,m);dates=d+"T"+t+"/"+iso(eh).replace(/-/g,"")+"T"+pad(eh.getHours())+pad(eh.getMinutes())+"00"}else dates=d+"/"+iso(addDays(parse(e.date),1)).replace(/-/g,"");
+  return"https://calendar.google.com/calendar/render?action=TEMPLATE&text="+encodeURIComponent(e.title||"")+"&dates="+dates+(e.location?"&location="+encodeURIComponent(e.location):"")+((e.details||e.notes)?"&details="+encodeURIComponent(e.details||e.notes):"")}
+const calFeed=()=>safeUrl(CFG.icsUrl);
+const webcal=u=>u.replace(/^https:\/\//,"webcal://");
+function subscribeBtns(){const u=calFeed();if(!u)return isPres&&canAct()?`<button class="btn" data-act="ics-set">Connect calendar feed</button>`:"";
+  return`<a class="btn" href="https://calendar.google.com/calendar/render?cid=${encodeURIComponent(webcal(u))}" target="_blank" rel="noopener">Subscribe in Google Calendar</a><a class="btn ghost" href="${esc(webcal(u))}">Apple Calendar</a>${isPres&&canAct()?`<button class="btn sm ghost" data-act="ics-set">Feed link</button>`:""}`}
 
 /* ---------- Explore: events, clubs, opportunities ---------- */
 function exploreTab(){const cur=shownView();
@@ -2693,8 +2780,8 @@ document.addEventListener("click",async e=>{
     case"club-join":{const c={...(myPlay().clubs||{})};if(c[id])delete c[id];else c[id]=true;return save(()=>savePlay({clubs:c}))}
     case"roster-import":b.disabled=true;await importRoster();b.disabled=false;return;
     case"cp-new":return clubPostForm(id);
-    case"cp-approve":{const d=allDrafts().find(x=>x.uid===b.dataset.uid&&x.key===b.dataset.key);if(!d)return;const{key,uid,status,...post}=d;return save(async()=>{await col("clubposts").add(post);await db.doc("clubdrafts/"+uid).update({items:{[key]:{status:"approved"}}})},"Approved and posted",["approved a club post from","club",d.clubName])}
-    case"cp-decline":{const d=allDrafts().find(x=>x.uid===b.dataset.uid&&x.key===b.dataset.key);if(!d)return;return save(()=>db.doc("clubdrafts/"+d.uid).update({items:{[d.key]:{status:"declined"}}}),"Post declined",["declined a club post from","club",d.clubName])}
+    case"cp-approve":{const d=allDrafts().find(x=>x.uid===b.dataset.uid&&x.key===b.dataset.key);if(!d)return;const{key,uid,status,...post}=d;return save(async()=>{await col("clubposts").add(post);await db.doc("clubdrafts/"+uid).update({items:{[key]:{status:"approved",decidedAt:new Date().toISOString()}}})},"Approved and posted",["approved a club post from","club",d.clubName])}
+    case"cp-decline":{const d=allDrafts().find(x=>x.uid===b.dataset.uid&&x.key===b.dataset.key);if(!d)return;return save(()=>db.doc("clubdrafts/"+d.uid).update({items:{[d.key]:{status:"declined",decidedAt:new Date().toISOString()}}}),"Post declined",["declined a club post from","club",d.clubName])}
     case"cp-delete":return save(()=>col("clubposts").doc(id).delete(),"Post removed");
     case"new-post":return postForm(b.dataset.kind);
     case"new-work":return postForm("create");
@@ -2726,8 +2813,8 @@ document.addEventListener("click",async e=>{
     case"create-filter":createFilter=b.dataset.to;return render();
     case"post-toggle":openPost=openPost===id?null:id;return render();
     case"post-delete":{const w=S.posts.find(x=>x.id===id);if(gal)closeGallery();return save(()=>col("posts").doc(id).delete(),"Removed",["removed","post",w&&w.title])}
-    case"sub-approve":{const d=allSubs().find(x=>x.uid===b.dataset.uid&&x.key===b.dataset.key);if(!d)return;const{key,uid,status,...post}=d;return save(async()=>{if(d.kind==="opp")await col("opps").add({title:d.title,details:d.text||"",link:d.link||"",deadline:d.deadline||"",category:"career",byName:d.byName||"",created:d.at});else await col("posts").add(post);await db.doc("submissions/"+uid).update({items:{[key]:{status:"approved"}}})},"Approved and posted",["approved","post",d.title])}
-    case"sub-decline":{const d=allSubs().find(x=>x.uid===b.dataset.uid&&x.key===b.dataset.key);if(!d)return;return save(()=>db.doc("submissions/"+d.uid).update({items:{[d.key]:{status:"declined"}}}),"Declined",["declined","post",d.title])}
+    case"sub-approve":{const d=allSubs().find(x=>x.uid===b.dataset.uid&&x.key===b.dataset.key);if(!d)return;const{key,uid,status,...post}=d;return save(async()=>{if(d.kind==="opp")await col("opps").add({title:d.title,details:d.text||"",link:d.link||"",deadline:d.deadline||"",category:"career",byName:d.byName||"",created:d.at});else await col("posts").add(post);await db.doc("submissions/"+uid).update({items:{[key]:{status:"approved",decidedAt:new Date().toISOString()}}})},"Approved and posted",["approved","post",d.title])}
+    case"sub-decline":{const d=allSubs().find(x=>x.uid===b.dataset.uid&&x.key===b.dataset.key);if(!d)return;return save(()=>db.doc("submissions/"+d.uid).update({items:{[d.key]:{status:"declined",decidedAt:new Date().toISOString()}}}),"Declined",["declined","post",d.title])}
     case"reply-send":{const inp=$("#rp-"+id),v=inp.value.trim();if(!v){inp.focus();return}inp.value="";return save(()=>upsert("replies",me.id,{items:{[Date.now().toString(36)]:{postId:id,text:v.slice(0,400),at:new Date().toISOString(),name:myName()}}}))}
     case"reply-delete":{const d=S.replies.find(x=>x.id===b.dataset.uid);if(!d)return;const items={...d.items};delete items[b.dataset.key];return save(()=>db.doc("replies/"+d.id).set({items}),"Reply removed")}
     case"add-chal":return chalForm(null);
@@ -2740,6 +2827,13 @@ document.addEventListener("click",async e=>{
     case"g-photo":return openForm({title:"Add your photo",submitLabel:"Enter",fields:[{id:"photo",label:"Your photo",type:"photos"}],values:{photo:myV(id).photo||""},submit:v=>{if(!v.photo){$("#merr").textContent="Choose a photo first.";return false}return save(()=>saveGV(id,{photo:v.photo,at:new Date().toISOString()}),"Photo entered")}});
     case"g-vote":return save(()=>saveGV(id,{vote:b.dataset.uid}),"Vote saved");
     case"g-remove":return save(()=>db.doc("gamevotes/"+b.dataset.uid).update({v:{[id]:{removed:true}}}),"Photo removed");
+    case"install":{if(!installEvt)return;const ev=installEvt;installEvt=null;ev.prompt();try{await ev.userChoice}catch(e){}return render()}
+    case"install-hide":try{localStorage.setItem("hub-install-hide","1")}catch(e){}return render();
+    case"ev-ics":{const e=S.events.find(x=>x.id===id);if(!e)return;return offer((e.title||"event").replace(/[\\/:*?"<>|]+/g,"").slice(0,60)+".ics",new Blob([icsWrap(icsEvent(e))],{type:"text/calendar"}))}
+    case"ics-set":return openForm({title:"Connect the calendar feed",note:"Paste the web app link from the Calendar feed Apps Script (tools/calendar-feed in the repo). Students can then subscribe once and get every school event in their own calendar.",fields:[{id:"url",label:"Feed link",full:true,placeholder:"https://script.google.com/macros/s/…/exec"}],values:{url:CFG.icsUrl||""},submit:v=>{const u=safeUrl(v.url);if(v.url&&!u){$("#merr").textContent="The link needs to start with https://";return false}return save(()=>cfgSet(c=>{c.icsUrl=u}),u?"Calendar feed connected":"Calendar feed removed")}});
+    case"inbox":return openInbox();
+    case"inbox-close":inboxOpen=false;drawInbox();render();{const bb=document.querySelector(".bell");bb&&bb.focus()}return;
+    case"inbox-go":inboxOpen=false;drawInbox();return;
     case"settle-now":{b.disabled=true;await settleGames();const left=S.games.filter(g=>g.date<TODAY&&!g.awarded).length;b.disabled=false;toast(left?"Couldn't add all the points yet. Reload the page and try again.":"Points added");return render()}
     case"g-guess":{const g=gameBy(id),i=b.dataset.i,inp=$("#gq-"+i),t=inp.value.trim();if(!g||!t){inp.focus();return}const st=myG(id),r=(st.r||{})[i]||{},ok=((g.items[i]||{}).h||[]).includes(await gh(id,t));inp.value="";
       return save(()=>savePl(id,{r:{...(st.r||{}),[i]:{ok,n:(r.n||0)+1,t}}}),ok?"Correct!":"Not quite")}
@@ -2825,8 +2919,8 @@ document.addEventListener("change",e=>{if(e.target.id==="roomDate"){roomDate=e.t
   if(e.target.id==="sugFilter"){sugFilter=e.target.value;render()}
   if(e.target.dataset&&e.target.dataset.sug){const t=e.target,x=allSuggestions().find(s=>s.key===t.dataset.key);save(()=>db.doc("suggestions/"+t.dataset.sug).update({items:{[t.dataset.key]:{status:t.value,reviewedBy:me.id,reviewedAt:new Date().toISOString()}}}),"Status updated",["marked as "+label(SUG_STATUS,t.value).toLowerCase()+":","suggestion",x&&x.title])}
   if(e.target.id==="taskFilter"){taskFilter=e.target.value;render()}if(e.target.id==="histFilter"){histFilter=e.target.value;render()}});
-document.addEventListener("keydown",e=>{if(e.key==="Enter"&&!e.isComposing&&e.target.matches&&e.target.matches(".reply-form input")){const bt=e.target.parentElement.querySelector("button");if(bt&&!bt.disabled){e.preventDefault();bt.click()}return}if(e.key==="Escape"&&$("#reveal")){closeReveal();return}if(e.key==="Escape"&&$("#archive")&&$("#modal").hidden&&!gal){closeArchive();return}if(!$("#modal").hidden){if(e.key==="Escape")closeModal();return}if(gal){if(e.key==="Escape")closeGallery();else if(e.key==="ArrowLeft")galStep(-1);else if(e.key==="ArrowRight")galStep(1)}});
-document.addEventListener("click",e=>{if(e.target.id==="gallery")closeGallery()});
+document.addEventListener("keydown",e=>{if(e.key==="Escape"&&inboxOpen){inboxOpen=false;drawInbox();render();const bb=document.querySelector(".bell");bb&&bb.focus();return}if(e.key==="Enter"&&!e.isComposing&&e.target.matches&&e.target.matches(".reply-form input")){const bt=e.target.parentElement.querySelector("button");if(bt&&!bt.disabled){e.preventDefault();bt.click()}return}if(e.key==="Escape"&&$("#reveal")){closeReveal();return}if(e.key==="Escape"&&$("#archive")&&$("#modal").hidden&&!gal){closeArchive();return}if(!$("#modal").hidden){if(e.key==="Escape")closeModal();return}if(gal){if(e.key==="Escape")closeGallery();else if(e.key==="ArrowLeft")galStep(-1);else if(e.key==="ArrowRight")galStep(1)}});
+document.addEventListener("click",e=>{if(e.target.id==="gallery")closeGallery();if(inboxOpen&&!e.target.closest("#inbox")&&!e.target.closest(".bell")){inboxOpen=false;drawInbox();render()}});
 
 /* ---------- sample council (president only; example data marked sample:true) ---------- */
 async function loadSample(){

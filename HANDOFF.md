@@ -21,6 +21,8 @@ A community site for high school students at Avenues The World School, run by St
 | `site/firebase-config.js` | Firebase web config + `OWNER_UID`. |
 | `firestore.rules` | Security rules. The president pastes them into Firebase → Firestore → Rules → Publish after every change. Always tell him. |
 | `tools/artifact-capabilities.json` | The `capabilities` value to pass when publishing the claude.ai artifact if rules change. |
+| `tools/calendar-feed/` | Apps Script web app that serves school events as a subscribable .ics feed (reads public `events` over Firestore REST, no keys). President deploys it and pastes the link in Explore → Events → Connect calendar feed (`CFG.icsUrl`). Not yet installed. |
+| `tools/make_icons.py` | Draws the pixel app icons into `site/icons/`. `build_site.py` also writes `site/manifest.webmanifest` and `site/sw.js` (network-first service worker, so the site installs to the home screen). |
 | `tools/google-slides/` | Apps Script that rebuilds a Google Slides lost-and-found deck from Firestore hourly. Not yet installed by the president. |
 | `student-list-template.csv` | Columns for the student list (Email, Name, Grade, Birthday, StuCo, Club leader). |
 
@@ -53,6 +55,7 @@ git push codeberg main "${SPLIT}:refs/heads/pages"   # normal push only; force-p
 - **Pixel scene:** animated Avenues building (time of day, season, plane with Aviator name, truck with latest news, birthday banner) in the Today banner and every page banner.
 - **Daily games:** `games/<date>`; answers hashed, readable keys in `gamekeys/` (council only); a council member's browser settles points the next day (`settleGames`). Until then students see their own points as "+N pending" (`myPending()`, worked out from their own plays, photo entries and unconfirmed challenges; display only). Overview shows a "Points to settle" alert with a button if a finished game hasn't been settled. **Rewards:** top 3 players each Monday to Sunday win the weekly prize (`_settings.weekPrize`, set in Play → Set the prizes); weekly totals use the `d` date on each score log entry (older entries fall back to the date in the key). **Streaks** count game days played in a row (a day with no game never breaks one); settlement adds +5 (`s<date>` log key) on every 5th day. The old $20 / 1000-point personal goal is gone. Practice mode for council (`trial`).
 - **Access:** student list pasted from a Google Sheet into `roster/<email>`; StuCo column = council; "Only listed emails can join" toggle. Student posts wait in `submissions/` for council approval.
+- **Inbox** (bell in the top bar): built in the browser from existing data (approvals, council replies and status changes, replies to your posts, points and streak bonuses, weekly placing, shout-outs, saved-opportunity and RSVP reminders). Seen time is `mine/<uid>.inboxSeen`. Approvals now save `decidedAt`. No phone push yet: that needs the planned nightly script.
 - **Data per person** lives in `<collection>/<uid>` documents with an `items` map (suggestions, signups, lostfound, bookings, gamevotes, replies…), written only by that person.
 
 ## Testing approach that works

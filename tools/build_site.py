@@ -38,14 +38,21 @@ head = f"""<!doctype html>
 <meta property="og:title" content="{TITLE}">
 <meta property="og:description" content="{DESCRIPTION}">
 <meta property="og:url" content="{SITE_URL}">
-<meta name="theme-color" content="#F4B400">
-<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='8' fill='%23F4B400'/%3E%3Ctext x='32' y='44' font-family='Arial' font-weight='800' font-size='30' text-anchor='middle' fill='%2314202E'%3ESH%3C/text%3E%3C/svg%3E">
+<meta name="theme-color" content="#14202E">
+<link rel="icon" href="icons/favicon-32.png" type="image/png">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Student Hub">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <style>:root{{color-scheme:light;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}}body{{margin:0;font:14px system-ui,sans-serif}}img{{max-width:100%}}[hidden]{{display:none!important}}</style>
 <script src="https://www.gstatic.com/firebasejs/{FIREBASE}/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/{FIREBASE}/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/{FIREBASE}/firebase-firestore-compat.js"></script>
 <script src="firebase-config.js?v={ver('firebase-config.js')}"></script>
 <script src="firebase-adapter.js?v={ver('firebase-adapter.js')}"></script>
+<script>if("serviceWorker"in navigator)addEventListener("load",()=>navigator.serviceWorker.register("sw.js").catch(()=>{{}}))</script>
 </head>
 <body>
 <noscript><p style="padding:16px">Avenues Student Hub needs JavaScript. It lists events, sign-ups, the weekly bulletin, opportunities and Student Council news for Avenues The World School.</p></noscript>
@@ -53,6 +60,30 @@ head = f"""<!doctype html>
 
 out = head + app.strip() + "\n</body>\n</html>\n"
 (ROOT / "site" / "index.html").write_text(out, encoding="utf-8")
+# installable app: manifest and a small service worker (network first, so students never get a stale page)
+import json
+(ROOT / "site" / "manifest.webmanifest").write_text(json.dumps({
+    "name": TITLE, "short_name": "Student Hub", "description": DESCRIPTION,
+    "start_url": "./#home", "scope": "./", "display": "standalone",
+    "background_color": "#14202E", "theme_color": "#14202E",
+    "icons": [
+        {"src": "icons/icon-192.png", "sizes": "192x192", "type": "image/png"},
+        {"src": "icons/icon-512.png", "sizes": "512x512", "type": "image/png"},
+        {"src": "icons/maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable"}]}, indent=1), encoding="utf-8")
+shell_ver = hashlib.sha1(out.encode()).hexdigest()[:10]
+(ROOT / "site" / "sw.js").write_text(f"""// Student Hub service worker. Network first for the page; cached copy only when offline.
+// Firebase and Google requests are never cached.
+const CACHE = "hub-{shell_ver}";
+const SHELL = ["./", "firebase-config.js", "firebase-adapter.js", "icons/icon-192.png"];
+self.addEventListener("install", e => {{ e.waitUntil(caches.open(CACHE).then(c => c.addAll(SHELL)).then(() => self.skipWaiting())); }});
+self.addEventListener("activate", e => {{ e.waitUntil(caches.keys().then(ks => Promise.all(ks.filter(k => k !== CACHE).map(k => caches.delete(k)))).then(() => self.clients.claim())); }});
+self.addEventListener("fetch", e => {{
+  const u = new URL(e.request.url);
+  if (e.request.method !== "GET" || u.origin !== location.origin) return;
+  e.respondWith(fetch(e.request).then(r => {{ if (r.ok) {{ const c = r.clone(); caches.open(CACHE).then(x => x.put(e.request, c)); }} return r; }})
+    .catch(() => caches.match(e.request, {{ ignoreSearch: true }}).then(r => r || caches.match("./"))));
+}});
+""", encoding="utf-8")
 (ROOT / "site" / "robots.txt").write_text(f"User-agent: *\nAllow: /\n\nSitemap: {SITE_URL}sitemap.xml\n", encoding="utf-8")
 (ROOT / "site" / "sitemap.xml").write_text(
     '<?xml version="1.0" encoding="UTF-8"?>\n'
