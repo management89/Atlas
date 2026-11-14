@@ -906,6 +906,11 @@ a.fchip{text-decoration:none;display:inline-block}
 
 .install .ios-steps{margin:4px 0 0;padding-left:20px}
 .install h2 .btn{font-size:13px}
+
+.switch{display:flex;gap:10px;align-items:flex-start;padding:10px 0;border-top:1px solid var(--rule);cursor:pointer}
+.switch:first-of-type{border-top:0}
+.switch input{width:18px;height:18px;margin-top:3px;accent-color:var(--ink);flex:none}
+.switch b{display:block}.switch .sub{display:block}
 </style>
 
 <div class="app">
@@ -2276,7 +2281,7 @@ function mySpaceView(){
     <section class="panel"><h2>My posts <a href="#community">Post something</a></h2>${pending.length?`<p class="sub" style="margin:8px 0 0">${pending.length} waiting for Student Council approval.</p>`:""}${own.length?`<ul class="list">${own.map(p=>`<li><div class="grow"><div class="title">${pins[p.id]?"📌 ":""}${esc(p.title||POST_KIND[p.kind])}</div><div class="sub">${POST_KIND[p.kind]||"Post"}, ${esc(short((p.at||"").slice(0,10)))}</div></div><button class="btn sm" data-act="my-pin" data-id="${p.id}" aria-pressed="${!!pins[p.id]}">${pins[p.id]?"Pinned":"Pin"}</button></li>`).join("")}</ul>`:`<p class="sub" style="margin:8px 0 0">Nothing posted yet. Your approved posts show here, and you can pin your favorites to the top.</p>`}</section>
     <section class="panel"><h2>Shout-outs</h2>${shouts.length?`<ul class="list">${shouts.map(x=>`<li><span class="chip gold">${esc(x.k)}</span><div class="grow"><div class="title">${esc(x.t)}</div><div class="sub">${x.d?esc(fmt(x.d,{month:"long",day:"numeric",year:"numeric"})):""}</div></div></li>`).join("")}</ul>`:`<p class="sub" style="margin:8px 0 0">When you're named Aviator of the Week, credited on a Student Council win or featured on the home page, it's saved here.</p>`}</section>
   </div><div class="my-col">
-    ${installCard("me")}
+    ${installCard("me")}${notifyPanel()}
     <section class="panel"><h2>Book a room</h2>${roomsHTML()}</section>
     <section class="panel"><h2>Saved opportunities <a href="#opportunities">Find more</a></h2>${saved.length?`<ul class="list">${saved.map(o=>`<li><div class="grow"><div class="title">${esc(o.title)}</div><div class="sub">${o.deadline?(o.deadline<TODAY?"Closed":"Apply by "+esc(short(o.deadline))):"No deadline"}</div></div>${safeUrl(o.link)?`<a class="btn sm" href="${esc(o.link)}" target="_blank" rel="noopener">Apply</a>`:""}<button class="btn sm ghost" data-act="opp-save" data-id="${o.id}">Unsave</button></li>`).join("")}</ul>`:`<p class="sub" style="margin:8px 0 0">Tap Save on any opportunity and it's pinned here.</p>`}</section>
     <section class="panel"><h2>Who can help</h2>${helpHTML()}</section>
@@ -2337,6 +2342,12 @@ const isStandalone=()=>{try{return matchMedia("(display-mode: standalone)").matc
 const isIOS=()=>/iPhone|iPad|iPod/.test(navigator.userAgent)||(navigator.platform==="MacIntel"&&navigator.maxTouchPoints>1);
 function installCard(where){if(!HOSTED||isStandalone()||!(installEvt||isIOS()))return"";if(where==="today"){try{if(localStorage.getItem("hub-install-hide"))return""}catch(e){}}
   return`<section class="panel install"><h2>Get the app${where==="today"?`<button class="btn sm ghost" data-act="install-hide" aria-label="Hide this">Hide</button>`:""}</h2><p class="sub" style="margin:8px 0">Put Student Hub on your home screen. It opens like an app, straight to Today.</p>${installEvt?`<button class="btn primary" data-act="install">Install Student Hub</button>`:`<ol class="ios-steps"><li>Tap the <b>Share</b> button in Safari</li><li>Choose <b>Add to Home Screen</b></li></ol>`}</section>`}
+
+/* ---------- notification settings (MySpace) ---------- */
+const pushReady=()=>HOSTED&&!!window.__pushToken&&"Notification"in window&&"serviceWorker"in navigator&&"PushManager"in window;
+function notifyPanel(){if(!HOSTED||!me.id||!canJoin())return"";const m=myMine(),on=!!(m.push&&m.push.token),vap=!!CFG.vapidKey,iosBrowser=isIOS()&&!isStandalone();
+  const push=!vap?`<p class="sub" style="margin:6px 0 0">Phone notifications aren't set up yet.</p>`:iosBrowser?`<p class="sub" style="margin:6px 0 0">On iPhone, add Student Hub to your home screen first, then turn notifications on from the app.</p>`:!pushReady()?`<p class="sub" style="margin:6px 0 0">This browser can't show notifications.</p>`:`<label class="switch"><input type="checkbox" data-act="push-toggle" ${on?"checked":""}> <span><b>Phone notifications</b><span class="sub">One a morning at most: today's game, your streak, your points.</span></span></label>`;
+  return`<section class="panel"><h2>Notifications</h2>${push}<label class="switch"><input type="checkbox" data-act="digest-toggle" ${m.digest?"checked":""}> <span><b>Weekly email</b><span class="sub">Sunday evening: the week ahead, deadlines, last week's winners.</span></span></label>${isPres&&canAct()?`<div style="margin-top:10px"><button class="btn sm ghost" data-act="vapid-set">${vap?"Phone notification key":"Set up phone notifications"}</button></div>`:""}</section>`}
 
 /* ---------- calendar: add one event, or subscribe to all school events ---------- */
 const icsEsc=t=>String(t||"").replace(/\\/g,"\\\\").replace(/\n/g,"\\n").replace(/([,;])/g,"\\$1");
@@ -2801,6 +2812,9 @@ document.addEventListener("click",async e=>{
     case"g-photo":return openForm({title:"Add your photo",submitLabel:"Enter",fields:[{id:"photo",label:"Your photo",type:"photos"}],values:{photo:myV(id).photo||""},submit:v=>{if(!v.photo){$("#merr").textContent="Choose a photo first.";return false}return save(()=>saveGV(id,{photo:v.photo,at:new Date().toISOString()}),"Photo entered")}});
     case"g-vote":return save(()=>saveGV(id,{vote:b.dataset.uid}),"Vote saved");
     case"g-remove":return save(()=>db.doc("gamevotes/"+b.dataset.uid).update({v:{[id]:{removed:true}}}),"Photo removed");
+    case"push-toggle":{const on=b.checked;b.disabled=true;try{if(on){const token=await window.__pushToken(CFG.vapidKey);await saveMine({push:{token,at:new Date().toISOString()}});toast("Notifications on")}else{await window.__pushOff();await saveMine({push:null});toast("Notifications off")}}catch(err){b.checked=!on;toast(err&&err.code==="denied"?"Notifications are blocked. Allow them in your browser settings, then try again.":"Couldn't turn on notifications here.")}b.disabled=false;return render()}
+    case"digest-toggle":return save(()=>saveMine({digest:b.checked}),b.checked?"Weekly email on":"Weekly email off");
+    case"vapid-set":return openForm({title:"Phone notifications",note:"In the Firebase console: Project settings → Cloud Messaging → Web Push certificates → Generate key pair. Paste the key here. The nightly script (tools/nightly) sends the notifications.",fields:[{id:"key",label:"Web Push key",full:true}],values:{key:CFG.vapidKey||""},submit:v=>{const k=(v.key||"").trim();if(k&&!/^[A-Za-z0-9_-]{60,120}$/.test(k)){$("#merr").textContent="That doesn't look like a Web Push key.";return false}return save(()=>cfgSet(c=>{c.vapidKey=k}),k?"Saved":"Removed")}});
     case"install":{if(!installEvt)return;const ev=installEvt;installEvt=null;ev.prompt();try{await ev.userChoice}catch(e){}return render()}
     case"install-hide":try{localStorage.setItem("hub-install-hide","1")}catch(e){}return render();
     case"ev-ics":{const e=S.events.find(x=>x.id===id);if(!e)return;return offer((e.title||"event").replace(/[\\/:*?"<>|]+/g,"").slice(0,60)+".ics",new Blob([icsWrap(icsEvent(e))],{type:"text/calendar"}))}
