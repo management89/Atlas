@@ -844,6 +844,24 @@ a.fchip{text-decoration:none;display:inline-block}
   .paperwrap{padding:8px}
 }
 @media (max-width:520px){.fields{grid-template-columns:1fr}.tally b{font-size:32px}}
+
+/* Today (the home page): short banner, one coming-up list, then announcements and the community feed */
+.home-short{min-height:0}
+.home-short .home-copy{padding-top:clamp(28px,7vh,72px);padding-bottom:36px}
+.home-short .home-copy h1{font-size:clamp(30px,4.2vw,52px);letter-spacing:-.03em}
+.home-short .home-copy p{margin-top:8px}
+@media (max-width:560px){.home-short .home-copy{padding-top:14px;padding-bottom:22px}.home-short .home-copy h1{font-size:30px}.home-short .home-copy p{font-size:16px}}
+.today-wrap{max-width:1220px;margin:0 auto;padding:28px max(24px,env(safe-area-inset-right,0px)) 40px max(24px,env(safe-area-inset-left,0px));display:flex;flex-direction:column;gap:28px}
+.today{display:grid;grid-template-columns:minmax(0,1fr) 320px;grid-template-areas:"main up" "main rest";grid-template-rows:auto 1fr;gap:28px 36px;align-items:start}
+.t-up{grid-area:up;min-width:0}.t-main{grid-area:main;display:flex;flex-direction:column;gap:28px;min-width:0}.t-rest{grid-area:rest;display:flex;flex-direction:column;gap:28px;min-width:0}
+@media (max-width:980px){.today{grid-template-columns:minmax(0,1fr);grid-template-areas:"up" "main" "rest";grid-template-rows:auto}}
+.posts.one{grid-template-columns:minmax(0,1fr)}
+.today-feed .mix{columns:300px 2}
+.today-feed .head{margin-top:10px}
+.panel .race-mini{margin-top:0}
+.play-sec{display:flex;flex-direction:column;gap:18px;scroll-margin-top:16px}
+.play-h{font-size:30px;font-weight:800;letter-spacing:-.02em;padding-top:10px;border-top:3px solid var(--rule-strong)}
+.play-sub{margin:-12px 0 0}
 </style>
 
 <div class="app">
@@ -865,10 +883,13 @@ a.fchip{text-decoration:none;display:inline-block}
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
 <script>
-const STUDENT_NAV=[["community","Hub"],["clubs","Clubs"],["challenges","Challenges"],["stuco","StuCo"]];
+const STUDENT_NAV=[["home","Today","home"],["explore","Explore","events"],["play","Play","play"],["stuco","StuCo","stuco"]];
 const COUNCIL_NAV=[["overview","Overview"],["tasks","Tasks"],["proposals","Proposals"],["attendance","Attendance"],["members","Members"],["history","History"]];
-const ROUTES={home:"home",hub:"community",events:"community",calendar:"community",bulletin:"community",community:"community",create:"community",collabs:"community",opportunities:"community",life:"community",clubs:"clubs",connect:"clubs",challenges:"challenges",play:"challenges",dares:"challenges",leaderboard:"challenges",stuco:"stuco",myspace:"community",suggestions:"stuco",lost:"stuco",voice:"stuco",working:"stuco",overview:"overview",tasks:"tasks",proposals:"proposals",attendance:"attendance",members:"members",history:"history"};
-const STUDENT_ROUTES=["home","hub","events","calendar","bulletin","community","create","collabs","opportunities","life","clubs","connect","challenges","play","dares","leaderboard","stuco","suggestions","lost","voice","working","myspace"];
+const ROUTES={home:"home",bulletin:"home",events:"explore",calendar:"explore",clubs:"explore",opportunities:"explore",play:"play",stuco:"stuco",suggestions:"stuco",lost:"stuco",voice:"stuco",working:"stuco",myspace:"me",overview:"overview",tasks:"tasks",proposals:"proposals",attendance:"attendance",members:"members",history:"history"};
+const STUDENT_ROUTES=["home","bulletin","events","calendar","clubs","opportunities","play","stuco","suggestions","lost","voice","working","myspace"];
+/* old links keep working: each old page name points at where that content lives now */
+const ALIAS={hub:["home"],community:["home"],create:["home"],collabs:["home"],life:["home","sec-photos"],connect:["clubs"],explore:["events"],challenges:["play","sec-game"],dares:["play","sec-challenges"],leaderboard:["play","sec-leaderboard"]};
+let pendingScroll=null;
 const COLS=["members","events","tasks","claims","bulletin","suggestions","albums","stories","opps","polls","votes","signups","birthdays","playlists","aviators","predictions","picks","scores","clubs","clubposts","clubdrafts","posts","submissions","replies","challenges","done","lostfound","wins","years","spaces","mine","bookings","games","gamevotes","plays","gamekeys","roster","proposals","meetings","history"];
 const COUNCIL_ONLY=["proposals","meetings","history","roster","gamekeys"];
 const SCHOOL="Avenues The World School";
@@ -973,9 +994,9 @@ const col=c=>db.collection(c);
 function cfgSet(mut){if(!loaded.has("config"))return Promise.reject({code:"unavailable"});const next=JSON.parse(JSON.stringify({approved:{},roles:{},...CFG}));mut(next);return db.doc("config/access").set(next)}
 
 /* ---------- routing ---------- */
-function current(){const h=location.hash.slice(1);return ROUTES[h]?h:null}
+function current(){let h=location.hash.slice(1);if(ALIAS[h]){const[t,a]=ALIAS[h];pendingScroll=a||null;try{history.replaceState(null,"","#"+t)}catch(e){}h=t}return ROUTES[h]?h:null}
 let view=current();
-addEventListener("hashchange",()=>{view=current();if(view!=="proposals")editing=null;render();const sc=document.getElementById("sec-"+view);if(sc)sc.scrollIntoView();else window.scrollTo(0,0)});
+addEventListener("hashchange",()=>{view=current();const ps=pendingScroll;if(view!=="proposals")editing=null;render();const sc=document.getElementById(ps||("sec-"+view));pendingScroll=null;if(sc)sc.scrollIntoView();else window.scrollTo(0,0)});
 
 function setStatus(s){
   dbState=s;const el=$("#status"),t=$("#statusText");el.className="status";
@@ -986,9 +1007,9 @@ function setStatus(s){
 
 /* ---------- render ---------- */
 function renderNav(){
-  const counts={tasks:S.tasks.filter(t=>taskState(t).status!=="done").length,proposals:S.proposals.filter(p=>p.status==="voting").length,members:isPres?S.members.filter(d=>!isApproved(d)).length:0,community:council()?pendSubs(FEED_KINDS).length:0,clubs:council()?allDrafts().filter(d=>d.status==="pending").length:0,stuco:council()?allSuggestions().filter(x=>x.status==="new").length:0,challenges:council()?waitingClaims():0};
+  const counts={tasks:S.tasks.filter(t=>taskState(t).status!=="done").length,proposals:S.proposals.filter(p=>p.status==="voting").length,members:isPres?S.members.filter(d=>!isApproved(d)).length:0,home:council()?pendSubs(FEED_KINDS).length:0,explore:council()?allDrafts().filter(d=>d.status==="pending").length:0,stuco:council()?allSuggestions().filter(x=>x.status==="new").length:0,play:council()?waitingClaims():0};
   const sec=ROUTES[shownView()];
-  const link=([k,l])=>`<a href="#${k}" ${k===sec?'aria-current="page"':""}>${l}${counts[k]?`<span class="count">${counts[k]}</span>`:""}</a>`;
+  const link=([k,l,href])=>`<a href="#${href||k}" ${k===sec?'aria-current="page"':""}>${l}${counts[k]?`<span class="count">${counts[k]}</span>`:""}</a>`;
   let h=council()?`<div class="navgroup">School site</div>${STUDENT_NAV.map(link).join("")}<div class="navgroup">Council</div>${COUNCIL_NAV.map(link).join("")}`:STUDENT_NAV.map(link).join("");
   if(!canCouncil()&&canJoin())h+=`<a class="navsmall" href="#members">On Student Council? Set up your profile</a>`;
   $("#nav").innerHTML=h;
@@ -1009,8 +1030,10 @@ function render(){
   const cur0=shownView(),site=!council();
   document.body.classList.toggle("is-home",cur0==="home");document.body.classList.toggle("is-site",site&&cur0!=="home");
   $("#band").hidden=cur0==="home";
-  if(cur0==="home"){if($("#homeHero")){$("#homeLive").innerHTML=homeLive();$("#homeAuth").innerHTML=homeAuth();$("#homeAv").innerHTML=homeAviator();$("#homeFeat").innerHTML=homeFeat();return}
-    $("#main").innerHTML=homeView();startScene($("#homeScene"));return}
+  const ae=document.activeElement,keep=ae&&ae.id&&$("#main").contains(ae)?{id:ae.id,val:ae.value,sel:ae.selectionStart!=null?[ae.selectionStart,ae.selectionEnd]:null}:null;
+  if(cur0==="home"){if($("#homeHero")){$("#homeLive").innerHTML=homeLive();$("#homeAuth").innerHTML=homeAuth();$("#homeHi").innerHTML=greeting();$("#homeBody").innerHTML=todayBody()}
+    else{$("#main").innerHTML=homeView();startScene($("#homeScene"))}
+    restoreFocus(keep);if(pendingScroll){const el=document.getElementById(pendingScroll);if(el){el.scrollIntoView();pendingScroll=null}}return}
   if(sceneCanvas!==$("#bandScene"))startScene($("#bandScene"));
   pageHead={title:"",context:""};
   let banner="";
@@ -1020,16 +1043,17 @@ function render(){
     else if(d&&isApproved(d)&&!isEditor)banner=`<div class="banner">You're an approved council member. Ask the president to give you Editor access to this page so you can make changes.</div>`;}
   if(preview&&canCouncil())banner=`<div class="banner preview"><span>You're seeing the site the way students see it.</span><button class="btn sm" data-act="mode" data-to="council">Back to council view</button></div>`+banner;
   if(lockedOut())banner+=`<div class="banner">You're signed in as ${esc(me.email||"an account")}, which isn't on the Avenues student list. Sign in with your school email, or ask Student Council to add you.</div>`;
-  const VIEWFN={hub:hubTab,events:hubTab,calendar:hubTab,bulletin:hubTab,community:hubTab,create:hubTab,collabs:hubTab,opportunities:hubTab,life:hubTab,clubs:clubsView,connect:clubsView,challenges:challengeHub,play:challengeHub,dares:challengeHub,leaderboard:challengeHub,stuco:stucoPage,myspace:hubTab,suggestions:stucoPage,lost:stucoPage,voice:stucoPage,working:stucoPage,overview,tasks:()=>tasks(),proposals,attendance,members,history:historyView};
-  const ae=document.activeElement,keep=ae&&ae.id&&$("#main").contains(ae)?{id:ae.id,val:ae.value,sel:ae.selectionStart!=null?[ae.selectionStart,ae.selectionEnd]:null}:null;
+  const VIEWFN={bulletin,events:exploreTab,calendar:exploreTab,clubs:exploreTab,opportunities:exploreTab,play:playPage,stuco:stucoPage,suggestions:stucoPage,lost:stucoPage,voice:stucoPage,working:stucoPage,myspace:mySpaceView,overview,tasks:()=>tasks(),proposals,attendance,members,history:historyView};
   $("#main").innerHTML=banner+VIEWFN[shownView()]();
   $("#bandH1").innerHTML=pageHead.title||"";const bc=$("#bandCtx");bc.innerHTML=pageHead.context||"";bc.hidden=!pageHead.context;
   const sn=$("#main .subnav"),bs=$("#bandSub");bs.innerHTML="";if(sn)bs.appendChild(sn);
   $("#bandTop").innerHTML=site?siteNav():"";
   if(site)$("#main").insertAdjacentHTML("beforeend",siteFoot());
   if(scrollTo_){const sc=document.getElementById("sec-"+scrollTo_);if(sc){sc.scrollIntoView();scrollTo_=null}}
-  if(keep){const n=document.getElementById(keep.id);if(n){if(keep.val!=null&&"value"in n&&n.type!=="file"&&n.tagName!=="SELECT")n.value=keep.val;n.focus({preventScroll:true});if(keep.sel&&n.setSelectionRange)try{n.setSelectionRange(...keep.sel)}catch(e){}}}
+  if(pendingScroll){const el=document.getElementById(pendingScroll);if(el){el.scrollIntoView();pendingScroll=null}}
+  restoreFocus(keep);
 }
+function restoreFocus(keep){if(!keep)return;const n=document.getElementById(keep.id);if(n){if(keep.val!=null&&"value"in n&&n.type!=="file"&&n.tagName!=="SELECT")n.value=keep.val;n.focus({preventScroll:true});if(keep.sel&&n.setSelectionRange)try{n.setSelectionRange(...keep.sel)}catch(e){}}}
 let pageHead={title:"",context:""};
 function head(context,title,actions=""){pageHead={title,context};return actions?`<div class="head"><div class="toolbar">${actions}</div></div>`:""}
 const addBtn=(act,txt,ok=canAct())=>ok?`<button class="btn primary" data-act="${act}">+ ${txt}</button>`:"";
@@ -1089,10 +1113,10 @@ function calendar(){
   const days=[];for(let i=0;i<42;i++)days.push(addDays(start,i));
   const rows=days[35].getMonth()!==m.getMonth()?days.slice(0,35):days;
   const evs=S.events.filter(evVisible).slice().sort(byDate);
-  const dues=S.tasks.filter(t=>t.due&&taskState(t).status!=="done");
+  const dues=council()?S.tasks.filter(t=>t.due&&taskState(t).status!=="done"):[];
   const monthKey=iso(m).slice(0,7);
   const monthEvents=evs.filter(e=>(e.date||"").startsWith(monthKey));
-  return head("Meetings, school events, dances, trips, competitions and deadlines.","Calendar",addBtn("add-event","Add event"))+
+  return head(council()?"Meetings, school events, dances, trips, competitions and deadlines.":"School events, dances, trips, competitions and deadlines, by month.","Events",`<a class="btn" href="#events">List view</a>`+addBtn("add-event","Add event"))+
   `<div class="calbar"><button class="btn sm" data-act="cal-prev" aria-label="Previous month">←</button><h2>${m.toLocaleDateString(undefined,{month:"long",year:"numeric"})}</h2><button class="btn sm" data-act="cal-next" aria-label="Next month">→</button><button class="btn sm ghost" data-act="cal-today">Today</button><span class="sp"></span><div class="legend">${EV_TYPES.map(([k,l])=>`<span class="chip ${k}">${l}</span>`).join("")}</div></div>
   <div class="calscroll"><div class="cal">${["Sun","Mon","Tue","Wed","Thu","Fri","Sat"].map(d=>`<div class="dow">${d}</div>`).join("")}
   ${rows.map(d=>{const k=iso(d),de=evs.filter(e=>e.date===k),dt=dues.filter(t=>t.due===k);
@@ -1186,21 +1210,6 @@ const HOSTED=!!window.__signIn;
 const needAccess=what=>HOSTED?`<button class="btn sm" data-act="signin">Sign in</button> to ${what}.`:`To ${what}, you need contributor access to this page. Ask any Student Council member.`;
 
 /* Student Hub */
-function weekView(){
-  const in14=iso(addDays(new Date(),14)),in30=iso(addDays(new Date(),30)),ago7=iso(addDays(new Date(),-7));
-  const changes=[...S.events.filter(e=>e.change&&e.date>=TODAY&&e.date<=in30).map(e=>({title:e.title,text:e.change,date:e.date})),...S.bulletin.filter(p=>p.tag==="Schedule change"&&(p.date||"")>=ago7).map(p=>({title:p.title,text:p.body,date:p.date}))];
-  const upcoming=S.events.filter(e=>evVisible(e)&&e.date>=TODAY&&e.date<=in14).sort(byDate);
-  const deadlines=[...S.events.filter(e=>e.type==="deadline"&&e.date>=TODAY&&e.date<=in14).map(e=>({title:e.title,date:e.date,href:"#calendar"})),
-    ...S.events.filter(e=>e.signup&&e.signup!=="none"&&e.closes&&e.closes>=TODAY&&e.closes<=in14).map(e=>({title:`${label(SIGNUP_KINDS,e.signup)} for ${e.title}`,date:e.closes,href:"#events"})),
-    ...S.opps.filter(o=>o.deadline&&o.deadline>=TODAY&&o.deadline<=in14).map(o=>({title:`Apply: ${o.title}`,date:o.deadline,href:"#opportunities"}))].sort((a,b)=>a.date.localeCompare(b.date));
-  const posts=sortedPosts().slice(0,4);
-  return head(`What's happening at ${SCHOOL} over the next two weeks.`,"This week",canAct()?`<button class="btn" data-act="add-post">+ Post announcement</button><button class="btn primary" data-act="add-event">+ Add event</button>`:"")+
-  (changes.length?`<section class="changes"><h2>Changes to know about</h2><ul>${changes.map(c=>`<li><b>${esc(c.title)}</b><span>${esc(c.text)}</span><span class="sub">${esc(longd(c.date))}</span></li>`).join("")}</ul></section>`:"")+
-  `<div class="grid2"><section class="panel"><h2>Coming up <a href="#calendar">Full calendar</a></h2>${upcoming.length?`<ul class="list">${upcoming.slice(0,8).map(evRow).join("")}</ul>`:`<p class="sub" style="margin:10px 0 0">Nothing scheduled in the next two weeks.</p>`}</section>
-  <section class="panel"><h2>Deadlines and reminders</h2>${deadlines.length?`<ul class="list">${deadlines.map(d=>`<li>${datebox(d.date)}<div class="grow"><a class="title" href="${d.href}">${esc(d.title)}</a><div class="sub">${dueIn(d.date)}</div></div></li>`).join("")}</ul>`:`<p class="sub" style="margin:10px 0 0">No deadlines in the next two weeks.</p>`}</section></div>`+
-  `<section class="panel"><h2>Announcements <a href="#bulletin">Weekly bulletin</a></h2>${posts.length?`<div class="posts" style="margin-top:12px">${posts.map(postCard).join("")}</div>`:`<p class="sub" style="margin:10px 0 0">No announcements yet.</p>`}</section>`+
-  (allPhotos().length?`<section class="panel"><h2>Around Avenues <a href="#life">Student Life</a></h2><div style="margin-top:12px">${beltsHTML(1)}</div></section>`:"");
-}
 function postCard(p){return`<article class="post ${p.pinned?"pinned":""}"><div class="meta"><span class="chip ${({Event:"gold",Opportunity:"good",Reminder:"bad","Schedule change":"bad",Spirit:"accent"})[p.tag]||""}">${esc(p.tag||"Announcement")}</span><span>${esc(longd(p.date))}</span>${p.pinned?`<span class="chip gold">Pinned</span>`:""}</div><h3>${esc(p.title)}</h3><p>${esc(p.body)}</p><div class="meta">${p.author?`Posted by ${who(p.author,"")}`:"Posted by Student Council"}<span class="sp"></span>${heartBtn(p.id)}${canAct()?`<button class="btn sm ghost" data-act="edit-post" data-id="${p.id}">Edit</button>`:""}</div></article>`}
 function bulletin(){
   const posts=sortedPosts(),pinned=posts.filter(p=>p.pinned),groups=[];
@@ -1222,7 +1231,7 @@ function eventsView(){
   const up=S.events.filter(e=>e.type!=="meeting"&&e.type!=="deadline"&&e.date>=TODAY).sort(byDate);
   const opts=[["all","All events"],["open","Sign-ups open"],["mine","I'm going"]];
   const list=up.filter(e=>evFilter==="all"||(evFilter==="open"?e.signup&&e.signup!=="none":!!mySignups()[e.id]));
-  return head("Dances, trips, tournaments and competitions. See the details and sign up in one place.","Events and sign-ups",addBtn("add-event","Add event"))+
+  return head("Dances, trips, tournaments and competitions. See the details and sign up in one place.","Events",`<a class="btn" href="#calendar">Month view</a>`+addBtn("add-event","Add event"))+
   `<div class="fchips">${opts.map(([k,l])=>`<button class="fchip" data-act="ev-filter" data-to="${k}" aria-pressed="${evFilter===k}">${l}</button>`).join("")}</div>`+
   (list.length?`<div class="evlist">${list.map(eventCard).join("")}</div>`:empty(up.length?"Nothing in this category":"No upcoming events",up.length?"Try another filter.":canAct()?"Add a dance, trip or competition and turn on sign-ups.":"Check back soon.",up.length?null:"add-event","Add an event"));
 }
@@ -1267,16 +1276,6 @@ function storyCard(s){const alb=s.albumId&&S.albums.find(a=>a.id===s.albumId&&(a
   return`<article class="story ${s.kind==="Meme"?"meme":""}">${s.photo?`<div class="story-img"><img src="${blob(s.photo)}" alt="" loading="lazy"></div>`:""}<div class="story-body"><div class="sub parts"><span class="chip">${esc(s.kind||"Story")}</span><span>${esc(short(s.date))}</span><span class="sp"></span>${heartBtn(s.id)}</div><h3>${esc(s.title)}</h3>${s.body?`<p>${esc(s.body)}</p>`:""}${alb||link||canAct()?`<div class="toolbar">${alb?`<button class="btn sm" data-act="album" data-id="${alb.id}">See the photos</button>`:""}${link?`<a class="btn sm ghost" href="${esc(link)}" target="_blank" rel="noopener">Open link</a>`:""}${canAct()?`<button class="btn sm ghost" data-act="edit-story" data-id="${s.id}">Edit</button>`:""}</div>`:""}</div></article>`}
 function nextBday(b){const now=parse(TODAY);let d=new Date(now.getFullYear(),b.month-1,b.day);if(d<now)d=new Date(now.getFullYear()+1,b.month-1,b.day);return d}
 function allPlaylists(){const out=[];for(const d of S.playlists)for(const[k,v]of Object.entries(d.items||{}))if(v&&v.title&&safeUrl(v.url))out.push({...v,key:k,uid:d.id});return out.sort((a,b)=>(b.at||"").localeCompare(a.at||""))}
-function lifeView(){
-  const albums=sortedAlbums(),stories=[...S.stories].sort((a,b)=>(b.date||"").localeCompare(a.date||"")),shown=stories.filter(s=>lifeFilter==="all"||(lifeFilter==="Meme")===(s.kind==="Meme"));
-  const bd=S.birthdays.filter(b=>b.show!==false&&b.name&&b.month&&b.day).map(b=>({...b,next:nextBday(b)})).filter(b=>(b.next-parse(TODAY))/864e5<=7).sort((a,b)=>a.next-b.next);
-  const mineB=S.birthdays.find(b=>b.id===me.id),pls=allPlaylists();
-  return head("Photos, recaps, spotlights, birthdays and playlists from the Avenues community.","Spotlight",canAct()?`<button class="btn" data-act="add-aviator">+ Aviator of the Week</button><button class="btn" data-act="add-story">+ Add a story</button><button class="btn primary" data-act="add-album">+ Add photo album</button>`:"")+
-  aviatorBlock()+(albums.length?beltsHTML(2)+`<section class="panel"><h2>Photo albums</h2><div class="albums">${albums.map(albumCard).join("")}</div></section>`:empty("No photos yet",canAct()?"Add an album of photos from a dance, game or trip. The photos drift across the top of this page, and clicking one opens its album.":"Photos from events will show up here.","add-album","Add the first album"))+
-  `<section class="panel"><h2>Stories</h2><div class="fchips" style="margin-top:10px">${[["all","All"],["stories","Stories and spotlights"],["Meme","Memes"]].map(([k,l])=>`<button class="fchip" data-act="life-filter" data-to="${k}" aria-pressed="${lifeFilter===k}">${l}</button>`).join("")}</div>${shown.length?`<div class="stories">${shown.map(storyCard).join("")}</div>`:`<p class="sub" style="margin:12px 0 0">${stories.length?"Nothing here yet.":"Recaps, student spotlights, interviews and memes will show up here."}</p>`}</section>`+
-  `<div class="grid2"><section class="panel"><h2>Birthdays this week</h2>${bd.length?bd.map(b=>{const today=iso(b.next)===TODAY;return`<div class="bday"><b>${esc(b.name)}</b><span class="sub">${today?"":esc(b.next.toLocaleDateString(undefined,{weekday:"long",month:"short",day:"numeric"}))}</span>${today?`<span class="chip gold">Today</span>`:""}${canAct()?`<span class="sp"></span><button class="btn sm ghost" data-act="bday-remove" data-id="${b.id}">Remove</button>`:""}</div>`}).join(""):`<p class="sub" style="margin:10px 0 0">No birthdays in the next 7 days.</p>`}${canJoin()&&!CFG.rosterOnly?`<div style="margin-top:12px"><button class="btn sm" data-act="bday">${mineB?"Edit my birthday":"Add my birthday"}</button> <span class="sub">Optional. Only your name and the date are shown.</span></div>`:""}</section>
-  <section class="panel"><h2>Student playlists</h2>${pls.length?pls.slice(0,12).map(p=>`<div class="playlist"><div class="grow"><a class="title" href="${esc(safeUrl(p.url))}" target="_blank" rel="noopener">${esc(p.title)}</a><div class="sub parts">${p.vibe?`<span>${esc(p.vibe)}</span>`:""}${p.name?`<span>Shared by ${esc(p.name)}</span>`:""}</div></div>${p.uid===me.id||canAct()?`<button class="btn sm ghost" data-act="pl-remove" data-uid="${esc(p.uid)}" data-key="${esc(p.key)}">Remove</button>`:""}</div>`).join(""):`<p class="sub" style="margin:10px 0 0">No playlists yet. Share what you're listening to.</p>`}${canJoin()?`<div style="margin-top:12px"><button class="btn sm" data-act="add-playlist">+ Share a playlist</button></div>`:""}</section></div>`;
-}
 function openAlbum(aid,pid){const a=S.albums.find(x=>x.id===aid);if(!a||!(a.photos||[]).length){toast("This album has no photos yet.");return}
   if(!gal)gal={ret:document.activeElement};gal.aid=aid;gal.idx=pid?Math.max(0,a.photos.indexOf(pid)):0;drawGallery();document.body.style.overflow="hidden";const c=$("#gallery [data-act=gal-close]");c&&c.focus()}
 function closeGallery(){const g=$("#gallery");g.hidden=true;g.innerHTML="";document.body.style.overflow="";const r=gal&&gal.ret;gal=null;if(r&&r.isConnected&&r.focus)r.focus()}
@@ -1319,7 +1318,6 @@ function oppCard(o){
 }
 
 /* Student Voice */
-function voiceView(){const cur=shownView();return subnav([["voice","Polls"],["suggestions","Suggestions and reports"],["working","What council is doing"]])+(cur==="suggestions"?suggestions():cur==="working"?tasks(true):pollsView())}
 const myVotes=()=>(S.votes.find(d=>d.id===me.id)||{}).polls||{};
 const pollOpen=p=>p.status!=="closed"&&(!p.closes||p.closes>=TODAY);
 function tallyPoll(p){const c=(p.options||[]).map(()=>0);for(const d of S.votes){const v=(d.polls||{})[p.id];if(Number.isInteger(v)&&v>=0&&v<c.length)c[v]++}return c}
@@ -1545,38 +1543,67 @@ function homeAuth(){
     h+=`<a class="me-glass" href="#myspace" title="My page">${pic?`<img class="avatar" src="${esc(pic)}" alt="">`:`<span class="avatar" style="background:${colorFor(me.id)}">${esc(initials(nm))}</span>`}<span>${esc(nm.split(" ")[0])}</span></a>`;
     if(window.__signOut)h+=`<button class="hbtn sm glass" data-act="signout">Sign out</button>`}
   else if(window.__signIn)h+=`<button class="hbtn sm" data-act="signin">Sign in</button>`;
-  else if(shownView()==="home")h+=`<a class="hbtn sm" href="#hub">Open the hub</a>`;
+  
   return h}
-function siteNav(){const sec=ROUTES[shownView()];return`<a class="home-brand" href="#home">Avenues <span>Student Hub</span></a><nav class="home-links" aria-label="Sections">${STUDENT_NAV.map(([k,l])=>`<a href="#${k}" ${sec===k?'aria-current="page"':""}>${l}</a>`).join("")}</nav><div class="home-auth" id="homeAuth">${homeAuth()}</div>`}
+function siteNav(){const sec=ROUTES[shownView()];return`<a class="home-brand" href="#home">Avenues <span>Student Hub</span></a><nav class="home-links" aria-label="Sections">${STUDENT_NAV.map(([k,l,href])=>`<a href="#${href}" ${sec===k?'aria-current="page"':""}>${l}</a>`).join("")}</nav><div class="home-auth" id="homeAuth">${homeAuth()}</div>`}
 function siteFoot(){return`<footer class="home-foot site-foot"><span><b>Avenues Student Hub</b>, run by the Avenues The World School Student Council</span><span class="sp"></span>${canJoin()&&!canCouncil()?`<a href="#members">On Student Council? Set up your profile</a>`:""}<a href="#suggestions">Contact Student Council</a></footer>`}
 function homeLive(){
   const evs=S.events.filter(e=>e.date>=TODAY&&evVisible(e)).sort(byDate),next=evs.find(e=>e.type!=="meeting"&&e.type!=="deadline")||evs[0],post=sortedPosts()[0],poll=S.polls.filter(pollOpen)[0];
   let a,b;
   if(next){const n=Math.round((parse(next.date)-parse(TODAY))/864e5);
     a=`<a class="live-card live-count" href="#events"><span class="num">${n===0?"Now":n}</span><span class="grow"><span class="k">${n===0?"Happening today":n===1?"day until":"days until"}</span><span class="v">${esc(next.title)}</span><span class="m">${esc(longd(next.date))}${next.time?", "+esc(fmtTime(next.time)):""}</span></span></a>`}
-  else a=`<a class="live-card" href="#calendar"><span class="k">Next up</span><span class="v">Nothing scheduled yet</span><span class="m">New events show up here first</span></a>`;
+  else a=`<a class="live-card" href="#events"><span class="k">Next up</span><span class="v">Nothing scheduled yet</span><span class="m">New events show up here first</span></a>`;
   const tg=gameOn(TODAY);
-  if(tg)b=`<a class="live-card" href="#challenges"><span class="k">Today's game</span><span class="v">${esc(gameName(tg))}</span><span class="m">Play now. The result drops tomorrow morning.</span></a>`;
+  if(tg)b=`<a class="live-card" href="#play"><span class="k">Today's game</span><span class="v">${esc(gameName(tg))}</span><span class="m">Play now. The result drops tomorrow morning.</span></a>`;
   else if(poll){const mv=myVotes()[poll.id];
     b=`<div class="live-card"><span class="k">Quick poll</span><span class="v">${esc(poll.question)}</span>${canJoin()?`<span class="live-opts">${(poll.options||[]).slice(0,4).map((o,i)=>`<button data-act="poll-vote" data-id="${poll.id}" data-i="${i}" aria-pressed="${mv===i}">${esc(o)}</button>`).join("")}</span>`:`<a class="m" href="#voice">Sign in to vote</a>`}</div>`}
   else b=`<a class="live-card" href="#suggestions"><span class="k">Student Voice</span><span class="v">Got an idea for school?</span><span class="m">Tell Student Council. They reply to every one.</span></a>`;
+  const dl=todayItems().find(x=>x.due);
+  if(dl)return a+b+`<a class="live-card" href="${dl.href}"><span class="k">Next deadline</span><span class="v">${esc(dl.title)}</span><span class="m">${esc(dueIn(dl.date))}, ${esc(longd(dl.date))}</span></a>`;
   return a+b+`<a class="live-card" href="#bulletin"><span class="k">Latest announcement</span><span class="v">${post?esc(post.title):"No announcements yet"}</span><span class="m">${post?esc(longd(post.date)):"The weekly bulletin lives here"}</span></a>`;
 }
+function greeting(){const h=new Date().getHours(),n=me.id?(myName()||me.name||"").split(" ")[0]:"";return`${h<12?"Good morning":h<17?"Good afternoon":"Good evening"}${n?", "+esc(n):""}`}
 function homeView(){
-  return`<section class="home" id="homeHero">
+  return`<section class="home home-short" id="homeHero">
     <canvas id="homeScene" aria-hidden="true"></canvas><div class="home-shade" aria-hidden="true"></div>
     <header class="home-nav">${siteNav()}</header>
-    <div class="home-copy"><h1>Made at Avenues</h1><div class="home-feat" id="homeFeat">${homeFeat()}</div></div>
+    <div class="home-copy"><h1 id="homeHi">${greeting()}</h1><p>${esc(new Date().toLocaleDateString(undefined,{weekday:"long",month:"long",day:"numeric"}))} at Avenues</p></div>
   </section>
   <div class="home-strip"><div class="home-live" id="homeLive">${homeLive()}</div></div>
-  <div id="homeReel">${winReel(THIS_YEAR,true)?`<section class="home-reel"><div class="home-reel-head"><h2>Student Council lately</h2><a href="#working">See everything we've done</a></div>${winReel(THIS_YEAR,true)}</section>`:""}</div>
-  <section class="home-about"><div><h2>The community hub for Avenues students</h2><ul class="about-list">
-    <li><a href="#community">Hub</a><span>The bulletin, what students are posting, and your own calendar, rooms and saved opportunities.</span></li>
-    <li><a href="#clubs">Clubs</a><span>Every club, when it meets, and what it's been up to.</span></li>
-    <li><a href="#challenges">Challenges</a><span>Daily games and challenges that win points for your grade.</span></li>
-    <li><a href="#stuco">StuCo</a><span>What Student Council has done, polls, feedback and the lost and found.</span></li>
-  </ul></div><div id="homeAv">${homeAviator()}</div></section>
+  <div class="today-wrap" id="homeBody">${todayBody()}</div>
   <footer class="home-foot"><span><b>Avenues Student Hub</b>, run by the Avenues The World School Student Council</span><span class="sp"></span>${canCouncil()?`<a href="#overview">Council workspace</a>`:""}<a href="#suggestions">Contact Student Council</a></footer>`;
+}
+/* Today: everything coming up in one list (school events, deadlines, sign-ups closing, opportunity deadlines, your own reminders) */
+function todayItems(){const in14=iso(addDays(new Date(),14)),out=[];
+  for(const e of S.events)if(evVisible(e)&&e.date>=TODAY&&e.date<=in14)out.push({date:e.date,time:e.time,title:e.title,href:"#events",sub:[e.time?fmtTime(e.time):"",e.location||"",e.grade?"Your grade":""].filter(Boolean).join(", "),chip:e.type,chipL:label(EV_TYPES,e.type),due:e.type==="deadline"});
+  for(const e of S.events)if(evVisible(e)&&e.signup&&e.signup!=="none"&&e.closes&&e.closes>=TODAY&&e.closes<=in14&&!mySignups()[e.id])out.push({date:e.closes,title:`${label(SIGNUP_KINDS,e.signup)} for ${e.title}`,href:"#events",sub:"Sign-up closes",chip:"deadline",chipL:"Closes",due:true});
+  for(const o of S.opps)if(o.deadline&&o.deadline>=TODAY&&o.deadline<=in14)out.push({date:o.deadline,title:`Apply: ${o.title}`,href:"#opportunities",sub:savedOpps.has(o.id)?"Saved":"",chip:"deadline",chipL:"Apply by",due:true});
+  if(me.id&&canJoin())for(const x of Object.values(myMine().items||{}))if(x.date>=TODAY&&x.date<=in14)out.push({date:x.date,time:x.time,title:x.title,href:"#myspace",sub:[x.time?fmtTime(x.time):"","Only you"].filter(Boolean).join(", "),chip:"",chipL:""});
+  return out.sort((a,b)=>(a.date+(a.time||"")).localeCompare(b.date+(b.time||"")))}
+function comingUp(){const it=todayItems().slice(0,7),signed=!!me.id&&canJoin();
+  return`<section class="panel" id="sec-upcoming"><h2>Coming up <a href="#calendar">Month view</a></h2>${it.length?`<ul class="list">${it.map(x=>`<li>${datebox(x.date)}<div class="grow"><a class="title" href="${x.href}">${esc(x.title)}</a>${x.sub?`<div class="sub">${esc(x.sub)}</div>`:""}</div>${x.chipL?`<span class="chip ${esc(x.chip)}">${esc(x.chipL)}</span>`:""}</li>`).join("")}</ul>`:`<p class="sub" style="margin:10px 0 0">Nothing in the next two weeks.</p>`}${signed?`<div style="margin-top:10px"><button class="btn sm" data-act="my-add" data-date="${TODAY}">+ Add a reminder only you see</button></div>`:""}</section>`}
+function bdayPanel(){const bd=S.birthdays.filter(b=>b.show!==false&&b.name&&b.month&&b.day).map(b=>({...b,next:nextBday(b)})).filter(b=>(b.next-parse(TODAY))/864e5<=7).sort((a,b)=>a.next-b.next),mineB=S.birthdays.find(b=>b.id===me.id),canAdd=canJoin()&&!CFG.rosterOnly;
+  if(!bd.length&&!canAdd)return"";
+  return`<section class="panel"><h2>Birthdays this week</h2>${bd.length?bd.map(b=>{const today=iso(b.next)===TODAY;return`<div class="bday"><b>${esc(b.name)}</b><span class="sub">${today?"":esc(b.next.toLocaleDateString(undefined,{weekday:"long"}))}</span>${today?`<span class="chip gold">Today</span>`:""}${canAct()?`<span class="sp"></span><button class="btn sm ghost" data-act="bday-remove" data-id="${b.id}">Remove</button>`:""}</div>`}).join(""):`<p class="sub" style="margin:10px 0 0">No birthdays in the next 7 days.</p>`}${canAdd?`<div style="margin-top:10px"><button class="btn sm" data-act="bday">${mineB?"Edit my birthday":"Add my birthday"}</button></div>`:""}</section>`}
+function playlistPanel(){const pls=allPlaylists();if(!pls.length&&!canJoin())return"";
+  return`<section class="panel"><h2>Student playlists</h2>${pls.length?pls.slice(0,5).map(p=>`<div class="playlist"><div class="grow"><a class="title" href="${esc(safeUrl(p.url))}" target="_blank" rel="noopener">${esc(p.title)}</a><div class="sub parts">${p.vibe?`<span>${esc(p.vibe)}</span>`:""}${p.name?`<span>${esc(p.name)}</span>`:""}</div></div>${p.uid===me.id||canAct()?`<button class="btn sm ghost" data-act="pl-remove" data-uid="${esc(p.uid)}" data-key="${esc(p.key)}">Remove</button>`:""}</div>`).join(""):`<p class="sub" style="margin:10px 0 0">Share what you're listening to.</p>`}${canJoin()?`<div style="margin-top:10px"><button class="btn sm" data-act="add-playlist">+ Share a playlist</button></div>`:""}</section>`}
+function todayBody(){
+  const posts=sortedPosts().slice(0,3),ch=scheduleChanges(),feat=postsOf(["create"]).length?homeFeat():"",albums=sortedAlbums(),reel=winReel(THIS_YEAR,true);
+  const tools=canAct()?`<div class="toolbar today-tools"><button class="btn" data-act="add-post">+ Announcement</button><button class="btn" data-act="add-event">+ Event</button><button class="btn" data-act="add-album">+ Photo album</button><button class="btn" data-act="add-story">+ Story or meme</button><button class="btn" data-act="add-aviator">+ Aviator of the Week</button></div>`:"";
+  const feed=feedView();
+  return tools+`<div class="today">
+  <div class="t-up">${comingUp()}</div>
+  <div class="t-main">
+    ${ch.length?`<section class="changes"><h2>Changes to know about</h2><ul>${ch.map(c=>`<li><b>${esc(c.title)}</b><span>${esc(c.text)}</span></li>`).join("")}</ul></section>`:""}
+    ${aviatorBlock()}
+    ${posts.length?`<section class="panel"><h2>Announcements <a href="#bulletin">All announcements</a></h2><div class="posts one" style="margin-top:12px">${posts.map(postCard).join("")}</div></section>`:""}
+    ${feat?`<section class="panel"><h2>Made at Avenues</h2><div class="home-feat">${feat}</div></section>`:""}
+    <section class="panel today-feed"><h2>Community</h2>${feed}</section>
+  </div>
+  <div class="t-rest"><section class="panel">${raceMini()}</section>${bdayPanel()}${playlistPanel()}</div>
+  </div>
+  ${albums.length?`<section class="panel" id="sec-photos"><h2>Around Avenues</h2><div style="margin-top:12px">${beltsHTML(2)}</div>${canAct()?`<div class="albums">${albums.map(albumCard).join("")}</div>`:""}</section>`:`<span id="sec-photos"></span>`}
+  ${reel?`<section class="home-reel"><div class="home-reel-head"><h2>Student Council lately</h2><a href="#working">See everything we've done</a></div>${reel}</section>`:""}`;
 }
 
 
@@ -1603,7 +1630,8 @@ const raceGoal=()=>{const s=S.scores.find(d=>d.id==="_settings")||{};return{goal
 function gradeTotals(){const t=Object.fromEntries(GRADES.map(g=>[g,0]));for(const d of scoreDocs())if(t[d.grade]!=null)t[d.grade]+=ptsOf(d);return t}
 function upsert(c,id,data){return S[c].some(d=>d.id===id)?db.doc(c+"/"+id).update(data):db.doc(c+"/"+id).set(data)}
 const predOpen=p=>p.answer==null&&(!p.closes||p.closes>=TODAY);
-function joinPrompt(){if(!canJoin())return`<div class="banner">${needAccess("play")}</div>`;if(myPlay().grade)return"";
+let PLAYONE=false;
+function joinPrompt(){if(PLAYONE)return"";if(!canJoin())return`<div class="banner">${needAccess("play")}</div>`;if(myPlay().grade)return"";
   return`<section class="start"><div><h2>Pick your grade to play</h2><p class="sub" style="margin:8px 0 0">Every point you earn also counts for your grade.</p></div><div class="acts"><button class="btn primary" data-act="play-join">Join the Grade Race</button></div></section>`}
 function predictionsView(){
   const ps=[...S.predictions].sort((a,b)=>(b.created||"").localeCompare(a.created||"")),open=ps.filter(predOpen),done=ps.filter(p=>!predOpen(p)).slice(0,8),mine=S.scores.find(d=>d.id===me.id),g=myPlay().grade;
@@ -1622,7 +1650,7 @@ function leaderBody(){
   const players=scoreDocs().filter(d=>!d.team).map(d=>({...d,pts:ptsOf(d)})).filter(d=>d.pts>0).sort((a,b)=>b.pts-a.pts).slice(0,15);
   const bonus=[];for(const d of scoreDocs())if(d.team)for(const[k,x]of Object.entries(d.log||{}))bonus.push({k,grade:d.grade,...x});bonus.sort((a,b)=>b.k.localeCompare(a.k));
   return `<div class="toolbar"><span class="sub">The first grade to ${goal} points wins ${esc(prize)}.</span><span class="sp"></span>${canAct()?`<button class="btn sm" data-act="race-goal">Set the prizes</button><button class="btn sm" data-act="award">Award points</button>`:""}</div><div class="sundaes">${GRADES.map(g=>{const pct=Math.min(100,Math.round(t[g]/goal*100)),top=t[g]===lead&&lead>0;return`<div class="sundae-col"><div class="sundae" role="img" aria-label="Grade ${g}: ${t[g]} of ${goal} points"><div class="cherry" ${pct>=100?"":"hidden"}></div><div class="sundae-glass"><div class="scoops" style="height:${pct}%"></div></div><div class="stem"></div></div><div class="title">Grade ${g}</div><div class="sub"><b>${t[g]}</b> of ${goal}</div>${top?`<span class="chip gold">In the lead</span>`:""}</div>`}).join("")}</div>
-  <div class="grid2"><section class="panel"><h2>Top players</h2>${players.length?`<ol class="ranks">${players.map((d,i)=>`<li class="${d.id===me.id?"you":""}"><span class="rk">${i+1}</span><span class="grow title">${esc(d.name||"Student")}${d.id===me.id?" (you)":""}</span><span class="sub">Grade ${esc(d.grade||"?")}</span><b>${d.pts}</b></li>`).join("")}</ol>`:`<p class="sub" style="margin:10px 0 0">No points yet. Make a prediction to get on the board.</p>`}</section>
+  <div class="grid2"><section class="panel"><h2>Top players</h2>${players.length?`<ol class="ranks">${players.map((d,i)=>`<li class="${d.id===me.id?"you":""}"><span class="rk">${i+1}</span><span class="grow title">${esc(d.name||"Student")}${d.id===me.id?" (you)":""}</span><span class="sub">Grade ${esc(d.grade||"?")}</span><b>${d.pts}</b></li>`).join("")}</ol>`:`<p class="sub" style="margin:10px 0 0">No points yet. Play today's game to get on the board.</p>`}</section>
   <section class="panel"><h2>Grade bonuses</h2>${bonus.length?`<ul class="list">${bonus.slice(0,8).map(x=>`<li><div class="grow"><div class="title">${esc(x.why||"Bonus")}</div><div class="sub">Grade ${esc(x.grade)}</div></div><b>+${Number(x.p)||0}</b></li>`).join("")}</ul>`:`<p class="sub" style="margin:10px 0 0">Spirit Week, turning up to games and class challenges add bonus points here.</p>`}</section></div>`;
 }
 function raceMini(){const t=gradeTotals(),{goal}=raceGoal();return`<div class="race-mini"><h3>Grade Race</h3>${GRADES.map(g=>`<div class="race-row"><span class="title">Grade ${g}</span><span class="race-bar"><i style="width:${Math.min(100,t[g]/goal*100)}%"></i></span><b>${t[g]}</b></div>`).join("")}<a href="#leaderboard">See the leaderboard</a></div>`}
@@ -1705,7 +1733,6 @@ function clubsView(){
 }
 function sceneInfo(){const a=currentAviator(),p=sortedPosts()[0],now=new Date();
   return{aviator:a?"AVIATOR OF THE WEEK: "+a.name:"",news:p?p.title:"",bdays:S.birthdays.filter(b=>b.show!==false&&b.name&&Number(b.month)===now.getMonth()+1&&Number(b.day)===now.getDate()).map(b=>b.name)}}
-function homeAviator(){return aviatorBlock()+raceMini()}
 
 
 /* ---------- community posts, Create, collaborations, challenges ----------
@@ -1739,9 +1766,9 @@ function feedCard(p){const rs=allReplies(p.id),open=openPost===p.id,win=p.kind==
 const chips=(opts,cur,act)=>`<div class="fchips">${opts.map(([k,l])=>`<button class="fchip" data-act="${act}" data-to="${k}" aria-pressed="${cur===k}">${l}</button>`).join("")}</div>`;
 function feedView(){
   const ps=postsOf(["post","rec","collab","create"]).filter(p=>feedFilter==="all"||(feedFilter==="wins")===(p.kind==="create")).map(p=>({t:p.at||"",h:feedCard(p)}));
-  const os=feedFilter==="all"?S.opps.filter(o=>!o.deadline||o.deadline>=TODAY).map(o=>({t:o.created||"",h:oppCard(o)})):[];
-  const items=[...ps,...os].sort((a,b)=>b.t.localeCompare(a.t));
-  return head("Opinions, accomplishments and opportunities, posted by students.","Community",canJoin()?`<button class="btn primary" data-act="new-post">+ Post something</button>`:"")+
+  const ss=feedFilter==="all"?S.stories.map(x=>({t:x.date||"",h:storyCard(x)})):[];
+  const items=[...ps,...ss].sort((a,b)=>b.t.localeCompare(a.t));
+  return head("Opinions, accomplishments and stories from around Avenues.","Community",canJoin()?`<button class="btn primary" data-act="new-post">+ Post something</button>`:"")+
   (canJoin()?"":`<div class="banner">${needAccess("post and reply")}</div>`)+modPanel(FEED_KINDS)+chips([["all","Everything"],["talk","Opinions"],["wins","Accomplishments"]],feedFilter,"feed-filter")+
   (items.length?`<div class="mix">${items.map(x=>x.h).join("")}</div>`:empty("Nothing here yet","Share an opinion, show something you made or won, or post an opportunity.","new-post","Post the first thing",canJoin()))}
 function postForm(kind){
@@ -1796,8 +1823,6 @@ function awardChal(cid,uids){const c=S.challenges.find(x=>x.id===cid);if(!c)retu
   return save(async()=>{for(const x of cl)await upsert("scores",x.uid,{name:x.name||"Student",grade:x.grade||"",log:{[cid]:{p:pts,why:c.title}}})},`Confirmed ${cl.length}`,[`confirmed ${cl.length} for`,"challenge",c.title])}
 
 /* section pages */
-function hubView(){const cur=shownView();return subnav([["hub","This week"],["events","Events"],["calendar","Calendar"],["bulletin","Announcements"]])+(cur==="calendar"?calendar():cur==="bulletin"?bulletin():cur==="events"?eventsView():weekView())}
-function communityHub(){const cur=shownView();return subnav([["community","Feed",["create","collabs"]],["opportunities","Opportunities"],["life","Spotlight"]])+(cur==="life"?lifeView():cur==="opportunities"?oppsView():feedView())}
 /* lost and found: each person's items live in their own document and show right away */
 function allLost(){const out=[];for(const d of S.lostfound)for(const[k,v]of Object.entries(d.items||{}))if(v&&v.what)out.push({...v,key:k,uid:d.id});return out.sort((a,b)=>(b.at||"").localeCompare(a.at||""))}
 function lostView(){const items=allLost().filter(x=>x.status!=="returned"&&(lostFilter==="all"||x.type===lostFilter));
@@ -1808,7 +1833,6 @@ function lostView(){const items=allLost().filter(x=>x.status!=="returned"&&(lost
 function lostForm(kind){const found=kind==="found";
   openForm({title:found?"I found something":"I lost something",submitLabel:"Post it",fields:[{id:"what",label:found?"What did you find?":"What did you lose?",required:true,full:true,placeholder:"e.g. Black North Face jacket"},{id:"where",label:found?"Where did you find it?":"Where did you last have it?"},{id:"date",label:"When",type:"date"},{id:"photo",label:"Photo (this helps the most)",type:"photos"},{id:"details",label:"Description",type:"textarea",placeholder:found?"Where it is now, how to get it back":"Size, color, name inside"}],values:{date:TODAY},
     submit:v=>save(()=>upsert("lostfound",me.id,{items:{[Date.now().toString(36)]:{...v,type:found?"found":"lost",status:"open",at:new Date().toISOString(),name:myName()}}}),"Posted to Lost and found")})}
-function challengeHub(){const cur=shownView();return subnav([["challenges","Today",["leaderboard"]],["dares","Challenges"],["play","Predictions"]])+(cur==="dares"?challengesView():cur==="play"?predictionsView():gamesView())}
 
 
 /* ---------- daily games ----------
@@ -1955,9 +1979,15 @@ function gamesView(){const g=gameOn(TODAY),y=lastGame(),day=DAY_GAME[new Date().
   return head("One game a day. Play today, and see who won first thing tomorrow.","Today's game",canAct()&&!g?`<button class="btn primary" data-act="game-edit" data-id="${TODAY}">Set up today's game</button>`:"")+(trial?trialHTML():joinPrompt()+
   (g?`<section class="game"><div class="game-head"><span class="av-tag">${esc(new Date().toLocaleDateString(undefined,{weekday:"long"}))}</span><h2>${esc(gameName(g))}</h2></div>${gameHTML(g)}</section>`:empty("No game today",day?`Today's ${day[1]} isn't up yet. Check back soon.`:"Games run Monday to Friday. See you Monday.",null,"")))+
   `<div class="grid2">${y?`<section class="panel"><h2>${y.date===iso(addDays(new Date(),-1))?"Yesterday":esc(fmt(y.date,{weekday:"long"}))}: ${esc(gameName(y))}${gameResult(y)?`<button class="btn sm" data-act="rv-show" data-id="${y.id}">Replay the reveal</button>`:""}</h2>${resultHTML(y)}</section>`:`<section class="panel"><h2>How it works</h2><ul class="list"><li>Monday: This or That</li><li>Tuesday: Photo challenge</li><li>Wednesday: Mystery</li><li>Thursday: Avenues Connections</li><li>Friday: a surprise mini-game</li></ul></section>`}
-  <section class="panel"><h2>Your prize</h2>${giftCard()}</section></div>
-  <section class="panel"><h2>Leaderboard</h2>${leaderBody()}</section>`+(council()?plannerHTML():"")}
-function leaderboardView(){return gamesView()}
+  <section class="panel"><h2>Your prize</h2>${giftCard()}</section></div>`}
+function playPage(){
+  const jp=trial?"":joinPrompt();PLAYONE=true;let g,c,p;
+  try{g=gamesView();c=canAct()||S.challenges.length?challengesView():"";p=canAct()||S.predictions.length?predictionsView():""}finally{PLAYONE=false}
+  pageHead={title:"Play",context:"A new game every school day, plus challenges and predictions. Every point counts for you and your grade."};
+  return jp+`<section class="play-sec" id="sec-game"><h2 class="play-h">Today's game</h2>${g}</section>`+
+    (c?`<section class="play-sec" id="sec-challenges"><h2 class="play-h">Challenges</h2><p class="sub play-sub">Do it, send it in, and Student Council confirms your points.</p>${c}</section>`:"")+
+    (p?`<section class="play-sec" id="sec-predictions"><h2 class="play-h">Predictions</h2><p class="sub play-sub">Call what happens at school this week.</p>${p}</section>`:"")+
+    `<section class="play-sec" id="sec-leaderboard"><h2 class="play-h">Leaderboard</h2>${leaderBody()}</section>`+(council()?plannerHTML():"")}
 
 /* setting up a day: council only types the items */
 async function gameForm(date){const g=gameOn(date),key=S.gamekeys.find(k=>k.id===date)||{},wd=parse(date).getDay(),def=DAY_GAME[wd]||DAY_GAME[1],type=g?g.type:(($("#gt-"+date)||{}).value||def[0]),when=longd(date);
@@ -2006,7 +2036,7 @@ async function settleGames(){
 
 
 /* ---------- StuCo: one page with a side menu ---------- */
-const SC_SECTIONS=[["working","Our work"],["voice","Polls"],["suggestions","Feedback"],["lost","Lost and found"]];
+const SC_SECTIONS=[["suggestions","Feedback"],["voice","Polls"],["lost","Lost and found"],["working","Our work"]];
 let scrollTo_=(location.hash.slice(1)&&["working","voice","suggestions","lost"].includes(location.hash.slice(1)))?location.hash.slice(1):null;
 const tilt=id=>{let h=0;for(const ch of String(id))h=(h*31+ch.charCodeAt(0))>>>0;return((h%7)-3)*.7};
 function cutout(text){let n=0;return`<h2 class="cutout" aria-label="${esc(text)}">${text.split(" ").filter(Boolean).map(w=>`<span class="cw" aria-hidden="true">${[...w].map(c=>`<span class="c${n++%5}">${esc(c)}</span>`).join("")}</span>`).join("")}</h2>`}
@@ -2032,10 +2062,10 @@ function tapeShelf(){return`<div class="shelf"><div class="shelf-head"><span>The
 function workSection(){const done=winsDone(THIS_YEAR),doing=winsDoing(),tk=S.tasks.filter(t=>taskState(t).status!=="done").slice(0,6),intro=yearDoc(THIS_YEAR).intro;
   return`<div class="toolbar">${canAct()?`<button class="btn" data-act="add-win" data-to="doing">+ Something we're working on</button><button class="btn primary" data-act="add-win" data-to="done">+ Add an accomplishment</button>`:""}</div>
   <div class="year-now"><div class="now-playing"><span class="av-tag">Now playing</span><b>${yearLabel(THIS_YEAR)}</b>${canAct()?`<button class="btn sm ghost" data-act="year-edit" data-to="${THIS_YEAR}">${intro?"Edit the description":"Add a description"}</button>`:""}</div>${intro?`<p class="year-intro">${esc(intro)}</p>`:""}</div>
-  ${winReel(THIS_YEAR)}
+  ${winReel(THIS_YEAR,!canAct())}
   ${doing.length||tk.length?`<div>${cutout("In the works")}<div class="notes">${doing.map(w=>`<div class="note" style="--r:${tilt(w.id)}deg"><b>${esc(w.title)}</b>${w.who?`<span>${esc(w.who)}</span>`:""}${w.description?`<p>${esc(w.description)}</p>`:""}${canAct()?`<button class="btn sm ghost" data-act="edit-win" data-id="${w.id}">Edit</button>`:""}</div>`).join("")}${tk.map(t=>{const st=taskState(t);return`<div class="note" style="--r:${tilt(t.id)}deg"><b>${esc(t.title)}</b><span>${st.owner?esc(nameOf(st.owner)):"Open"}${t.due?", due "+esc(short(t.due)):""}</span></div>`}).join("")}</div></div>`:""}
   <div>${cutout("What we've done")}${done.length?`<div class="board">${done.map(pinCard).join("")}</div>`:empty("Nothing posted yet",canAct()?"Add what Student Council has pulled off this year, with photos and who made it happen.":"Student Council's accomplishments will show up here.","add-win","Add one")}</div>
-  ${tapeShelf()}`}
+  ${canAct()||S.wins.length||S.years.length?tapeShelf():""}`}
 
 /* the archive page for one year */
 function openArchive(y){archiveYear=y;let el=$("#archive");if(!el){el=document.createElement("div");el.id="archive";el.setAttribute("role","dialog");el.setAttribute("aria-modal","true");document.body.appendChild(el)}drawArchive(true);document.body.style.overflow="hidden";const c=el.querySelector("[data-act=archive-close]");c&&c.focus()}
@@ -2071,7 +2101,7 @@ function stucoPage(){
   const counts={voice:S.polls.filter(pollOpen).length,lost:allLost().filter(x=>x.status!=="returned").length,suggestions:council()?allSuggestions().filter(x=>x.status==="new").length:0};
   const intro={working:"Everything Student Council has done this year, and what's in progress now.",voice:"Vote on what happens next. Results are posted when each poll closes.",suggestions:"Ideas, problems around school, vending requests. Student Council reads every one and replies.",lost:"Lost a jacket? Found a water bottle? Post it with a photo so it gets back to its owner."};
   pageHead={title:"Student Council",context:"What we've done, what we're working on, and how to reach us."};
-  const cur=view&&SC_SECTIONS.some(s=>s[0]===view)?view:"working";
+  const cur=view&&SC_SECTIONS.some(s=>s[0]===view)?view:"suggestions";
   return`<div class="stuco-layout"><nav class="side-nav" aria-label="Student Council sections">${SC_SECTIONS.map(([k,l])=>`<a href="#${k}" ${k===cur?'aria-current="page"':""}>${l}${counts[k]?`<span class="count">${counts[k]}</span>`:""}</a>`).join("")}</nav>
   <div class="stuco-main">${SC_SECTIONS.map(([k,l])=>`<section class="sc-sec" id="sec-${k}"><div><h2 class="sc-h">${l}</h2><p class="sub" style="margin:4px 0 0">${intro[k]}</p></div>${sec[k]}</section>`).join("")}</div></div>`}
 
@@ -2178,35 +2208,12 @@ function bookForm(){const rooms=CFG.rooms||[];
       const cur=(S.bookings.find(d=>d.id===me.id)||{}).items||{};roomDate=v.date;
       return save(()=>db.doc("bookings/"+me.id).set({items:{...cur,[Date.now().toString(36)]:{...v,name:myName(),grade:myGrade(),at:new Date().toISOString()}}}),`${v.room} booked`)}})}
 
-/* ---------- Hub: the feed, a small bulletin and your own stuff on one page ---------- */
-const HUB_SECTION={community:"feed",create:"feed",collabs:"feed",hub:"bulletin",events:"bulletin",calendar:"bulletin",bulletin:"bulletin",opportunities:"opportunities",life:"life",myspace:"myspace"};
-function hubTab(){const cur=shownView(),sec=HUB_SECTION[cur]||"feed";
-  return subnav([["community","Feed",["create","collabs"]],["hub","Bulletin",["events","calendar","bulletin"]],["opportunities","Opportunities"],["life","Spotlight"],["myspace","MySpace"]])+
-    (sec==="bulletin"?bulletinPages(cur):sec==="opportunities"?oppsView():sec==="life"?lifeView():sec==="myspace"?mySpaceView():hubDash())}
-function bulletinPages(cur){const links=[["hub","This week"],["events","Events"],["calendar","Calendar"],["bulletin","Announcements"]];
-  return`<div class="fchips">${links.map(([k,l])=>`<a class="fchip" href="#${k}" ${k===cur?'aria-current="page"':""}>${l}</a>`).join("")}</div>`+(cur==="calendar"?calendar():cur==="bulletin"?bulletin():cur==="events"?eventsView():weekView())}
+/* ---------- Explore: events, clubs, opportunities ---------- */
+function exploreTab(){const cur=shownView();
+  return subnav([["events","Events",["calendar"]],["clubs","Clubs"],["opportunities","Opportunities"]])+(cur==="clubs"?clubsView():cur==="opportunities"?oppsView():cur==="calendar"?calendar():eventsView())}
+/* ---------- schedule changes (Today) ---------- */
 function scheduleChanges(){const in30=iso(addDays(new Date(),30)),ago7=iso(addDays(new Date(),-7));
   return[...S.events.filter(e=>e.change&&evVisible(e)&&e.date>=TODAY&&e.date<=in30).map(e=>({title:e.title,text:e.change})),...S.bulletin.filter(p=>p.tag==="Schedule change"&&(p.date||"")>=ago7).map(p=>({title:p.title,text:p.body}))]}
-function meStrip(){
-  if(!me.id||!canJoin())return`<div class="me-strip" style="--acc:#F4B400"><div class="grow"><b>Make the Hub yours</b><div class="sub">${HOSTED?needAccess("see your calendar, saved opportunities and room bookings"):"Sign in to see your own calendar, saved opportunities and room bookings."}</div></div></div>`;
-  const sp=mySpace(),acc=accentOf(sp),name=myName()||"You",g=myGrade(),pts=ptsOf(S.scores.find(d=>d.id===me.id));
-  return`<div class="me-strip" style="--acc:${acc}"><span class="me-pic">${esc(initials(name))}</span><div class="grow"><b>${esc(name)}</b><div class="sub parts">${g?`<span>Grade ${esc(g)}</span>`:""}<span>${pts} points</span>${sp.status?`<span>${esc(sp.status)}</span>`:""}</div></div><button class="btn sm ghost" data-act="my-edit">Customize</button><a class="btn sm" href="#myspace">My page</a></div>`}
-function bulletinMini(){const ch=scheduleChanges(),evs=S.events.filter(e=>evVisible(e)&&e.date>=TODAY&&e.type!=="meeting").sort(byDate).slice(0,3),posts=sortedPosts().slice(0,3);
-  return`<section class="bmini"><div class="bmini-head"><h2>Bulletin</h2><a href="#hub">Full bulletin</a></div>
-  ${ch.length?`<div class="bmini-alert"><b>Changed:</b> ${ch.slice(0,2).map(c=>`${esc(c.title)}, ${esc(c.text)}`).join(". ")}</div>`:""}
-  <div class="bmini-grid"><div><h3>Coming up</h3>${evs.length?`<ul>${evs.map(e=>`<li><span class="d">${esc(short(e.date))}</span><a href="#events">${esc(e.title)}</a>${e.signup&&e.signup!=="none"?`<span class="chip good">Sign up</span>`:""}</li>`).join("")}</ul>`:`<p class="sub">Nothing scheduled yet.</p>`}</div>
-  <div><h3>Announcements</h3>${posts.length?`<ul>${posts.map(p=>`<li><span class="d">${esc(short(p.date))}</span><a href="#bulletin">${esc(p.title)}</a></li>`).join("")}</ul>`:`<p class="sub">No announcements yet.</p>`}</div></div></section>`}
-function sideUpcoming(){const signed=!!me.id&&canJoin(),acc=accentOf(mySpace()),evs=S.events.filter(e=>evVisible(e)&&e.date>=TODAY).map(e=>({date:e.date,time:e.time,title:e.title,c:e.grade?"g":"s"})),mine=signed?Object.values(myMine().items||{}).filter(x=>x.date>=TODAY).map(x=>({...x,c:"m"})):[];
-  const all=[...evs,...mine].sort((a,b)=>(a.date+(a.time||"")).localeCompare(b.date+(b.time||""))).slice(0,6);
-  return`<section class="panel side"><h2>Coming up for you ${signed?`<button class="btn sm ghost" data-act="my-add" data-date="${TODAY}">+ Add</button>`:""}</h2>${all.length?`<ul class="list">${all.map(x=>`<li><span class="dot-c c-${x.c}" style="--acc:${acc}"></span><div class="grow"><div class="title">${esc(x.title)}</div><div class="sub">${esc(longd(x.date))}${x.time?", "+esc(fmtTime(x.time)):""}${x.c==="m"?", only you":x.c==="g"?", your grade":""}</div></div></li>`).join("")}</ul>`:`<p class="sub" style="margin:8px 0 0">Nothing coming up.</p>`}<a class="side-link" href="#myspace">Open my calendar</a></section>`}
-function sideSaved(){if(!me.id||!canJoin())return"";const saved=S.opps.filter(o=>savedOpps.has(o.id)&&(!o.deadline||o.deadline>=TODAY)).slice(0,4);
-  return`<section class="panel side"><h2>Saved opportunities</h2>${saved.length?`<ul class="list">${saved.map(o=>`<li><div class="grow"><div class="title">${esc(o.title)}</div><div class="sub">${o.deadline?"Apply by "+esc(short(o.deadline)):"No deadline"}</div></div></li>`).join("")}</ul>`:`<p class="sub" style="margin:8px 0 0">Tap Save on an opportunity to keep it here.</p>`}<a class="side-link" href="#opportunities">Browse opportunities</a></section>`}
-function sideRooms(){if(!me.id||!canJoin()||!(CFG.rooms||[]).length)return"";const mine=allBookings().filter(b=>b.uid===me.id&&b.date>=TODAY).slice(0,3);
-  return`<section class="panel side"><h2>Rooms <button class="btn sm primary" data-act="room-book">Book</button></h2>${mine.length?`<ul class="list">${mine.map(b=>`<li><div class="grow"><div class="title">${esc(b.room)}</div><div class="sub">${esc(short(b.date))}, ${esc(fmtTime(b.start))} to ${esc(fmtTime(b.end))}</div></div></li>`).join("")}</ul>`:`<p class="sub" style="margin:8px 0 0">Need a space? Book a free room.</p>`}<a class="side-link" href="#myspace">See what's free</a></section>`}
-function hubDash(){const feed=feedView();
-  pageHead={title:"Hub",context:"What's happening at Avenues, what students are posting, and your own stuff."};
-  return`<div class="hub"><div class="hub-main">${meStrip()}${bulletinMini()}<section class="hub-feed"><h2 class="hub-h">Community</h2>${feed}</section></div>
-  <aside class="hub-side">${sideUpcoming()}${sideSaved()}${sideRooms()}${me.id&&canJoin()?`<section class="panel side"><h2>Who can help</h2>${helpHTML()}</section>`:""}</aside></div>`}
 
 /* ---------- proposals ---------- */
 function tally(p){const v=p.votes||{},t={aye:0,nay:0,abstain:0};for(const k in v)if(t[v[k]]!=null&&isApproved(S.members.find(m=>m.id===k)))t[v[k]]++;return t}

@@ -1,6 +1,6 @@
 # Handoff: Atlas (Avenues Student Hub)
 
-Everything a new session needs to keep building this site. Last updated 2026-11-13.
+Everything a new session needs to keep building this site. Last updated 2026-11-14.
 
 ## What it is
 
@@ -46,10 +46,11 @@ git push codeberg main "${SPLIT}:refs/heads/pages"   # normal push only; force-p
 
 ## How the app is organized
 
-- **Student tabs (4):** Hub (feed, small bulletin, personal side column; sub-pages Feed, Bulletin, Opportunities, Spotlight, MySpace), Clubs, Challenges (daily games Today, Challenges, Predictions), StuCo (one page with side menu: Our work, Polls, Feedback, Lost and found).
+- **Student tabs (4), no third level:** Today (`#home`: short pixel banner with a greeting, three live cards, one merged "Coming up" list of events, deadlines, sign-up closings, opportunity deadlines and private reminders, then announcements, the community feed with stories, Grade Race, birthdays, playlists, photo belt), Explore (Events with a Month view, Clubs, Opportunities), Play (one page: today's game, challenges, predictions, leaderboard; empty sections hide for students), StuCo (one page, side menu: Feedback, Polls, Lost and found, Our work). MySpace (`#myspace`) opens from the avatar in the top bar. `#bulletin` is the full announcements archive (under Today).
+- **Old links:** `ALIAS` maps retired names (hub, community, create, collabs, life, connect, explore, challenges, dares, leaderboard) to their new place and section; keep it when renaming routes.
 - **Council view** (switch in the menu): Overview, Tasks, Proposals, Attendance, Members, History, plus edit buttons everywhere. `council()` is false in student preview.
 - **Routing:** `ROUTES` maps hash names to tabs; `VIEWFN` in `render()` maps them to view functions. `head(context,title,actions)` puts the title in the pixel banner.
-- **Home page** (`#home`): animated pixel scene of the Avenues building (time of day, season, plane with Aviator name, truck with latest news, birthday banner), featured student work, live cards, Student Council film reel.
+- **Pixel scene:** animated Avenues building (time of day, season, plane with Aviator name, truck with latest news, birthday banner) in the Today banner and every page banner.
 - **Daily games:** `games/<date>`; answers hashed, readable keys in `gamekeys/` (council only); a council member's browser settles points the next day (`settleGames`). Practice mode for council (`trial`).
 - **Access:** student list pasted from a Google Sheet into `roster/<email>`; StuCo column = council; "Only listed emails can join" toggle. Student posts wait in `submissions/` for council approval.
 - **Data per person** lives in `<collection>/<uid>` documents with an `items` map (suggestions, signups, lostfound, bookings, gamevotes, replies…), written only by that person.

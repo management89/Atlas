@@ -6,12 +6,12 @@ The student hub and Student Council workspace for Avenues The World School.
 
 ## What's in it
 
-**For students (five tabs)**
-- **Student Hub:** this week at a glance (schedule and location changes, what's coming up, deadlines and reminders, announcements), a full calendar, and the weekly bulletin.
-- **Events:** dances, trips, tournaments and competitions with details, schedules, prices and spots left. Students RSVP, sign up, register a team or reserve a ticket in one click.
-- **Student Life:** event photos drifting across the page in two rows. Click any photo to open its full album. Also recaps, spotlights, achievements, club highlights, interviews, memes, opt-in birthdays and student playlists.
-- **Opportunities:** a searchable board of volunteering, internships, competitions, trips, club recruitment, and music, art and athletics opportunities, with deadlines and a Save list.
-- **Student Voice:** school-wide polls (council posts the results), suggestions, vending machine requests, problem reports, and a view of what each council member is working on.
+**For students (four tabs)**
+- **Today:** the home page. What's coming up (events, deadlines, sign-ups closing, opportunity deadlines, your own reminders) in one list, announcements, the community feed with recaps and memes, the Grade Race, birthdays and playlists.
+- **Explore:** events with sign-ups (list or month view), every club, and a searchable opportunities board with a Save list.
+- **Play:** today's game, challenges, predictions and the leaderboard on one page.
+- **StuCo:** feedback and problem reports, polls, lost and found, and everything Student Council has done.
+- **MySpace:** open it from your picture in the top bar. Your profile, private calendar, posts, saved opportunities and room bookings.
 
 **For council members**
 - A Student view / Council view switch, so the president can see exactly what students see.
