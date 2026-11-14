@@ -51,7 +51,7 @@ git push codeberg main "${SPLIT}:refs/heads/pages"   # normal push only; force-p
 - **Council view** (switch in the menu): Overview, Tasks, Proposals, Attendance, Members, History, plus edit buttons everywhere. `council()` is false in student preview.
 - **Routing:** `ROUTES` maps hash names to tabs; `VIEWFN` in `render()` maps them to view functions. `head(context,title,actions)` puts the title in the pixel banner.
 - **Pixel scene:** animated Avenues building (time of day, season, plane with Aviator name, truck with latest news, birthday banner) in the Today banner and every page banner.
-- **Daily games:** `games/<date>`; answers hashed, readable keys in `gamekeys/` (council only); a council member's browser settles points the next day (`settleGames`). Practice mode for council (`trial`).
+- **Daily games:** `games/<date>`; answers hashed, readable keys in `gamekeys/` (council only); a council member's browser settles points the next day (`settleGames`). Until then students see their own points as "+N pending" (`myPending()`, worked out from their own plays, photo entries and unconfirmed challenges; display only). Overview shows a "Points to settle" alert with a button if a finished game hasn't been settled. Practice mode for council (`trial`).
 - **Access:** student list pasted from a Google Sheet into `roster/<email>`; StuCo column = council; "Only listed emails can join" toggle. Student posts wait in `submissions/` for council approval.
 - **Data per person** lives in `<collection>/<uid>` documents with an `items` map (suggestions, signups, lostfound, bookings, gamevotes, replies…), written only by that person.
 
