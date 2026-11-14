@@ -23,6 +23,8 @@
   const auth = firebase.auth();
   const fs = firebase.firestore();
   try { fs.settings({ ignoreUndefinedProperties: true, merge: true }); } catch (e) {}
+  // Keep a copy in the browser so reopening the site within a session doesn't re-read everything.
+  try { fs.enablePersistence({ synchronizeTabs: true }).catch(() => {}); } catch (e) {}
 
   let user = null, isOwner = false, isCouncil = false, isLeader = false;
 
@@ -112,7 +114,19 @@
       where() { return this; }, orderBy() { return this; }, limit() { return this; },
     };
   }
-  const db = { doc: docRef, collection: colRef };
+  // A limited listen: spec = { where: [[field, op, value], ...], orderBy: [field, "asc"|"desc"], limit: n }.
+  // The app uses these so each page reads only what it shows (Firestore bills per document read).
+  function query(path, spec) {
+    let r = fs.collection(path);
+    for (const w of (spec && spec.where) || []) r = r.where(w[0], w[1], w[2]);
+    if (spec && spec.orderBy) r = r.orderBy(spec.orderBy[0], spec.orderBy[1] || "asc");
+    if (spec && spec.limit) r = r.limit(spec.limit);
+    return {
+      onSnapshot: (next, err) => r.onSnapshot((s) => next(q(s.docs, s.metadata)), (e) => { if (denied(e)) next(q([])); else err && err(toErr(e)); }),
+      get: () => r.get().then((s) => q(s.docs, s.metadata)).catch((e) => { if (denied(e)) return q([]); throw toErr(e); }),
+    };
+  }
+  const db = { doc: docRef, collection: colRef, query };
 
   /* ---------- people ---------- */
   const profCache = {};

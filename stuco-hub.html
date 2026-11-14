@@ -1068,6 +1068,7 @@ function renderMe(){
   b.innerHTML=`${img}<div class="grow"><div class="title">${esc((d&&d.name)||me.name||"You")}</div><div class="sub">${esc(role)}</div></div>${window.__signOut?`<button class="btn sm ghost" data-act="signout">Sign out</button>`:""}`;
 }
 function render(){
+  ensureData();
   if(inboxOpen)drawInbox();
   renderNav();renderMe();maybeReveal();if(archiveYear!=null)drawArchive();
   {const wb=$("#workBar"),w=gal&&gal.work&&S.posts.find(x=>x.id===gal.work);if(wb&&w)wb.innerHTML=workBar(w)}
@@ -1271,7 +1272,7 @@ function signupsFor(eid){const out=[];for(const d of S.signups){const x=(d.event
 const mySignups=()=>(S.signups.find(d=>d.id===me.id)||{}).events||{};
 const myEngage=()=>S.signups.find(d=>d.id===me.id)||{};
 function setSignup(eid,val){const mine={...mySignups()};if(val)mine[eid]=val;else delete mine[eid];return db.doc("signups/"+me.id).set({hearts:myEngage().hearts||{},events:mine})}
-function heartBtn(id){const on=!!(myEngage().hearts||{})[id],n=S.signups.reduce((t,d)=>t+((d.hearts||{})[id]?1:0),0);return`<button class="heart" data-act="heart" data-id="${id}" aria-pressed="${on}" aria-label="${on?"Remove your like":"Like this"}${n?`, ${n} so far`:""}" ${canJoin()?"":"disabled"}>♥${n?" "+n:""}</button>`}
+function heartBtn(id){const on=!!(myEngage().hearts||{})[id],n=LEAN&&!fullData("signups")?Math.max(Number((STATS.hearts||{})[id])||0,on?1:0):S.signups.reduce((t,d)=>t+((d.hearts||{})[id]?1:0),0);return`<button class="heart" data-act="heart" data-id="${id}" aria-pressed="${on}" aria-label="${on?"Remove your like":"Like this"}${n?`, ${n} so far`:""}" ${canJoin()?"":"disabled"}>♥${n?" "+n:""}</button>`}
 function eventsView(){
   const up=S.events.filter(e=>e.type!=="meeting"&&e.type!=="deadline"&&e.date>=TODAY).sort(byDate);
   const opts=[["all","All events"],["open","Sign-ups open"],["mine","I'm going"]];
@@ -1281,7 +1282,7 @@ function eventsView(){
   (list.length?`<div class="evlist">${list.map(eventCard).join("")}</div>`:empty(up.length?"Nothing in this category":"No upcoming events",up.length?"Try another filter.":canAct()?"Add a dance, trip or competition and turn on sign-ups.":"Check back soon.",up.length?null:"add-event","Add an event"));
 }
 function eventCard(e){
-  const sus=signupsFor(e.id),mine=mySignups()[e.id],has=e.signup&&e.signup!=="none",cap=Number(e.capacity)||0,full=cap&&sus.length>=cap,closed=e.closes&&e.closes<TODAY,x=openEvent===e.id;
+  const sus=LEAN&&!fullData("signups")&&GOING[e.id]?GOING[e.id]:LEAN&&!fullData("signups")?Array.from({length:Math.max(Number((STATS.signups||{})[e.id])||0,mySignups()[e.id]?1:0)},(_,i)=>i===0&&mySignups()[e.id]?{uid:me.id,...mySignups()[e.id]}:{uid:"",n:i}):signupsFor(e.id),mine=mySignups()[e.id],has=e.signup&&e.signup!=="none",cap=Number(e.capacity)||0,full=cap&&sus.length>=cap,closed=e.closes&&e.closes<TODAY,x=openEvent===e.id;
   const kind=label(SIGNUP_KINDS,e.signup);
   let act="";
   if(has){
@@ -1297,7 +1298,7 @@ function eventCard(e){
     <div class="sub parts"><span>${esc(longd(e.date))}${e.time?", "+esc(fmtTime(e.time)):""}</span>${e.location?`<span>${esc(e.location)}</span>`:""}${e.price?`<span>${esc(e.price)}</span>`:""}</div>
     ${e.change?`<div class="changenote">Changed: ${esc(e.change)}</div>`:""}
     ${has?`<div class="sub parts"><span>${sus.length} signed up</span>${cap?`<span>${Math.max(0,cap-sus.length)} of ${cap} spots left</span>`:""}${e.closes?`<span>${closed?"Closed":"Closes"} ${esc(short(e.closes))}</span>`:""}</div>`:""}
-    ${x?`<div class="ev-more"><div><b>Add to your calendar</b><div class="toolbar" style="margin-top:6px"><a class="btn sm" href="${esc(gcalLink(e))}" target="_blank" rel="noopener">Google Calendar</a><button class="btn sm" data-act="ev-ics" data-id="${e.id}">Apple or Outlook (.ics)</button></div></div>${e.details||e.notes?`<div><b>Details</b><p>${esc(e.details||e.notes)}</p></div>`:""}${e.schedule?`<div><b>Schedule</b><p>${esc(e.schedule)}</p></div>`:""}${has&&sus.length?`<div><b>Who's going</b><div class="going">${council()?`<ul class="list" style="margin:0">${sus.map(s=>`<li>${who(s.uid,"Someone")}${s.team?`<span class="sub">${esc(s.team)}</span>`:""}</li>`).join("")}</ul>`:sus.slice(0,24).map(s=>avatar(s.uid)).join("")+(sus.length>24?`<span class="sub">and ${sus.length-24} more</span>`:"")}</div></div>`:""}</div>`:""}
+    ${x?`<div class="ev-more"><div><b>Add to your calendar</b><div class="toolbar" style="margin-top:6px"><a class="btn sm" href="${esc(gcalLink(e))}" target="_blank" rel="noopener">Google Calendar</a><button class="btn sm" data-act="ev-ics" data-id="${e.id}">Apple or Outlook (.ics)</button></div></div>${e.details||e.notes?`<div><b>Details</b><p>${esc(e.details||e.notes)}</p></div>`:""}${e.schedule?`<div><b>Schedule</b><p>${esc(e.schedule)}</p></div>`:""}${has&&sus.length&&(!LEAN||fullData("signups")||GOING[e.id])?`<div><b>Who's going</b><div class="going">${council()?`<ul class="list" style="margin:0">${sus.map(s=>`<li>${who(s.uid,"Someone")}${s.team?`<span class="sub">${esc(s.team)}</span>`:""}</li>`).join("")}</ul>`:sus.slice(0,24).map(s=>avatar(s.uid)).join("")+(sus.length>24?`<span class="sub">and ${sus.length-24} more</span>`:"")}</div></div>`:""}</div>`:""}
     <div class="toolbar">${act}<button class="btn sm ghost" data-act="ev-toggle" data-id="${e.id}" aria-expanded="${x}">${x?"Hide details":e.details||e.notes||e.schedule||(has&&sus.length)?"Details and add to calendar":"Add to calendar"}</button>${canAct()?`<button class="btn sm ghost" data-act="edit-event" data-id="${e.id}">Edit</button>`:""}</div>
   </div></article>`;
 }
@@ -1671,9 +1672,9 @@ function aviatorForm(id){const a=id&&S.aviators.find(x=>x.id===id);
 const myPlay=()=>{const p=S.picks.find(d=>d.id===me.id)||{},r=RM();return r?{...p,name:r.name||p.name||me.name||"",grade:r.grade||p.grade||""}:p};
 function savePlay(patch){const p=myPlay();return db.doc("picks/"+me.id).set({name:p.name||"",grade:p.grade||"",picks:p.picks||{},clubs:p.clubs||{},...patch})}
 const ptsOf=d=>Object.values((d&&d.log)||{}).reduce((t,x)=>t+(Number(x&&x.p)||0),0);
-const scoreDocs=()=>S.scores.filter(d=>d.id!=="_settings");
+const scoreDocs=()=>S.scores.filter(d=>d.id[0]!=="_");
 const raceGoal=()=>{const s=S.scores.find(d=>d.id==="_settings")||{};return{goal:Number(s.goal)||500,prize:s.prize||"an ice cream sundae party"}};
-function gradeTotals(){const t=Object.fromEntries(GRADES.map(g=>[g,0]));for(const d of scoreDocs())if(t[d.grade]!=null)t[d.grade]+=ptsOf(d);return t}
+function gradeTotals(){if(LEAN&&!fullData("scores"))return Object.fromEntries(GRADES.map(g=>[g,Number((STATS.grades||{})[g])||0]));const t=Object.fromEntries(GRADES.map(g=>[g,0]));for(const d of scoreDocs())if(t[d.grade]!=null)t[d.grade]+=ptsOf(d);return t}
 function upsert(c,id,data){return S[c].some(d=>d.id===id)?db.doc(c+"/"+id).update(data):db.doc(c+"/"+id).set(data)}
 const predOpen=p=>p.answer==null&&(!p.closes||p.closes>=TODAY);
 let PLAYONE=false;
@@ -1693,7 +1694,7 @@ function predCard(p){const opts=p.options||[],pk=(myPlay().picks||{})[p.id],open
   ${canAct()?`<div class="toolbar"><button class="btn sm primary" data-act="pred-resolve" data-id="${p.id}">${res?"Change the answer":"Mark the answer"}</button><button class="btn sm ghost" data-act="edit-pred" data-id="${p.id}">Edit</button><span class="sub">${S.picks.filter(d=>(d.picks||{})[p.id]!=null).length} picks so far</span></div>`:""}</article>`}
 function leaderBody(){
   const t=gradeTotals(),{goal,prize}=raceGoal(),lead=Math.max(...Object.values(t));
-  const players=scoreDocs().filter(d=>!d.team).map(d=>({...d,pts:ptsOf(d)})).filter(d=>d.pts>0).sort((a,b)=>b.pts-a.pts).slice(0,15);
+  const players=LEAN&&!fullData("scores")?(STATS.players||[]):scoreDocs().filter(d=>!d.team).map(d=>({...d,pts:ptsOf(d)})).filter(d=>d.pts>0).sort((a,b)=>b.pts-a.pts).slice(0,15);
   const bonus=[];for(const d of scoreDocs())if(d.team)for(const[k,x]of Object.entries(d.log||{}))bonus.push({k,grade:d.grade,...x});bonus.sort((a,b)=>b.k.localeCompare(a.k));
   return `<div class="toolbar"><span class="sub">The first grade to ${goal} points wins ${esc(prize)}.</span><span class="sp"></span>${canAct()?`<button class="btn sm" data-act="race-goal">Set the prizes</button><button class="btn sm" data-act="award">Award points</button>`:""}</div><div class="sundaes">${GRADES.map(g=>{const pct=Math.min(100,Math.round(t[g]/goal*100)),top=t[g]===lead&&lead>0;return`<div class="sundae-col"><div class="sundae" role="img" aria-label="Grade ${g}: ${t[g]} of ${goal} points"><div class="cherry" ${pct>=100?"":"hidden"}></div><div class="sundae-glass"><div class="scoops" style="height:${pct}%"></div></div><div class="stem"></div></div><div class="title">Grade ${g}</div><div class="sub"><b>${t[g]}</b> of ${goal}</div>${g===myGrade()&&myPending()?`<span class="pend">+${myPending()} pending from you</span>`:""}${top?`<span class="chip gold">In the lead</span>`:""}</div>`}).join("")}</div>
   <div class="grid2"><section class="panel"><h2>Top players</h2>${players.length?`<ol class="ranks">${players.map((d,i)=>`<li class="${d.id===me.id?"you":""}"><span class="rk">${i+1}</span><span class="grow title">${esc(d.name||"Student")}${d.id===me.id?" (you)":""}</span><span class="sub">Grade ${esc(d.grade||"?")}</span><b>${d.pts}</b></li>`).join("")}</ol>`:`<p class="sub" style="margin:10px 0 0">No points yet. Play today's game to get on the board.</p>`}</section>
@@ -1805,9 +1806,9 @@ function modPanel(kinds){
     return`<section class="panel"><h2>Waiting for approval</h2><ul class="sugs" style="border-top:0">${p.map(d=>`<li><div class="sug-head"><span class="title">${esc(d.title||POST_KIND[d.kind])}</span><span class="sub parts"><span>${POST_KIND[d.kind]}${d.medium?", "+label(MEDIA,d.medium):""}</span><span>${byLine(d)}</span></span></div>${workBody(d)}${canAct()?`<div class="toolbar"><button class="btn sm good" data-act="sub-approve" data-uid="${esc(d.uid)}" data-key="${esc(d.key)}">Approve and post</button><button class="btn sm ghost danger" data-act="sub-decline" data-uid="${esc(d.uid)}" data-key="${esc(d.key)}">Decline</button></div>`:""}</li>`).join("")}</ul></section>`}
   const own=allSubs().filter(d=>d.uid===me.id&&kinds.includes(d.kind)&&d.status!=="approved").slice(0,4);if(!own.length)return"";
   return`<section class="panel"><h2>Your submissions</h2><ul class="sugs" style="border-top:0">${own.map(d=>`<li><div class="sug-head"><span class="title">${esc(d.title||POST_KIND[d.kind])}</span><span class="state ${d.status==="declined"?"wait":"todo"}">${d.status==="declined"?"Not approved":"Waiting for Student Council approval"}</span></div></li>`).join("")}</ul></section>`}
-function feedCard(p){const rs=allReplies(p.id),open=openPost===p.id,win=p.kind==="create"&&((p.photos||[]).length||ytId(p.link));let h=0;for(const ch of p.id)h=(h*31+ch.charCodeAt(0))>>>0;
+function feedCard(p){const rs=allReplies(p.id),open=openPost===p.id,rn=LEAN&&!fullData("replies")?Number((STATS.replies||{})[p.id])||rs.length:rs.length,win=p.kind==="create"&&((p.photos||[]).length||ytId(p.link));let h=0;for(const ch of p.id)h=(h*31+ch.charCodeAt(0))>>>0;
   return`<article class="post">${win?`<button class="feed-cover r${h%3}" data-act="work" data-id="${p.id}" aria-label="Open ${esc(p.title)}">${workCover(p)}${playTag(p)}</button>`:""}<div class="meta"><span class="chip ${p.kind==="create"?"gold":p.kind==="collab"?"good":"accent"}">${POST_KIND[p.kind]||"Post"}</span><span>${byLine(p)}</span><span>${esc(short((p.at||"").slice(0,10)))}</span></div>${p.title?`<h3>${esc(p.title)}</h3>`:""}${win?(p.text?`<p>${esc(p.text)}</p>`:""):workBody(p)}
-  <div class="meta">${heartBtn(p.id)}<button class="btn sm ghost" data-act="post-toggle" data-id="${p.id}" aria-expanded="${open}">${rs.length?`${rs.length} repl${rs.length===1?"y":"ies"}`:"Reply"}</button><span class="sp"></span>${canAct()?`<button class="btn sm ghost" data-act="post-delete" data-id="${p.id}">Remove</button>`:""}</div>
+  <div class="meta">${heartBtn(p.id)}<button class="btn sm ghost" data-act="post-toggle" data-id="${p.id}" aria-expanded="${open}">${rn?`${rn} repl${rn===1?"y":"ies"}`:"Reply"}</button><span class="sp"></span>${canAct()?`<button class="btn sm ghost" data-act="post-delete" data-id="${p.id}">Remove</button>`:""}</div>
   ${open?`<div class="replies">${rs.map(r=>`<div class="reply"><b>${esc(r.name||"Student")}</b> ${esc(r.text)}${r.uid===me.id||canAct()?` <button class="btn sm ghost" data-act="reply-delete" data-uid="${esc(r.uid)}" data-key="${esc(r.key)}">Remove</button>`:""}</div>`).join("")}${canJoin()?`<div class="reply-form"><input id="rp-${p.id}" aria-label="Write a reply" placeholder="Write a reply" maxlength="400"><button class="btn sm" data-act="reply-send" data-id="${p.id}">Reply</button></div>`:""}</div>`:""}</article>`}
 const chips=(opts,cur,act)=>`<div class="fchips">${opts.map(([k,l])=>`<button class="fchip" data-act="${act}" data-to="${k}" aria-pressed="${cur===k}">${l}</button>`).join("")}</div>`;
 function feedView(){
@@ -2033,7 +2034,7 @@ const weekPrize=()=>(S.scores.find(d=>d.id==="_settings")||{}).weekPrize||"a pri
 function logDate(k,x){if(x&&x.d)return x.d;if(/^[gs]\d{4}-\d\d-\d\d$/.test(k))return k.slice(1);if(/^b[0-9a-z]+$/.test(k)){const t=parseInt(k.slice(1),36);if(t>1.5e12&&t<4e12)return iso(new Date(t))}
   const c=S.challenges.find(c=>c.id===k);if(c)return c.date||null;const pr=S.predictions.find(p=>p.id===k);if(pr)return(pr.closes||pr.created||"").slice(0,10)||null;return null}
 function weekPts(d,ws){const we=iso(addDays(parse(ws),6));let t=0;for(const[k,x]of Object.entries((d&&d.log)||{})){const dt=logDate(k,x);if(dt&&dt>=ws&&dt<=we)t+=Number(x&&x.p)||0}return t}
-function weekBoard(ws){return scoreDocs().filter(d=>!d.team).map(d=>({...d,pts:weekPts(d,ws)})).filter(d=>d.pts>0).sort((a,b)=>b.pts-a.pts||(a.name||"").localeCompare(b.name||""))}
+function weekBoard(ws){if(LEAN&&!fullData("scores")){const w=[STATS.week,STATS.lastWeek].find(x=>x&&x.ws===ws);return w?w.rank.slice():[]}return scoreDocs().filter(d=>!d.team).map(d=>({...d,pts:weekPts(d,ws)})).filter(d=>d.pts>0).sort((a,b)=>b.pts-a.pts||(a.name||"").localeCompare(b.name||""))}
 const lastWeek=()=>iso(addDays(parse(weekStart(TODAY)),-7));
 /* streaks count game days, so a day with no game posted never breaks one */
 const realGames=()=>S.games.filter(g=>/^\d{4}-\d\d-\d\d$/.test(g.id)).sort((a,b)=>b.id.localeCompare(a.id));
@@ -2100,7 +2101,7 @@ let settling=false;
 function settleAlert(){if(!canAct())return"";const due=S.games.filter(g=>g.date<TODAY&&!g.awarded);if(!due.length||settling)return"";
   return`<section class="changes settle"><h2>Points to settle</h2><ul><li><span>${due.length} finished game${due.length===1?"":"s"} (${due.map(g=>esc(short(g.date))).join(", ")}) still ${due.length===1?"needs":"need"} points added. This usually happens on its own when a council member opens the site.</span></li></ul><div class="toolbar"><button class="btn primary" data-act="settle-now">Add the points now</button></div></section>`}
 async function settleGames(){
-  if(settling||!db||!canCouncil()||!canWrite||!["games","gamevotes","plays","scores","gamekeys"].every(c=>loaded.has(c)))return;
+  if(settling||!db||!canCouncil()||!canWrite||!["games","gamevotes","plays","scores","gamekeys"].every(c=>LEAN?fullData(c):loaded.has(c)))return;
   const due=S.games.filter(g=>g.date<TODAY&&!g.awarded);if(!due.length)return;settling=true;
   try{const awards={},done=[];for(const g of due){const pts=Number(g.points)||10,wins={};let result=gameResult(g)||{};
     if(g.type==="versus"){for(const d of S.gamevotes){const p=((d.v||{})[g.id]||{}).pick;if(p&&(result.win==="tie"||p===result.win))wins[d.id]={p:pts,d}}}
@@ -2260,7 +2261,7 @@ function roomsHTML(){const rooms=CFG.rooms||[],bk=allBookings(),day=bk.filter(b=
   return`<div class="toolbar"><label class="sub" for="roomDate">Availability on</label><input type="date" id="roomDate" value="${roomDate}" min="${TODAY}"><button class="btn sm primary" data-act="room-book">Book a room</button>${isPres?`<button class="btn sm ghost" data-act="rooms-edit">Edit rooms</button>`:""}</div>
   <ul class="rooms">${rooms.map(r=>{const bs=day.filter(b=>b.room===r);return`<li><b>${esc(r)}</b><span>${bs.length?bs.map(b=>`<span class="slot">${esc(fmtTime(b.start))} to ${esc(fmtTime(b.end))}${council()?`, ${esc(b.name||"Student")}: ${esc(b.purpose||"")} <button class="btn sm ghost" data-act="room-cancel" data-uid="${esc(b.uid)}" data-id="${esc(b.key)}">Cancel</button>`:""}</span>`).join(""):`<span class="sub">Free all day</span>`}</span></li>`}).join("")}</ul>
   ${mine.length?`<div class="sub" style="margin-top:6px"><b>Your bookings:</b></div><ul class="list">${mine.map(b=>`<li><div class="grow"><div class="title">${esc(b.room)}</div><div class="sub">${esc(longd(b.date))}, ${esc(fmtTime(b.start))} to ${esc(fmtTime(b.end))}${b.purpose?". "+esc(b.purpose):""}</div></div><button class="btn sm ghost" data-act="room-cancel" data-uid="${esc(me.id)}" data-id="${esc(b.key)}">Cancel</button></li>`).join("")}</ul>`:""}`}
-function helpHTML(){const q=helpQ.trim().toLowerCase(),people=S.spaces.filter(d=>d.id!==me.id&&((d.skills||[]).length||(d.activities||[]).length)).filter(d=>!q||[d.name,...(d.skills||[]),...(d.activities||[])].join(" ").toLowerCase().includes(q));
+function helpHTML(){if(LEAN&&!fullData("spaces"))return`<input id="helpQ" type="search" placeholder="Search a skill, like video editing or calculus" value="${esc(helpQ)}" aria-label="Search people by skill"><p class="sub" style="margin:8px 0 0">Type a skill to find students who can help.</p>`;const q=helpQ.trim().toLowerCase(),people=S.spaces.filter(d=>d.id!==me.id&&((d.skills||[]).length||(d.activities||[]).length)).filter(d=>!q||[d.name,...(d.skills||[]),...(d.activities||[])].join(" ").toLowerCase().includes(q));
   return`<input id="helpQ" type="search" placeholder="Search a skill, like video editing or calculus" value="${esc(helpQ)}" aria-label="Search people by skill"><div id="helpList">${helpList(people)}</div>`}
 function helpList(people){return people.length?`<ul class="list">${people.slice(0,12).map(d=>`<li><span class="avatar lg" style="background:${accentOf(d)}">${esc(initials(d.name))}</span><div class="grow"><div class="title">${esc(d.name||"Student")}${d.grade?`<span class="sub">, Grade ${esc(d.grade)}</span>`:""}</div><div class="tags">${(d.skills||[]).map(x=>`<span class="tag">${esc(x)}</span>`).join("")}</div>${(d.activities||[]).length?`<div class="sub">${(d.activities||[]).map(esc).join(", ")}</div>`:""}</div></li>`).join("")}</ul>`:`<p class="sub" style="margin:8px 0 0">${helpQ?"No one has listed that yet.":"When students list their skills, you can find them here."}</p>`}
 function mySpaceView(){
@@ -2307,6 +2308,7 @@ function inboxItems(){if(!me.id||!canJoin())return[];const out=[],now=new Date()
   for(const x of allSuggestions())if(x.uid===me.id){if(x.reply)add("sr"+x.key,x.repliedAt||x.at,`Student Council replied to “${x.title}”`,x.reply.slice(0,120),"#suggestions","info");
     if(x.status&&x.status!=="new"&&x.status!=="review"&&x.reviewedAt)add("ss"+x.key+x.status,x.reviewedAt,`“${x.title}” is now ${label(SUG_STATUS,x.status).toLowerCase()}`,"","#suggestions",x.status==="declined"?"bad":"good")}
   const mine=new Set(S.posts.filter(p=>p.by===me.id).map(p=>p.id));
+  if(LEAN&&!fullData("replies"))for(const v of (STATS.replyNotes||{})[me.id]||[]){const p=S.posts.find(x=>x.id===v.postId);add("rp"+v.postId+v.at,v.at,`${v.name||"Someone"} replied to “${(p&&p.title)||"your post"}”`,v.text||"","#home","info")}
   for(const d of S.replies)if(d.id!==me.id)for(const[k,v]of Object.entries(d.items||{}))if(v&&mine.has(v.postId)){const p=S.posts.find(x=>x.id===v.postId);add("rp"+k,v.at,`${v.name||"Someone"} replied to “${(p&&p.title)||"your post"}”`,(v.text||"").slice(0,120),"#home","info")}
   const sc=S.scores.find(d=>d.id===me.id),games={};
   for(const[k,x]of Object.entries((sc&&sc.log)||{})){const p=Number(x&&x.p)||0,dt=logDate(k,x);if(!p||!dt)continue;
@@ -2553,7 +2555,7 @@ async function saveEditor(){
   else{const ref=col("proposals").doc();ok=await save(()=>ref.set({...data,number:nextNumber(),status:"draft",votes:{},author:me.id||null,created:new Date().toISOString()}),"Proposal saved",["wrote","proposal",data.title]);if(ok)selProposal=ref.id}
   if(ok){editing=null;$("#main").innerHTML="";render()}
 }
-document.addEventListener("input",e=>{if(e.target.id==="helpQ"){helpQ=e.target.value;const q=helpQ.trim().toLowerCase(),l=$("#helpList");if(l)l.innerHTML=helpList(S.spaces.filter(d=>d.id!==me.id&&((d.skills||[]).length||(d.activities||[]).length)).filter(d=>!q||[d.name,...(d.skills||[]),...(d.activities||[])].join(" ").toLowerCase().includes(q)));return}if(e.target.id==="oppQ"){oppQ=e.target.value;const l=$("#oppList");if(l)l.innerHTML=oppList();return}if(editing&&e.target.closest&&e.target.closest("#pform")){readEditor();const pv=$("#preview");if(pv)pv.innerHTML=docHTML(editing.d)}});
+document.addEventListener("input",e=>{if(e.target.id==="helpQ"){want("spaces","all");helpQ=e.target.value;const q=helpQ.trim().toLowerCase(),l=$("#helpList");if(l)l.innerHTML=helpList(S.spaces.filter(d=>d.id!==me.id&&((d.skills||[]).length||(d.activities||[]).length)).filter(d=>!q||[d.name,...(d.skills||[]),...(d.activities||[])].join(" ").toLowerCase().includes(q)));return}if(e.target.id==="oppQ"){oppQ=e.target.value;const l=$("#oppList");if(l)l.innerHTML=oppList();return}if(editing&&e.target.closest&&e.target.closest("#pform")){readEditor();const pv=$("#preview");if(pv)pv.innerHTML=docHTML(editing.d)}});
 
 /* attendance */
 function quorum(m){const r=m.records||{},ms=roster(),total=ms.length;let here=0;for(const x of ms)if(r[x.id]==="present"||r[x.id]==="late")here++;return{here,total,met:total>0&&here>total/2,need:Math.floor(total/2)+1}}
@@ -2783,7 +2785,7 @@ document.addEventListener("click",async e=>{
     case"work-feature":{const w=S.posts.find(x=>x.id===id);if(!w)return;return save(()=>col("posts").doc(id).update({featured:!w.featured}),w.featured?"Taken off the home page":"Featured on the home page")}
     case"feed-filter":feedFilter=b.dataset.to;return render();
     case"create-filter":createFilter=b.dataset.to;return render();
-    case"post-toggle":openPost=openPost===id?null:id;return render();
+    case"post-toggle":openPost=openPost===id?null:id;if(openPost)want("replies","all");return render();
     case"post-delete":{const w=S.posts.find(x=>x.id===id);if(gal)closeGallery();return save(()=>col("posts").doc(id).delete(),"Removed",["removed","post",w&&w.title])}
     case"sub-approve":{const d=allSubs().find(x=>x.uid===b.dataset.uid&&x.key===b.dataset.key);if(!d)return;const{key,uid,status,...post}=d;return save(async()=>{if(d.kind==="opp")await col("opps").add({title:d.title,details:d.text||"",link:d.link||"",deadline:d.deadline||"",category:"career",byName:d.byName||"",created:d.at});else await col("posts").add(post);await db.doc("submissions/"+uid).update({items:{[key]:{status:"approved",decidedAt:new Date().toISOString()}}})},"Approved and posted",["approved","post",d.title])}
     case"sub-decline":{const d=allSubs().find(x=>x.uid===b.dataset.uid&&x.key===b.dataset.key);if(!d)return;return save(()=>db.doc("submissions/"+d.uid).update({items:{[d.key]:{status:"declined",decidedAt:new Date().toISOString()}}}),"Declined",["declined","post",d.title])}
@@ -2819,7 +2821,7 @@ document.addEventListener("click",async e=>{
     case"try-exit":trial=null;conSel=[];return render();
     case"rv-show":{const g=gameOn(id);return g&&showReveal(g)}
     case"rv-close":return closeReveal();
-    case"ev-toggle":openEvent=openEvent===id?null:id;return render();
+    case"ev-toggle":openEvent=openEvent===id?null:id;if(openEvent)loadGoing(id);return render();
     case"ev-filter":evFilter=b.dataset.to;return render();
     case"ev-join":{const ev=S.events.find(x=>x.id===id);if(!ev)return;const ok=ev.signup==="tickets"?"Ticket reserved":"You're signed up";
       if(ev.askTeam)return openForm({title:`${label(SIGNUP_KINDS,ev.signup)}: ${ev.title}`,submitLabel:label(SIGNUP_KINDS,ev.signup),fields:[{id:"team",label:"Team name",required:true,full:true}],submit:v=>save(()=>setSignup(id,{at:new Date().toISOString(),team:v.team}),ok)});
@@ -2892,6 +2894,8 @@ document.addEventListener("change",e=>{if(e.target.id==="roomDate"){roomDate=e.t
   if(e.target.dataset&&e.target.dataset.sug){const t=e.target,x=allSuggestions().find(s=>s.key===t.dataset.key);save(()=>db.doc("suggestions/"+t.dataset.sug).update({items:{[t.dataset.key]:{status:t.value,reviewedBy:me.id,reviewedAt:new Date().toISOString()}}}),"Status updated",["marked as "+label(SUG_STATUS,t.value).toLowerCase()+":","suggestion",x&&x.title])}
   if(e.target.id==="taskFilter"){taskFilter=e.target.value;render()}if(e.target.id==="histFilter"){histFilter=e.target.value;render()}});
 document.addEventListener("keydown",e=>{if(e.key==="Escape"&&inboxOpen){inboxOpen=false;drawInbox();render();const bb=document.querySelector(".bell");bb&&bb.focus();return}if(e.key==="Enter"&&!e.isComposing&&e.target.matches&&e.target.matches(".reply-form input")){const bt=e.target.parentElement.querySelector("button");if(bt&&!bt.disabled){e.preventDefault();bt.click()}return}if(e.key==="Escape"&&$("#reveal")){closeReveal();return}if(e.key==="Escape"&&$("#archive")&&$("#modal").hidden&&!gal){closeArchive();return}if(!$("#modal").hidden){if(e.key==="Escape")closeModal();return}if(gal){if(e.key==="Escape")closeGallery();else if(e.key==="ArrowLeft")galStep(-1);else if(e.key==="ArrowRight")galStep(1)}});
+document.addEventListener("focusin",e=>{if(e.target&&e.target.id==="helpQ")want("spaces","all")});
+document.addEventListener("pointerdown",e=>{if(e.target&&e.target.id==="helpQ")want("spaces","all")});
 document.addEventListener("click",e=>{if(e.target.id==="gallery")closeGallery();if(inboxOpen&&!e.target.closest("#inbox")&&!e.target.closest(".bell")){inboxOpen=false;drawInbox();render()}});
 
 /* ---------- sample council (president only; example data marked sample:true) ---------- */
@@ -2912,22 +2916,101 @@ async function loadSample(){
   if(!ok)render();
 }
 
+/* ---------- data loading ----------
+   Firestore bills one read per document, so each page listens only to what it shows:
+   "self" = just your own document, "query" = a limited listen (newest N, upcoming), "all" = the whole collection.
+   Counts that would need everyone's documents (likes, sign-ups, replies, leaderboards) come from one summary
+   document, scores/_stats, which a council member's browser rewrites on Overview. Where the host has no queries
+   (the claude.ai artifact) everything falls back to "all", as before. */
+const SUBS={},LV={self:1,query:2,all:3};
+let LEAN=false,STATS={},bootDone=false,slowTimer=null;
+const DAYS_AGO=n=>iso(addDays(new Date(),-n));
+const QUERIES={
+  games:()=>({where:[["date",">=",DAYS_AGO(60)]]}),
+  challenges:()=>({where:[["date",">=",DAYS_AGO(35)]]}),
+  bulletin:()=>({orderBy:["date","desc"],limit:15}),
+  events:()=>({where:[["date",">=",DAYS_AGO(7)]]}),
+  opps:()=>({where:[["deadline",">=",TODAY]]}),
+  posts:()=>({orderBy:["at","desc"],limit:24}),
+  stories:()=>({orderBy:["date","desc"],limit:8}),
+  albums:()=>({orderBy:["created","desc"],limit:8}),
+  playlists:()=>({limit:12}),
+  birthdays:()=>{const m=new Date().getMonth()+1;return{where:[["month","in",[m,m%12+1]]]}},
+  clubposts:()=>({orderBy:["at","desc"],limit:60}),
+  predictions:()=>({orderBy:["created","desc"],limit:20}),
+};
+const fullData=c=>!!SUBS[c]&&SUBS[c].lvl==="all"&&loaded.has(c);
+const subsReady=()=>Object.keys(SUBS).every(c=>loaded.has(c))&&loaded.has("config");
+function subDone(c,snap){if(!snap.metadata||!snap.metadata.fromCache)loaded.add(c);if(bootDone&&subsReady()){clearTimeout(slowTimer);if(dbState!=="ok")setStatus("ok")}}
+function subFail(){clearTimeout(slowTimer);setStatus("err");render()}
+function want(c,lvl){
+  if(!db||(COUNCIL_ONLY.includes(c)&&!isEditor))return;
+  if(!LEAN)lvl="all";
+  if(lvl==="self"&&!me.id){if(!SUBS[c]){SUBS[c]={lvl:"self",unsub:null};loaded.add(c)}return}
+  const cur=SUBS[c];if(cur&&LV[cur.lvl]>=LV[lvl])return;
+  if(cur&&cur.unsub)try{cur.unsub()}catch(e){}
+  loaded.delete(c);SUBS[c]={lvl,unsub:null};
+  const got=docs=>{S[c]=docs;if(c==="scores"){const st=docs.find(d=>d.id==="_stats");if(st)STATS=st}render();if(c==="members")autoApprove();settleGames();writeStats()};
+  if(lvl==="self"){
+    const ids=c==="scores"?[me.id,"_settings","_stats"]:[me.id],parts={};let n=0;
+    const uns=ids.map(id=>db.doc(c+"/"+id).onSnapshot(d=>{if(id==="_stats"){STATS=d.exists?d.data():{}}else parts[id]=d.exists?{id,...d.data()}:null;if(++n>=ids.length||loaded.has(c)){subDone(c,d);got(Object.values(parts).filter(Boolean))}},subFail));
+    SUBS[c].unsub=()=>uns.forEach(u=>u&&u());
+  }else{
+    const src=lvl==="query"&&QUERIES[c]?db.query(c,QUERIES[c]()):col(c);
+    SUBS[c].unsub=src.onSnapshot(snap=>{subDone(c,snap);got(snap.docs.map(x=>({id:x.id,...x.data()})))},subFail);
+  }
+}
+/* what each page needs, on top of BASE (header, inbox, pixel scene, Coming up) */
+const BASE_STUDENT={members:"all",polls:"all",aviators:"all",votes:"self",signups:"self",scores:"self",plays:"self",gamevotes:"self",mine:"self",submissions:"self",suggestions:"self",clubdrafts:"self",done:"self",picks:"self",spaces:"self",games:"query",challenges:"query",bulletin:"query",events:"query",opps:"query",birthdays:"query",replies:"self",wins:"all"};
+const PAGE_NEEDS={
+  home:{posts:"query",stories:"query",albums:"query",wins:"all",playlists:"query"},
+  bulletin:{bulletin:"all"},
+  events:{events:"all"},calendar:{events:"all"},
+  clubs:{clubs:"all",clubposts:"query"},
+  opportunities:{opps:"all"},
+  play:{predictions:"query"},
+  stuco:{lostfound:"all",wins:"all",years:"all",tasks:"all",claims:"all"},
+  suggestions:{lostfound:"all",wins:"all",years:"all",tasks:"all",claims:"all"},voice:{lostfound:"all",wins:"all",years:"all",tasks:"all",claims:"all"},lost:{lostfound:"all",wins:"all",years:"all",tasks:"all",claims:"all"},working:{lostfound:"all",wins:"all",years:"all",tasks:"all",claims:"all"},
+  myspace:{wins:"all",posts:"all"},
+};
+/* council: approvals, settlement and the summary need everyone's documents */
+const BASE_COUNCIL={submissions:"all",clubdrafts:"all",suggestions:"all",done:"all",scores:"all",picks:"all",tasks:"all",claims:"all",members:"all",games:"all",gamekeys:"all",events:"all",bulletin:"all",proposals:"all",meetings:"all"};
+const COUNCIL_PAGES={overview:{gamevotes:"all",plays:"all",signups:"all",replies:"all",history:"all"},history:{history:"all"},members:{spaces:"all"},home:{signups:"all",replies:"all",gamevotes:"all",plays:"all"},play:{gamevotes:"all",plays:"all",predictions:"all",challenges:"all"},clubs:{clubs:"all",clubposts:"all"}};
+function ensureData(){if(!db)return;const v=shownView()||"home",need={...BASE_STUDENT,...(PAGE_NEEDS[v]||{})};
+  /* everyone's votes only on days a This or That or photo game still needs its live tally */
+  if(v==="play"&&S.games.some(g=>(g.type==="versus"||g.type==="photo")&&!g.awarded&&g.id>=DAYS_AGO(2)))need.gamevotes="all";
+  if(v==="myspace"&&(CFG.rooms||[]).length)need.bookings="all";
+  if(council()||canCouncil())Object.assign(need,BASE_COUNCIL,council()?COUNCIL_PAGES[v]||{}:{});
+  for(const[c,l]of Object.entries(need))want(c,l)}
+/* who's going to one event: only the sign-up documents that include it (Firestore indexes map fields) */
+const GOING={};
+function loadGoing(eid){if(!LEAN||fullData("signups")||GOING[eid])return;db.query("signups",{where:[["events."+eid+".at",">=",""]]}).get().then(sn=>{GOING[eid]=sn.docs.map(d=>({uid:d.id,...((d.data().events||{})[eid]||{})})).sort((a,b)=>(a.at||"").localeCompare(b.at||""));render()}).catch(()=>{})}
+/* summary document for everyone else: written by a council browser that has the full data, at most every 30 seconds, only when it changed */
+let statsT=null,statsLast="";
+function writeStats(){if(!LEAN||!db||!canAct()||!["signups","replies","scores"].every(fullData))return;clearTimeout(statsT);statsT=setTimeout(async()=>{
+  const hearts={},signups={},replies={},replyNotes={};
+  for(const d of S.signups){for(const k in d.hearts||{})if(d.hearts[k])hearts[k]=(hearts[k]||0)+1;for(const k in d.events||{})signups[k]=(signups[k]||0)+1}
+  const owner={};for(const p of S.posts)if(p.by)owner[p.id]=p.by;
+  for(const d of S.replies)for(const v of Object.values(d.items||{})){if(!v||!v.postId)continue;replies[v.postId]=(replies[v.postId]||0)+1;const o=owner[v.postId];if(o&&o!==d.id)(replyNotes[o]=replyNotes[o]||[]).push({postId:v.postId,name:v.name||"",text:(v.text||"").slice(0,120),at:v.at||""})}
+  for(const o in replyNotes)replyNotes[o]=replyNotes[o].sort((a,b)=>b.at.localeCompare(a.at)).slice(0,8);
+  const pl=scoreDocs().filter(d=>!d.team),grades=gradeTotals(),players=pl.map(d=>({id:d.id,name:d.name||"",grade:d.grade||"",pts:ptsOf(d)})).filter(d=>d.pts>0).sort((a,b)=>b.pts-a.pts).slice(0,15);
+  const wk=ws=>({ws,rank:weekBoard(ws).map(d=>({id:d.id,name:d.name||"",grade:d.grade||"",pts:d.pts}))});
+  const data={hearts,signups,replies,replyNotes,grades,players,week:wk(weekStart(TODAY)),lastWeek:{...wk(lastWeek()),rank:wk(lastWeek()).rank.slice(0,3)}};
+  const key=JSON.stringify(data);if(key===statsLast||key===JSON.stringify({...STATS,at:undefined}))return;statsLast=key;
+  try{await db.doc("scores/_stats").set({...data,at:new Date().toISOString()})}catch(e){}},30000)}
+
 /* ---------- boot ---------- */
 render();
 (async()=>{
   if(!window.claude||!window.claude.use){setStatus("offline");render();return}
   const[d,u]=await Promise.all([claude.use("db"),claude.use("user")]);
-  db=d;U=u;
+  db=d;U=u;LEAN=!!(db&&typeof db.query==="function");
   if(u){const m=await u.me();me={id:m.id,name:m.name,email:m.email,avatarUrl:m.avatarUrl,color:m.color};isPres=!!m.isOwner;isEditor=!!m.canEdit||isPres;const c=await u.can("data.write");if(c===false)canWrite=false}
   if(!db){setStatus("nodb");render();return}
-  const cols=COLS.filter(c=>isEditor||!COUNCIL_ONLY.includes(c));
-  const subs=[...cols,"config"].concat(isPres?["admin"]:[]);
-  const timer=setTimeout(()=>{if(loaded.size<subs.length)setStatus("slow")},10000);
-  const done=(k,snap)=>{if(!snap.metadata.fromCache)loaded.add(k);if(loaded.size>=subs.length){clearTimeout(timer);setStatus("ok")}};
-  const fail=()=>{clearTimeout(timer);setStatus("err");render()};
-  cols.forEach(c=>col(c).onSnapshot(snap=>{S[c]=snap.docs.map(x=>({id:x.id,...x.data()}));done(c,snap);render();if(c==="members")autoApprove();settleGames()},fail));
-  db.doc("config/access").onSnapshot(s=>{cfgExists=s.exists;CFG={approved:{},roles:{},school:"",president:null,...(s.exists?s.data():{})};done("config",s);render()},fail);
-  if(isPres)db.doc("admin/access").onSnapshot(s=>{adminExists=s.exists;ADMIN={emails:[],...(s.exists?s.data():{})};done("admin",s);render();autoApprove()},fail);
-  setStatus("connecting");render();
+  slowTimer=setTimeout(()=>{if(!subsReady())setStatus("slow")},10000);
+  db.doc("config/access").onSnapshot(s=>{cfgExists=s.exists;CFG={approved:{},roles:{},school:"",president:null,...(s.exists?s.data():{})};subDone("config",s);render()},subFail);
+  if(isPres)db.doc("admin/access").onSnapshot(s=>{adminExists=s.exists;ADMIN={emails:[],...(s.exists?s.data():{})};loaded.add("admin");render();autoApprove()},subFail);
+  if(!LEAN)COLS.filter(c=>isEditor||!COUNCIL_ONLY.includes(c)).forEach(c=>want(c,"all"));
+  bootDone=true;setStatus("connecting");render();
 })();
 </script>
