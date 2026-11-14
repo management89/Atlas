@@ -462,8 +462,8 @@ body.is-site .app{grid-template-columns:minmax(0,1fr)}
 .band .subnav a:hover{color:#FFFFFF;border-bottom-color:rgba(255,255,255,.5)}
 .band .subnav a[aria-current="page"]{color:#FFFFFF;border-bottom-color:#F4B400}
 .home-auth{display:flex;align-items:center;gap:8px}
-.me-glass{display:inline-flex;align-items:center;gap:8px;color:#FFFFFF;font-weight:700;font-size:15px;white-space:nowrap;text-shadow:0 1px 0 rgba(14,26,48,.35)}
-.me-glass .avatar{width:30px;height:30px;border:2px solid #FFFFFF}
+.me-glass{text-decoration:none;display:inline-flex;align-items:center;gap:8px;color:#FFFFFF;font-weight:700;font-size:15px;white-space:nowrap;text-shadow:0 1px 0 rgba(14,26,48,.35)}
+.me-glass .avatar{width:30px;height:30px;border:2px solid #FFFFFF;display:inline-grid;place-items:center;font-size:12px;flex:none}
 .head:empty{display:none}
 .site-foot{margin-top:24px}
 @media (max-width:980px){.home-nav{flex-wrap:wrap}.home-links{order:3;flex-basis:100%;overflow-x:auto;scrollbar-width:none}}
@@ -637,14 +637,15 @@ body.is-site .app{grid-template-columns:minmax(0,1fr)}
 .frame{width:240px}
 .frame:hover,.frame:focus-visible{outline:3px solid #F4B400;outline-offset:-3px}
 @media (prefers-reduced-motion:reduce){.reel{overflow-x:auto}.reel-track{animation:none}.reel-set[aria-hidden]{display:none}}
-.cutout{display:flex;flex-wrap:wrap;gap:4px;margin:0 0 18px}
-.cutout span{display:inline-block;font-weight:900;font-size:clamp(22px,3vw,34px);line-height:1;padding:4px 7px;text-transform:uppercase}
-.cutout span:nth-child(5n+1){background:#F4B400;color:#14202E;transform:rotate(-3deg)}
-.cutout span:nth-child(5n+2){background:#14202E;color:#FFFFFF;transform:rotate(2deg)}
-.cutout span:nth-child(5n+3){background:#FFFFFF;color:#C8373B;outline:2px solid #14202E;outline-offset:-2px;transform:rotate(-1deg)}
-.cutout span:nth-child(5n+4){background:#2446C7;color:#FFFFFF;transform:rotate(3deg)}
-.cutout span:nth-child(5n+5){background:#C8373B;color:#FFFFFF;transform:rotate(-2deg)}
-.cutout .gap{background:none!important;outline:0!important;width:10px;padding:0}
+.cutout{display:flex;flex-wrap:wrap;gap:6px 14px;margin:0 0 18px}
+.cutout .cw{display:inline-flex;flex-wrap:nowrap;gap:4px}
+.cutout .cw span{display:inline-block;font-weight:900;font-size:clamp(20px,3vw,34px);line-height:1;padding:4px 7px;text-transform:uppercase}
+@media (max-width:420px){.cutout .cw span{font-size:19px;padding:4px 5px}.cutout .cw{gap:3px}}
+.cutout .c0{background:#F4B400;color:#14202E;transform:rotate(-3deg)}
+.cutout .c1{background:#14202E;color:#FFFFFF;transform:rotate(2deg)}
+.cutout .c2{background:#FFFFFF;color:#C8373B;outline:2px solid #14202E;outline-offset:-2px;transform:rotate(-1deg)}
+.cutout .c3{background:#2446C7;color:#FFFFFF;transform:rotate(3deg)}
+.cutout .c4{background:#C8373B;color:#FFFFFF;transform:rotate(-2deg)}
 .board{columns:250px 3;column-gap:28px}
 .pin{break-inside:avoid;margin:14px 2px 30px;background:#FFFFFF;color:#14202E;padding:10px 10px 12px;position:relative;transform:rotate(var(--r));box-shadow:0 3px 0 rgba(20,32,46,.16)}
 .pin::before{content:"";position:absolute;top:-11px;left:50%;width:76px;height:22px;margin-left:-38px;background:rgba(244,180,0,.62);transform:rotate(-4deg)}
@@ -1081,7 +1082,7 @@ function overview(){
   const lastMeet=[...S.meetings].sort((a,b)=>b.date.localeCompare(a.date))[0];
   const nothing=["members","events","tasks","bulletin","proposals","meetings"].every(c=>!S[c].length);
   let start="";
-  if(isPres&&W()&&dbState!=="connecting"&&(!myDoc()||nothing))start=`<section class="start"><div><h2>Set up your council, President</h2><ol><li>${myDoc()?"✓ Your profile is set up.":"Create your president profile."}</li><li>On Members, list the email addresses of approved council members.</li><li>Share this page with council members as Editors, and with the rest of the school as Viewers.</li></ol></div><div class="acts">${nothing?`<button class="btn" data-act="sample">Load a sample council</button>`:""}${myDoc()?`<a class="btn primary" href="#members">Manage members</a>`:`<button class="btn primary" data-act="join">Create my profile</button>`}</div></section>`;
+  if(isPres&&W()&&dbState!=="connecting"&&(!myDoc()||nothing))start=`<section class="start"><div><h2>Set up your council, President</h2><ol><li>${myDoc()?"✓ Your profile is set up.":"Create your president profile."}</li>${window.__signIn?`<li>On Members → President controls, paste the student list from the Google Sheet. Rows marked yes in the StuCo column become council members.</li><li>Share the site link with students.</li>`:`<li>On Members, list the email addresses of approved council members.</li><li>Share this page with council members as Editors, and with the rest of the school as Viewers.</li>`}</ol></div><div class="acts">${nothing?`<button class="btn" data-act="sample">Load a sample council</button>`:""}${myDoc()?`<a class="btn primary" href="#members">Manage members</a>`:`<button class="btn primary" data-act="join">Create my profile</button>`}</div></section>`;
   const soon=open.filter(x=>x.t.due).sort((a,b)=>a.t.due.localeCompare(b.t.due)).concat(open.filter(x=>!x.t.due)).slice(0,5);
   const posts=sortedPosts().slice(0,3);
   const q=lastMeet?quorum(lastMeet):null;
@@ -1561,7 +1562,8 @@ function stopScene(){if(sceneRAF)cancelAnimationFrame(sceneRAF);sceneRAF=0;scene
 function homeAuth(){
   let h=canCouncil()?`<button class="hbtn sm glass" data-act="mode" data-to="council">Council view</button>`:"";
   if(me.id){const d=myDoc(),pic=d&&typeof d.photo==="string"&&d.photo.startsWith("data:image/")?d.photo:me.avatarUrl;
-    h+=`<span class="me-glass">${pic?`<img class="avatar" src="${esc(pic)}" alt="">`:""}<span>${esc(((d&&d.name)||me.name||"You").split(" ")[0])}</span></span>`;
+    const nm=(d&&d.name)||me.name||"You";
+    h+=`<a class="me-glass" href="#myspace" title="My page">${pic?`<img class="avatar" src="${esc(pic)}" alt="">`:`<span class="avatar" style="background:${colorFor(me.id)}">${esc(initials(nm))}</span>`}<span>${esc(nm.split(" ")[0])}</span></a>`;
     if(window.__signOut)h+=`<button class="hbtn sm glass" data-act="signout">Sign out</button>`}
   else if(window.__signIn)h+=`<button class="hbtn sm" data-act="signin">Sign in</button>`;
   else if(shownView()==="home")h+=`<a class="hbtn sm" href="#hub">Open the hub</a>`;
@@ -1569,7 +1571,7 @@ function homeAuth(){
 function siteNav(){const sec=ROUTES[shownView()];return`<a class="home-brand" href="#home">Avenues <span>Student Hub</span></a><nav class="home-links" aria-label="Sections">${STUDENT_NAV.map(([k,l])=>`<a href="#${k}" ${sec===k?'aria-current="page"':""}>${l}</a>`).join("")}</nav><div class="home-auth" id="homeAuth">${homeAuth()}</div>`}
 function siteFoot(){return`<footer class="home-foot site-foot"><span><b>Avenues Student Hub</b>, run by the Avenues The World School Student Council</span><span class="sp"></span>${canJoin()&&!canCouncil()?`<a href="#members">On Student Council? Set up your profile</a>`:""}<a href="#suggestions">Contact Student Council</a></footer>`}
 function homeLive(){
-  const evs=S.events.filter(e=>e.date>=TODAY).sort(byDate),next=evs.find(e=>e.type!=="meeting"&&e.type!=="deadline")||evs[0],post=sortedPosts()[0],poll=S.polls.filter(pollOpen)[0];
+  const evs=S.events.filter(e=>e.date>=TODAY&&evVisible(e)).sort(byDate),next=evs.find(e=>e.type!=="meeting"&&e.type!=="deadline")||evs[0],post=sortedPosts()[0],poll=S.polls.filter(pollOpen)[0];
   let a,b;
   if(next){const n=Math.round((parse(next.date)-parse(TODAY))/864e5);
     a=`<a class="live-card live-count" href="#events"><span class="num">${n===0?"Now":n}</span><span class="grow"><span class="k">${n===0?"Happening today":n===1?"day until":"days until"}</span><span class="v">${esc(next.title)}</span><span class="m">${esc(longd(next.date))}${next.time?", "+esc(fmtTime(next.time)):""}</span></span></a>`}
@@ -1972,7 +1974,7 @@ function plannerHTML(){const days=[];for(let i=0;days.length<7&&i<12;i++){const 
     return`<li>${datebox(k)}<div class="grow"><div class="title">${g?esc(gameName(g)):def[1]}</div><div class="sub">${g?"Ready":"Not set up yet"}</div></div>${canAct()?`${g?"":`<select id="gt-${k}" aria-label="Game type for ${esc(short(k))}">${GAME_TYPES.map(([v,l])=>`<option value="${v}" ${v===def[0]?"selected":""}>${l}</option>`).join("")}</select>`}${g?`<button class="btn sm" data-act="try-game" data-id="${k}">Try it</button>`:""}<button class="btn sm ${g?"":"primary"}" data-act="game-edit" data-id="${k}">${g?"Edit":"Set up"}</button>`:""}</li>`}).join("")}</ul><div class="toolbar" style="margin-top:14px"><b>Try a sample game:</b>${GAME_TYPES.map(([v,l])=>`<button class="btn sm" data-act="try-sample" data-to="${v}">${l}</button>`).join("")}<span class="sub">Practice runs aren't saved or scored.</span></div></section>`}
 function gamesView(){const g=gameOn(TODAY),y=lastGame(),day=DAY_GAME[new Date().getDay()];
   return head("One game a day. Play today, and see who won first thing tomorrow.","Today's game",canAct()&&!g?`<button class="btn primary" data-act="game-edit" data-id="${TODAY}">Set up today's game</button>`:"")+(trial?trialHTML():joinPrompt()+
-  (g?`<section class="game"><div class="game-head"><span class="av-tag">${esc(new Date().toLocaleDateString(undefined,{weekday:"long"}))}</span><h2>${esc(gameName(g))}</h2></div>${gameHTML(g)}</section>`:empty("No game today",day?`${day[1]} is usually on ${new Date().toLocaleDateString(undefined,{weekday:"long"})}s. Check back soon.`:"Games run Monday to Friday. See you Monday.",null,"")))+
+  (g?`<section class="game"><div class="game-head"><span class="av-tag">${esc(new Date().toLocaleDateString(undefined,{weekday:"long"}))}</span><h2>${esc(gameName(g))}</h2></div>${gameHTML(g)}</section>`:empty("No game today",day?`Today's ${day[1]} isn't up yet. Check back soon.`:"Games run Monday to Friday. See you Monday.",null,"")))+
   `<div class="grid2">${y?`<section class="panel"><h2>${y.date===iso(addDays(new Date(),-1))?"Yesterday":esc(fmt(y.date,{weekday:"long"}))}: ${esc(gameName(y))}${gameResult(y)?`<button class="btn sm" data-act="rv-show" data-id="${y.id}">Replay the reveal</button>`:""}</h2>${resultHTML(y)}</section>`:`<section class="panel"><h2>How it works</h2><ul class="list"><li>Monday: This or That</li><li>Tuesday: Photo challenge</li><li>Wednesday: Mystery</li><li>Thursday: Avenues Connections</li><li>Friday: a surprise mini-game</li></ul></section>`}
   <section class="panel"><h2>Your prize</h2>${giftCard()}</section></div>
   <section class="panel"><h2>Leaderboard</h2>${leaderBody()}</section>`+(council()?plannerHTML():"")}
@@ -1994,12 +1996,12 @@ async function gameForm(date){const g=gameOn(date),key=S.gamekeys.find(k=>k.id==
       for(let i=words.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[words[i],words[j]]=[words[j],words[i]]}
       return finish({title:"Avenues Connections",groups,words,points:v.points},{raw:v.raw,answers:ans.join("\n")})}});
   return openForm({title:(wd===5?"Friday mini-game, ":"Mystery, ")+when,onDelete,note:"One round per line: <b>clue or question | answer, another accepted answer | link (optional)</b>",
-    fields:[{id:"title",label:"Name of the game",full:true,placeholder:"e.g. Guess that song"},{id:"image",label:"Picture (optional), like a zoomed-in photo",type:"photos"},{id:"intro",label:"Instructions (optional)",full:true},{id:"raw",label:"Rounds",type:"textarea",required:true,placeholder:"Where on campus is this? | library, the library\nFirst 5 seconds. Name the song. | Bohemian Rhapsody | https://…"},P],
-    values:{title:(g&&g.title)||(wd===5?"Friday mini-game":"Mystery"),image:(g&&g.image)||"",intro:(g&&g.intro)||"",raw:key.raw||"",points:(g&&g.points)||10},
+    fields:[{id:"title",label:"Name of the game (optional)",full:true,placeholder:wd===5?"Friday mini-game":"Mystery"},{id:"image",label:"Picture (optional), like a zoomed-in photo",type:"photos"},{id:"intro",label:"Instructions (optional)",full:true},{id:"raw",label:"Rounds",type:"textarea",required:true,placeholder:"Where on campus is this? | library, the library\nFirst 5 seconds. Name the song. | Bohemian Rhapsody | https://…"},P],
+    values:{title:(g&&g.title&&g.title!==(wd===5?"Friday mini-game":"Mystery")?g.title:""),image:(g&&g.image)||"",intro:(g&&g.intro)||"",raw:key.raw||"",points:(g&&g.points)||10},
     submit:async v=>{const items=[],ans=[];
       for(const l of v.raw.split("\n").map(x=>x.trim()).filter(Boolean)){const p=l.split("|").map(x=>x.trim()),as=(p[1]||"").split(/[,;]/).map(x=>x.trim()).filter(Boolean);if(!p[0]||!as.length){$("#merr").textContent=`Each line needs a clue, then | and the answer. Check: "${l.slice(0,40)}"`;return false}
         items.push({q:p[0],link:safeUrl(p[2])||"",h:await Promise.all(as.map(a=>gh(date,a)))});ans.push(`${items.length}. ${as[0]}`)}
-      return finish({title:v.title||"Mystery",image:v.image,intro:v.intro,items,points:v.points},{raw:v.raw,answers:ans.join("\n")})}});
+      return finish({title:(v.title||"").trim()||(wd===5?"Friday mini-game":"Mystery"),image:v.image,intro:v.intro,items,points:v.points},{raw:v.raw,answers:ans.join("\n")})}});
 }
 /* a council member's browser settles finished games: works out winners and writes the points */
 let settling=false;
@@ -2028,7 +2030,7 @@ async function settleGames(){
 const SC_SECTIONS=[["working","Our work"],["voice","Polls"],["suggestions","Feedback"],["lost","Lost and found"]];
 let scrollTo_=(location.hash.slice(1)&&["working","voice","suggestions","lost"].includes(location.hash.slice(1)))?location.hash.slice(1):null;
 const tilt=id=>{let h=0;for(const ch of String(id))h=(h*31+ch.charCodeAt(0))>>>0;return((h%7)-3)*.7};
-function cutout(text){return`<h2 class="cutout" aria-label="${esc(text)}">${[...text].map(c=>c===" "?`<span class="gap"></span>`:`<span>${esc(c)}</span>`).join("")}</h2>`}
+function cutout(text){let n=0;return`<h2 class="cutout" aria-label="${esc(text)}">${text.split(" ").filter(Boolean).map(w=>`<span class="cw" aria-hidden="true">${[...w].map(c=>`<span class="c${n++%5}">${esc(c)}</span>`).join("")}</span>`).join("")}</h2>`}
 /* each school year (August to July) is one tape; this year lives on the page, past years open as their own themed page */
 const schoolYear=d=>{const x=parse(d)||new Date();return x.getMonth()>=7?x.getFullYear():x.getFullYear()-1};
 const yearLabel=y=>`${y}–${String((y+1)%100).padStart(2,"0")}`;
@@ -2139,7 +2141,8 @@ let myCursor=firstOfMonth(new Date()),roomDate=TODAY,helpQ="";
 const mySpace=()=>S.spaces.find(d=>d.id===me.id)||{};
 const myMine=()=>S.mine.find(d=>d.id===me.id)||{};
 const myGrade=()=>(RM()&&RM().grade)||myPlay().grade||"";
-const evVisible=e=>!e.grade||e.grade===myGrade()||council();
+/* StuCo meetings only show to council members (not in student preview) */
+const evVisible=e=>council()||((e.type!=="meeting"||(amMember()&&!preview))&&(!e.grade||e.grade===myGrade()));
 const accentOf=sp=>ACCENTS.some(a=>a[0]===sp.accent)?sp.accent:"#F4B400";
 function saveMine(patch){const m=myMine();return db.doc("mine/"+me.id).set({pins:m.pins||{},items:m.items||{},...patch})}
 function myShouts(){const n=gnorm(myName());if(!n||n.length<3)return[];const out=[];
@@ -2453,7 +2456,7 @@ function members(){
   if(db&&W()&&!isPres){
     if(!me.id)joinCard=`<div class="banner">Sign in to claude.ai to join the council here.</div>`;
     else if(!mine)joinCard=`<section class="start"><div><h2>Join the council</h2><p class="sub" style="margin:8px 0 0">Create your member profile with a photo and a short description. If the president has approved your email address, you're approved automatically. Otherwise the president approves you by hand.</p></div><div class="acts"><button class="btn primary" data-act="join">Create my profile</button></div></section>`;
-    else if(!isApproved(mine))joinCard=`<div class="banner">Your profile is waiting for approval. If your email is on the president's approved list, it goes through automatically the next time the president opens StuCo Hub.</div>`;
+    else if(!isApproved(mine))joinCard=`<div class="banner">Your profile is waiting for approval. If your email is on the president's approved list, it goes through automatically the next time the president opens the site.</div>`;
   }
   return head("","Members",(mine&&amMember()?`<button class="btn" data-act="edit-profile">Edit my profile</button>`:"")+(isPres&&W()?`${mine?"":`<button class="btn" data-act="join">Create my profile</button>`}<button class="btn primary" data-act="add-member">+ Add member without an account</button>`:""))+
   joinCard+(isPres&&W()?presPanel():"")+
@@ -2752,7 +2755,7 @@ document.addEventListener("change",e=>{if(e.target.id==="roomDate"){roomDate=e.t
   if(e.target.id==="sugFilter"){sugFilter=e.target.value;render()}
   if(e.target.dataset&&e.target.dataset.sug){const t=e.target,x=allSuggestions().find(s=>s.key===t.dataset.key);save(()=>db.doc("suggestions/"+t.dataset.sug).update({items:{[t.dataset.key]:{status:t.value,reviewedBy:me.id,reviewedAt:new Date().toISOString()}}}),"Status updated",["marked as "+label(SUG_STATUS,t.value).toLowerCase()+":","suggestion",x&&x.title])}
   if(e.target.id==="taskFilter"){taskFilter=e.target.value;render()}if(e.target.id==="histFilter"){histFilter=e.target.value;render()}});
-document.addEventListener("keydown",e=>{if(e.key==="Escape"&&$("#reveal")){closeReveal();return}if(e.key==="Escape"&&$("#archive")&&$("#modal").hidden&&!gal){closeArchive();return}if(!$("#modal").hidden){if(e.key==="Escape")closeModal();return}if(gal){if(e.key==="Escape")closeGallery();else if(e.key==="ArrowLeft")galStep(-1);else if(e.key==="ArrowRight")galStep(1)}});
+document.addEventListener("keydown",e=>{if(e.key==="Enter"&&!e.isComposing&&e.target.matches&&e.target.matches(".reply-form input")){const bt=e.target.parentElement.querySelector("button");if(bt&&!bt.disabled){e.preventDefault();bt.click()}return}if(e.key==="Escape"&&$("#reveal")){closeReveal();return}if(e.key==="Escape"&&$("#archive")&&$("#modal").hidden&&!gal){closeArchive();return}if(!$("#modal").hidden){if(e.key==="Escape")closeModal();return}if(gal){if(e.key==="Escape")closeGallery();else if(e.key==="ArrowLeft")galStep(-1);else if(e.key==="ArrowRight")galStep(1)}});
 document.addEventListener("click",e=>{if(e.target.id==="gallery")closeGallery()});
 
 /* ---------- sample council (president only; example data marked sample:true) ---------- */
