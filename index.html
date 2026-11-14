@@ -883,6 +883,14 @@ a.fchip{text-decoration:none;display:inline-block}
 .play-sec{display:flex;flex-direction:column;gap:18px;scroll-margin-top:16px}
 .play-h{font-size:30px;font-weight:800;letter-spacing:-.02em;padding-top:10px;border-top:3px solid var(--rule-strong)}
 .play-sub{margin:-12px 0 0}
+
+/* pending points */
+.pend{display:inline-block;font-size:12px;font-weight:700;padding:1px 6px;background:var(--warn-soft);color:var(--warn);white-space:nowrap;vertical-align:middle}
+.pend-note{background:var(--warn-soft);color:var(--ink);padding:10px 12px;font-size:15px}
+.race-bar{display:flex}.race-bar .pend-bar{background:repeating-linear-gradient(45deg,var(--rail) 0 4px,transparent 4px 8px);opacity:.8}
+.race-pend{margin:-4px 0 4px 90px;font-size:12px}
+.giftcard .pend{background:#F4B400;color:#14202E}
+.changes.settle{border-left-color:var(--rail)}
 </style>
 
 <div class="app">
@@ -1112,7 +1120,7 @@ function overview(){
   const q=lastMeet?quorum(lastMeet):null;
   const taskLi=x=>`<li><span class="pri ${x.t.priority||"normal"}" style="margin-top:8px"></span><div class="grow"><div class="title">${esc(x.t.title)}</div><div class="sub parts">${who(x.st.owner,"Open to anyone")}${dueText(x.t,x.st)}</div></div>${statusChip(x.t,x.st)}</li>`;
   return head(today.toLocaleDateString(undefined,{weekday:"long",month:"long",day:"numeric"}),me.id&&amMember()?`Welcome back, ${esc((nameOf(me.id)||"").split(" ")[0]||"friend")}`:"This week in council")+
-  `<div class="summary"><span>Next meeting <b>${nextMeeting?esc(longd(nextMeeting.date)):"not scheduled"}</b></span><span><b>${open.length}</b> open tasks</span><span><b>${overdue.length}</b> overdue</span><span><b>${voting.length}</b> ${voting.length===1?"proposal":"proposals"} open for vote</span><span><b>${roster().length}</b> members</span></div>`+start+
+  `<div class="summary"><span>Next meeting <b>${nextMeeting?esc(longd(nextMeeting.date)):"not scheduled"}</b></span><span><b>${open.length}</b> open tasks</span><span><b>${overdue.length}</b> overdue</span><span><b>${voting.length}</b> ${voting.length===1?"proposal":"proposals"} open for vote</span><span><b>${roster().length}</b> members</span></div>`+settleAlert()+start+
   (mine.length?`<section class="panel"><h2>Your tasks <a href="#tasks">Open the board</a></h2><ul class="list">${mine.map(taskLi).join("")}</ul></section>`:"")+
   `<div class="grid2">
     <section class="panel"><h2>Coming up <a href="#calendar">Open calendar</a></h2>${upcoming.length?`<ul class="list">${upcoming.slice(0,5).map(evRow).join("")}</ul>`:`<div style="margin-top:12px">${empty("Nothing on the calendar","Add meetings, school events and deadlines.","add-event","Add an event")}</div>`}</section>
@@ -1575,7 +1583,7 @@ function homeLive(){
     a=`<a class="live-card live-count" href="#events"><span class="num">${n===0?"Now":n}</span><span class="grow"><span class="k">${n===0?"Happening today":n===1?"day until":"days until"}</span><span class="v">${esc(next.title)}</span><span class="m">${esc(longd(next.date))}${next.time?", "+esc(fmtTime(next.time)):""}</span></span></a>`}
   else a=`<a class="live-card" href="#events"><span class="k">Next up</span><span class="v">Nothing scheduled yet</span><span class="m">New events show up here first</span></a>`;
   const tg=gameOn(TODAY);
-  if(tg)b=`<a class="live-card" href="#play"><span class="k">Today's game</span><span class="v">${esc(gameName(tg))}</span><span class="m">Play now. The result drops tomorrow morning.</span></a>`;
+  if(tg){const pn=gamePending(tg);b=`<a class="live-card" href="#play"><span class="k">Today's game</span><span class="v">${esc(gameName(tg))}</span><span class="m">${pn?`+${pn} points pending. Results post tomorrow morning.`:"Play now. The result drops tomorrow morning."}</span></a>`}
   else if(poll){const mv=myVotes()[poll.id];
     b=`<div class="live-card"><span class="k">Quick poll</span><span class="v">${esc(poll.question)}</span>${canJoin()?`<span class="live-opts">${(poll.options||[]).slice(0,4).map((o,i)=>`<button data-act="poll-vote" data-id="${poll.id}" data-i="${i}" aria-pressed="${mv===i}">${esc(o)}</button>`).join("")}</span>`:`<a class="m" href="#voice">Sign in to vote</a>`}</div>`}
   else b=`<a class="live-card" href="#suggestions"><span class="k">Student Voice</span><span class="v">Got an idea for school?</span><span class="m">Tell Student Council. They reply to every one.</span></a>`;
@@ -1657,7 +1665,7 @@ function joinPrompt(){if(PLAYONE)return"";if(!canJoin())return`<div class="banne
 function predictionsView(){
   const ps=[...S.predictions].sort((a,b)=>(b.created||"").localeCompare(a.created||"")),open=ps.filter(predOpen),done=ps.filter(p=>!predOpen(p)).slice(0,8),mine=S.scores.find(d=>d.id===me.id),g=myPlay().grade;
   return head("Call what happens at school this week. Every right answer earns points for you and for your grade.","Grade Race",canAct()?`<button class="btn" data-act="award">Award points</button><button class="btn primary" data-act="add-pred">+ New prediction</button>`:"")+joinPrompt()+
-  (g?`<div class="summary"><span>You have <b>${ptsOf(mine)}</b> points</span><span>Grade ${esc(g)} has <b>${gradeTotals()[g]||0}</b></span><a href="#leaderboard">See the leaderboard</a>${RM()&&RM().grade?"":`<button class="btn sm ghost" data-act="play-join">Change my grade</button>`}</div>`:"")+
+  (g?`<div class="summary"><span>You have <b>${ptsOf(mine)}</b> points${pendTag(myPending())}</span><span>Grade ${esc(g)} has <b>${gradeTotals()[g]||0}</b></span><a href="#leaderboard">See the leaderboard</a>${RM()&&RM().grade?"":`<button class="btn sm ghost" data-act="play-join">Change my grade</button>`}</div>`:"")+
   (open.length?`<div class="polls">${open.map(predCard).join("")}</div>`:empty("No predictions open right now",canAct()?"Post a few each Monday: who wins Friday's game, what's for lunch on Thursday, whether the fire alarm goes off.":"New ones go up each week.","add-pred","Post a prediction"))+
   (done.length?`<section class="panel"><h2>Results</h2><div class="polls" style="margin-top:12px">${done.map(predCard).join("")}</div></section>`:"");
 }
@@ -1670,11 +1678,11 @@ function leaderBody(){
   const t=gradeTotals(),{goal,prize}=raceGoal(),lead=Math.max(...Object.values(t));
   const players=scoreDocs().filter(d=>!d.team).map(d=>({...d,pts:ptsOf(d)})).filter(d=>d.pts>0).sort((a,b)=>b.pts-a.pts).slice(0,15);
   const bonus=[];for(const d of scoreDocs())if(d.team)for(const[k,x]of Object.entries(d.log||{}))bonus.push({k,grade:d.grade,...x});bonus.sort((a,b)=>b.k.localeCompare(a.k));
-  return `<div class="toolbar"><span class="sub">The first grade to ${goal} points wins ${esc(prize)}.</span><span class="sp"></span>${canAct()?`<button class="btn sm" data-act="race-goal">Set the prizes</button><button class="btn sm" data-act="award">Award points</button>`:""}</div><div class="sundaes">${GRADES.map(g=>{const pct=Math.min(100,Math.round(t[g]/goal*100)),top=t[g]===lead&&lead>0;return`<div class="sundae-col"><div class="sundae" role="img" aria-label="Grade ${g}: ${t[g]} of ${goal} points"><div class="cherry" ${pct>=100?"":"hidden"}></div><div class="sundae-glass"><div class="scoops" style="height:${pct}%"></div></div><div class="stem"></div></div><div class="title">Grade ${g}</div><div class="sub"><b>${t[g]}</b> of ${goal}</div>${top?`<span class="chip gold">In the lead</span>`:""}</div>`}).join("")}</div>
+  return `<div class="toolbar"><span class="sub">The first grade to ${goal} points wins ${esc(prize)}.</span><span class="sp"></span>${canAct()?`<button class="btn sm" data-act="race-goal">Set the prizes</button><button class="btn sm" data-act="award">Award points</button>`:""}</div><div class="sundaes">${GRADES.map(g=>{const pct=Math.min(100,Math.round(t[g]/goal*100)),top=t[g]===lead&&lead>0;return`<div class="sundae-col"><div class="sundae" role="img" aria-label="Grade ${g}: ${t[g]} of ${goal} points"><div class="cherry" ${pct>=100?"":"hidden"}></div><div class="sundae-glass"><div class="scoops" style="height:${pct}%"></div></div><div class="stem"></div></div><div class="title">Grade ${g}</div><div class="sub"><b>${t[g]}</b> of ${goal}</div>${g===myGrade()&&myPending()?`<span class="pend">+${myPending()} pending from you</span>`:""}${top?`<span class="chip gold">In the lead</span>`:""}</div>`}).join("")}</div>
   <div class="grid2"><section class="panel"><h2>Top players</h2>${players.length?`<ol class="ranks">${players.map((d,i)=>`<li class="${d.id===me.id?"you":""}"><span class="rk">${i+1}</span><span class="grow title">${esc(d.name||"Student")}${d.id===me.id?" (you)":""}</span><span class="sub">Grade ${esc(d.grade||"?")}</span><b>${d.pts}</b></li>`).join("")}</ol>`:`<p class="sub" style="margin:10px 0 0">No points yet. Play today's game to get on the board.</p>`}</section>
   <section class="panel"><h2>Grade bonuses</h2>${bonus.length?`<ul class="list">${bonus.slice(0,8).map(x=>`<li><div class="grow"><div class="title">${esc(x.why||"Bonus")}</div><div class="sub">Grade ${esc(x.grade)}</div></div><b>+${Number(x.p)||0}</b></li>`).join("")}</ul>`:`<p class="sub" style="margin:10px 0 0">Spirit Week, turning up to games and class challenges add bonus points here.</p>`}</section></div>`;
 }
-function raceMini(){const t=gradeTotals(),{goal}=raceGoal();return`<div class="race-mini"><h3>Grade Race</h3>${GRADES.map(g=>`<div class="race-row"><span class="title">Grade ${g}</span><span class="race-bar"><i style="width:${Math.min(100,t[g]/goal*100)}%"></i></span><b>${t[g]}</b></div>`).join("")}<a href="#leaderboard">See the leaderboard</a></div>`}
+function raceMini(){const t=gradeTotals(),{goal}=raceGoal();return`<div class="race-mini"><h3>Grade Race</h3>${GRADES.map(g=>{const pn=g===myGrade()?myPending():0;return`<div class="race-row"><span class="title">Grade ${g}</span><span class="race-bar"><i style="width:${Math.min(100,t[g]/goal*100)}%"></i>${pn?`<i class="pend-bar" style="width:${Math.min(100-Math.min(100,t[g]/goal*100),pn/goal*100)}%"></i>`:""}</span><b>${t[g]}</b></div>${pn?`<div class="sub race-pend">+${pn} pending from you</div>`:""}`}).join("")}<a href="#leaderboard">See the leaderboard</a></div>`}
 function predForm(id){const p=id&&S.predictions.find(x=>x.id===id);
   openForm({title:p?"Edit prediction":"New prediction",submitLabel:p?"Save":"Post prediction",
     fields:[{id:"question",label:"What might happen?",required:true,full:true,placeholder:"e.g. Who wins Friday's basketball game?"},{id:"optionsText",label:"Answers, one per line",type:"textarea",required:true},{id:"closes",label:"Last day to pick",type:"date"},{id:"points",label:"Points for a right answer",type:"number"}],
@@ -1991,14 +1999,24 @@ let revealTried=false;
 function maybeReveal(){if(revealTried||dbState!=="ok"||!me.id||!canJoin()||council())return;const g=lastGame();if(!g||!gameResult(g))return;revealTried=true;let seen=null;try{seen=localStorage.getItem("atlas-reveal")}catch(e){}if(seen!==g.id)showReveal(g)}
 
 /* the Today page: game, yesterday's result, gift card and leaderboard together */
+/* pending points: what you've earned that isn't settled yet, worked out from your own answers.
+   Real points are still written only by the settlement step; this is display only. */
+function gamePending(g){if(!me.id||!g||g.awarded)return 0;const p=Number(g.points)||10,st=(((myPl().g)||{})[g.id])||null;
+  if(g.type==="quiz")return st?Object.values(st.r||{}).filter(r=>r&&r.ok).length*p:0;
+  if(g.type==="connections")return st?(st.s||[]).length*p:0;
+  if(g.type==="photo")return photoEntries(g).some(e=>e.uid===me.id)?p:0;
+  return 0}
+function myPending(){if(!me.id)return 0;let t=0;for(const g of S.games)if(g.id<=TODAY)t+=gamePending(g);
+  const dn=myDone();for(const c of S.challenges)if(dn[c.id]&&!confirmed(me.id,c.id))t+=Number(c.points)||10;return t}
+const pendTag=n=>n?` <span class="pend" title="Added when results post">+${n} pending</span>`:"";
 function giftCard(){const st=S.scores.find(d=>d.id==="_settings")||{},goal=Number(st.cardGoal)||1000,prize=st.cardPrize||"$20 gift card",mine=ptsOf(S.scores.find(d=>d.id===me.id)),owed=council()?scoreDocs().filter(d=>!d.team&&ptsOf(d)>=goal):[];
-  return`<div class="giftcard"><div class="gc-top"><b>${esc(prize)}</b><span>${me.id?`${mine} of ${goal} points`:`${goal} points`}</span></div><div class="gc-bar"><i style="width:${Math.min(100,mine/goal*100)}%"></i></div><div class="gc-note">${mine>=goal?"You made it. Student Council will get it to you.":`Reach ${goal} points and it's yours.`}</div>${owed.length?`<div class="gc-note">Reached the goal: ${owed.map(d=>esc(d.name)).join(", ")}</div>`:""}</div>`}
+  return`<div class="giftcard"><div class="gc-top"><b>${esc(prize)}</b><span>${me.id?`${mine} of ${goal} points${pendTag(myPending())}`:`${goal} points`}</span></div><div class="gc-bar"><i style="width:${Math.min(100,mine/goal*100)}%"></i></div><div class="gc-note">${mine>=goal?"You made it. Student Council will get it to you.":`Reach ${goal} points and it's yours.`}</div>${owed.length?`<div class="gc-note">Reached the goal: ${owed.map(d=>esc(d.name)).join(", ")}</div>`:""}</div>`}
 function plannerHTML(){const days=[];for(let i=0;days.length<7&&i<12;i++){const d=addDays(new Date(),i);if(d.getDay()>=1&&d.getDay()<=5)days.push(d)}
   return`<section class="panel"><h2>Game schedule <span class="sub" style="font-weight:500">Only council sees this</span></h2><ul class="list planner">${days.map(d=>{const k=iso(d),g=gameOn(k),def=DAY_GAME[d.getDay()];
     return`<li>${datebox(k)}<div class="grow"><div class="title">${g?esc(gameName(g)):def[1]}</div><div class="sub">${g?"Ready":"Not set up yet"}</div></div>${canAct()?`${g?"":`<select id="gt-${k}" aria-label="Game type for ${esc(short(k))}">${GAME_TYPES.map(([v,l])=>`<option value="${v}" ${v===def[0]?"selected":""}>${l}</option>`).join("")}</select>`}${g?`<button class="btn sm" data-act="try-game" data-id="${k}">Try it</button>`:""}<button class="btn sm ${g?"":"primary"}" data-act="game-edit" data-id="${k}">${g?"Edit":"Set up"}</button>`:""}</li>`}).join("")}</ul><div class="toolbar" style="margin-top:14px"><b>Try a sample game:</b>${GAME_TYPES.map(([v,l])=>`<button class="btn sm" data-act="try-sample" data-to="${v}">${l}</button>`).join("")}<span class="sub">Practice runs aren't saved or scored.</span></div></section>`}
 function gamesView(){const g=gameOn(TODAY),y=lastGame(),day=DAY_GAME[new Date().getDay()];
   return head("One game a day. Play today, and see who won first thing tomorrow.","Today's game",canAct()&&!g?`<button class="btn primary" data-act="game-edit" data-id="${TODAY}">Set up today's game</button>`:"")+(trial?trialHTML():joinPrompt()+
-  (g?`<section class="game"><div class="game-head"><span class="av-tag">${esc(new Date().toLocaleDateString(undefined,{weekday:"long"}))}</span><h2>${esc(gameName(g))}</h2></div>${gameHTML(g)}</section>`:empty("No game today",day?`Today's ${day[1]} isn't up yet. Check back soon.`:"Games run Monday to Friday. See you Monday.",null,"")))+
+  (g?`<section class="game"><div class="game-head"><span class="av-tag">${esc(new Date().toLocaleDateString(undefined,{weekday:"long"}))}</span><h2>${esc(gameName(g))}</h2></div>${gameHTML(g)}${gamePending(g)?`<div class="pend-note"><b>+${gamePending(g)} points pending</b> for you${myGrade()?" and Grade "+esc(myGrade()):""}. They're added when the results post tomorrow morning.</div>`:""}</section>`:empty("No game today",day?`Today's ${day[1]} isn't up yet. Check back soon.`:"Games run Monday to Friday. See you Monday.",null,"")))+
   `<div class="grid2">${y?`<section class="panel"><h2>${y.date===iso(addDays(new Date(),-1))?"Yesterday":esc(fmt(y.date,{weekday:"long"}))}: ${esc(gameName(y))}${gameResult(y)?`<button class="btn sm" data-act="rv-show" data-id="${y.id}">Replay the reveal</button>`:""}</h2>${resultHTML(y)}</section>`:`<section class="panel"><h2>How it works</h2><ul class="list"><li>Monday: This or That</li><li>Tuesday: Photo challenge</li><li>Wednesday: Mystery</li><li>Thursday: Avenues Connections</li><li>Friday: a surprise mini-game</li></ul></section>`}
   <section class="panel"><h2>Your prize</h2>${giftCard()}</section></div>`}
 function playPage(){
@@ -2035,6 +2053,8 @@ async function gameForm(date){const g=gameOn(date),key=S.gamekeys.find(k=>k.id==
 }
 /* a council member's browser settles finished games: works out winners and writes the points */
 let settling=false;
+function settleAlert(){if(!canAct())return"";const due=S.games.filter(g=>g.date<TODAY&&!g.awarded);if(!due.length||settling)return"";
+  return`<section class="changes settle"><h2>Points to settle</h2><ul><li><span>${due.length} finished game${due.length===1?"":"s"} (${due.map(g=>esc(short(g.date))).join(", ")}) still ${due.length===1?"needs":"need"} points added. This usually happens on its own when a council member opens the site.</span></li></ul><div class="toolbar"><button class="btn primary" data-act="settle-now">Add the points now</button></div></section>`}
 async function settleGames(){
   if(settling||!db||!canCouncil()||!canWrite||!["games","gamevotes","plays","scores","gamekeys"].every(c=>loaded.has(c)))return;
   const due=S.games.filter(g=>g.date<TODAY&&!g.awarded);if(!due.length)return;settling=true;
@@ -2202,7 +2222,7 @@ function mySpaceView(){
   const sp=mySpace(),acc=accentOf(sp),name=myName()||"You",g=myGrade(),pins=myMine().pins||{},own=S.posts.filter(p=>p.by===me.id).sort((a,b)=>(pins[b.id]?1:0)-(pins[a.id]?1:0)||(b.at||"").localeCompare(a.at||"")),pending=allSubs().filter(d=>d.uid===me.id&&d.status==="pending"),shouts=myShouts(),saved=S.opps.filter(o=>savedOpps.has(o.id)),pts=ptsOf(S.scores.find(d=>d.id===me.id));
   pageHead={title:"MySpace",context:"Your posts, your calendar, your spaces and skills, in one place."};
   return`<div class="myspace" style="--acc:${acc}">
-  <section class="me-card"><div class="me-banner b-${esc(sp.banner||"stripes")}"></div><div class="me-row"><span class="me-pic">${esc(initials(name))}</span><div class="grow"><h2>${esc(name)}</h2><div class="sub parts">${g?`<span>Grade ${esc(g)}</span>`:""}<span>${pts} points</span>${shouts.length?`<span>${shouts.length} shout-out${shouts.length===1?"":"s"}</span>`:""}</div>${sp.status?`<p class="me-status">${esc(sp.status)}</p>`:""}</div><button class="btn" data-act="my-edit">Customize</button></div>
+  <section class="me-card"><div class="me-banner b-${esc(sp.banner||"stripes")}"></div><div class="me-row"><span class="me-pic">${esc(initials(name))}</span><div class="grow"><h2>${esc(name)}</h2><div class="sub parts">${g?`<span>Grade ${esc(g)}</span>`:""}<span>${pts} points${pendTag(myPending())}</span>${shouts.length?`<span>${shouts.length} shout-out${shouts.length===1?"":"s"}</span>`:""}</div>${sp.status?`<p class="me-status">${esc(sp.status)}</p>`:""}</div><button class="btn" data-act="my-edit">Customize</button></div>
   <div class="tags">${(sp.skills||[]).map(x=>`<span class="tag">${esc(x)}</span>`).join("")}${(sp.activities||[]).map(x=>`<span class="tag tag-act">${esc(x)}</span>`).join("")}${!(sp.skills||[]).length&&!(sp.activities||[]).length?`<span class="sub">Add your skills and the clubs or activities you're in, so people know what you can help with.</span>`:""}</div></section>
   <div class="my-grid"><div class="my-col">
     <section class="panel"><h2>My calendar</h2>${myCalHTML()}</section>
@@ -2678,6 +2698,7 @@ document.addEventListener("click",async e=>{
     case"g-photo":return openForm({title:"Add your photo",submitLabel:"Enter",fields:[{id:"photo",label:"Your photo",type:"photos"}],values:{photo:myV(id).photo||""},submit:v=>{if(!v.photo){$("#merr").textContent="Choose a photo first.";return false}return save(()=>saveGV(id,{photo:v.photo,at:new Date().toISOString()}),"Photo entered")}});
     case"g-vote":return save(()=>saveGV(id,{vote:b.dataset.uid}),"Vote saved");
     case"g-remove":return save(()=>db.doc("gamevotes/"+b.dataset.uid).update({v:{[id]:{removed:true}}}),"Photo removed");
+    case"settle-now":{b.disabled=true;await settleGames();const left=S.games.filter(g=>g.date<TODAY&&!g.awarded).length;b.disabled=false;toast(left?"Couldn't add all the points yet. Reload the page and try again.":"Points added");return render()}
     case"g-guess":{const g=gameBy(id),i=b.dataset.i,inp=$("#gq-"+i),t=inp.value.trim();if(!g||!t){inp.focus();return}const st=myG(id),r=(st.r||{})[i]||{},ok=((g.items[i]||{}).h||[]).includes(await gh(id,t));inp.value="";
       return save(()=>savePl(id,{r:{...(st.r||{}),[i]:{ok,n:(r.n||0)+1,t}}}),ok?"Correct!":"Not quite")}
     case"con-tap":{const w=b.dataset.w;if(conSel.includes(w))conSel=conSel.filter(x=>x!==w);else if(conSel.length<4)conSel.push(w);return render()}
