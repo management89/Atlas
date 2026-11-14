@@ -128,6 +128,16 @@
   }
   const db = { doc: docRef, collection: colRef, query };
 
+  /* ---------- phone notifications (Firebase Cloud Messaging), delivered by sw.js ---------- */
+  window.__pushToken = async (vapidKey) => {
+    if (!firebase.messaging || !("serviceWorker" in navigator)) throw { code: "unsupported" };
+    const perm = await Notification.requestPermission();
+    if (perm !== "granted") throw { code: "denied" };
+    const reg = await navigator.serviceWorker.ready;
+    return firebase.messaging().getToken({ vapidKey, serviceWorkerRegistration: reg });
+  };
+  window.__pushOff = async () => { try { await firebase.messaging().deleteToken(); } catch (e) {} };
+
   /* ---------- people ---------- */
   const profCache = {};
   const blank = (id) => ({ id, name: "", avatarUrl: initials("?"), color: "#56606C", email: null, isMe: !!user && id === user.uid, guest: false });
