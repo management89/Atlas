@@ -753,6 +753,33 @@ body.is-site .app{grid-template-columns:minmax(0,1fr)}
 
 .lf-council{border:2px dashed var(--rule);padding:12px 14px;display:flex;flex-direction:column;gap:8px}
 
+.chip.assessment{background:#EFE4F8;color:#6A3A99;border-color:transparent}
+.chip.mine-chip{background:var(--acc);color:#14202E;border-color:transparent}
+.mycal-m{font-size:22px;font-weight:800;min-width:180px}
+.myspace{display:flex;flex-direction:column;gap:28px}
+.me-card{background:var(--surface);padding:0 0 18px;display:flex;flex-direction:column;gap:14px;box-shadow:0 -3px 0 var(--surface),0 3px 0 var(--surface),-3px 0 0 var(--surface),3px 0 0 var(--surface),0 6px 0 var(--acc),-3px 3px 0 var(--acc),3px 3px 0 var(--acc);margin:3px}
+.me-banner{height:110px;background:var(--acc)}
+.me-banner.b-stripes{background:repeating-linear-gradient(45deg,var(--acc) 0 16px,#14202E 16px 32px)}
+.me-banner.b-dots{background-color:var(--acc);background-image:radial-gradient(#14202E 3px,transparent 3.5px);background-size:18px 18px}
+.me-banner.b-checker{background-color:var(--acc);background-image:linear-gradient(45deg,#14202E 25%,transparent 25%,transparent 75%,#14202E 75%),linear-gradient(45deg,#14202E 25%,transparent 25%,transparent 75%,#14202E 75%);background-size:24px 24px;background-position:0 0,12px 12px}
+.me-row{display:flex;gap:16px;align-items:flex-end;padding:0 20px;margin-top:-44px;flex-wrap:wrap}
+.me-pic{width:96px;height:96px;display:grid;place-items:center;background:var(--acc);color:#14202E;font-weight:900;font-size:34px;border:5px solid var(--surface);flex:none}
+.me-row h2{font-size:32px;font-weight:900;letter-spacing:-.025em}
+.me-status{margin:4px 0 0;font-size:16px}
+.myspace .tags{padding:0 20px}
+.tags{display:flex;flex-wrap:wrap;gap:6px}
+.tag{font-size:13px;font-weight:700;padding:3px 9px;background:var(--acc,#F4B400);color:#14202E}
+.tag-act{background:var(--ground);color:var(--ink);outline:1.5px solid var(--rule);outline-offset:-1.5px}
+.my-grid{display:grid;grid-template-columns:minmax(0,1.45fr) minmax(0,1fr);gap:28px 36px;align-items:start}
+.my-col{display:flex;flex-direction:column;gap:30px;min-width:0}
+.rooms{list-style:none;margin:10px 0 0;padding:0}
+.rooms li{display:grid;grid-template-columns:150px minmax(0,1fr);gap:10px;padding:9px 0;border-top:1px solid var(--rule);align-items:baseline}
+.rooms li span{display:flex;flex-direction:column;gap:4px}
+.slot{font-size:14px;font-weight:600}
+#roomDate,#helpQ{border:1.5px solid var(--rule);background:var(--surface);border-radius:3px;padding:6px 9px}
+#helpQ{width:100%;margin-top:10px}
+@media (max-width:900px){.my-grid{grid-template-columns:minmax(0,1fr)}.rooms li{grid-template-columns:minmax(0,1fr)}}
+
 /* history */
 .hday{font-size:17px;font-weight:800;margin-top:14px}
 .hday:first-child{margin-top:0}
@@ -824,18 +851,18 @@ body.is-site .app{grid-template-columns:minmax(0,1fr)}
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
 <script>
-const STUDENT_NAV=[["hub","Bulletin"],["community","Community"],["clubs","Clubs"],["challenges","Challenges"],["stuco","StuCo"]];
+const STUDENT_NAV=[["hub","Bulletin"],["community","Community"],["clubs","Clubs"],["challenges","Challenges"],["stuco","StuCo"],["myspace","MySpace"]];
 const COUNCIL_NAV=[["overview","Overview"],["tasks","Tasks"],["proposals","Proposals"],["attendance","Attendance"],["members","Members"],["history","History"]];
-const ROUTES={home:"home",hub:"hub",events:"hub",calendar:"hub",bulletin:"hub",community:"community",create:"community",collabs:"community",opportunities:"community",life:"community",clubs:"clubs",connect:"clubs",challenges:"challenges",play:"challenges",dares:"challenges",leaderboard:"challenges",stuco:"stuco",suggestions:"stuco",lost:"stuco",voice:"stuco",working:"stuco",overview:"overview",tasks:"tasks",proposals:"proposals",attendance:"attendance",members:"members",history:"history"};
-const STUDENT_ROUTES=["home","hub","events","calendar","bulletin","community","create","collabs","opportunities","life","clubs","connect","challenges","play","dares","leaderboard","stuco","suggestions","lost","voice","working"];
-const COLS=["members","events","tasks","claims","bulletin","suggestions","albums","stories","opps","polls","votes","signups","birthdays","playlists","aviators","predictions","picks","scores","clubs","clubposts","clubdrafts","posts","submissions","replies","challenges","done","lostfound","wins","years","games","gamevotes","plays","gamekeys","roster","proposals","meetings","history"];
+const ROUTES={home:"home",hub:"hub",events:"hub",calendar:"hub",bulletin:"hub",community:"community",create:"community",collabs:"community",opportunities:"community",life:"community",clubs:"clubs",connect:"clubs",challenges:"challenges",play:"challenges",dares:"challenges",leaderboard:"challenges",stuco:"stuco",myspace:"myspace",suggestions:"stuco",lost:"stuco",voice:"stuco",working:"stuco",overview:"overview",tasks:"tasks",proposals:"proposals",attendance:"attendance",members:"members",history:"history"};
+const STUDENT_ROUTES=["home","hub","events","calendar","bulletin","community","create","collabs","opportunities","life","clubs","connect","challenges","play","dares","leaderboard","stuco","suggestions","lost","voice","working","myspace"];
+const COLS=["members","events","tasks","claims","bulletin","suggestions","albums","stories","opps","polls","votes","signups","birthdays","playlists","aviators","predictions","picks","scores","clubs","clubposts","clubdrafts","posts","submissions","replies","challenges","done","lostfound","wins","years","spaces","mine","bookings","games","gamevotes","plays","gamekeys","roster","proposals","meetings","history"];
 const COUNCIL_ONLY=["proposals","meetings","history","roster","gamekeys"];
 const SCHOOL="Avenues The World School";
 const SUG_CATS=["Events","Spirit","Vending machine","Facilities","Food","Clubs","School policy","Report a problem","Other"];
 const SUG_STATUS=[["new","New"],["review","Under review"],["planned","Planned"],["done","Done"],["declined","Not this time"]];
-const S={members:[],events:[],tasks:[],claims:[],bulletin:[],suggestions:[],albums:[],stories:[],opps:[],polls:[],votes:[],signups:[],birthdays:[],playlists:[],aviators:[],predictions:[],picks:[],scores:[],clubs:[],clubposts:[],clubdrafts:[],posts:[],submissions:[],replies:[],challenges:[],done:[],lostfound:[],wins:[],years:[],games:[],gamevotes:[],plays:[],gamekeys:[],roster:[],proposals:[],meetings:[],history:[]};
+const S={members:[],events:[],tasks:[],claims:[],bulletin:[],suggestions:[],albums:[],stories:[],opps:[],polls:[],votes:[],signups:[],birthdays:[],playlists:[],aviators:[],predictions:[],picks:[],scores:[],clubs:[],clubposts:[],clubdrafts:[],posts:[],submissions:[],replies:[],challenges:[],done:[],lostfound:[],wins:[],years:[],spaces:[],mine:[],bookings:[],games:[],gamevotes:[],plays:[],gamekeys:[],roster:[],proposals:[],meetings:[],history:[]};
 let CFG={approved:{},roles:{},school:"",president:null}, cfgExists=false, ADMIN={emails:[]}, adminExists=false;
-const EV_TYPES=[["meeting","StuCo meeting"],["event","School event"],["dance","Dance"],["trip","Trip"],["competition","Competition or tournament"],["fundraiser","Fundraiser"],["deadline","Deadline"]];
+const EV_TYPES=[["meeting","StuCo meeting"],["event","School event"],["dance","Dance"],["trip","Trip"],["competition","Competition or tournament"],["fundraiser","Fundraiser"],["deadline","Deadline"],["assessment","Assessment"]];
 const TASK_STATUS=[["todo","To do"],["doing","In progress"],["done","Done"]];
 const PRI=[["high","High"],["normal","Normal"],["low","Low"]];
 const POST_TAGS=[["Announcement","Announcement"],["Event","Event"],["Reminder","Reminder"],["Opportunity","Opportunity"],["Spirit","Spirit"],["Schedule change","Schedule change"]];
@@ -979,7 +1006,7 @@ function render(){
     else if(d&&isApproved(d)&&!isEditor)banner=`<div class="banner">You're an approved council member. Ask the president to give you Editor access to this page so you can make changes.</div>`;}
   if(preview&&canCouncil())banner=`<div class="banner preview"><span>You're seeing the site the way students see it.</span><button class="btn sm" data-act="mode" data-to="council">Back to council view</button></div>`+banner;
   if(lockedOut())banner+=`<div class="banner">You're signed in as ${esc(me.email||"an account")}, which isn't on the Avenues student list. Sign in with your school email, or ask Student Council to add you.</div>`;
-  const VIEWFN={hub:hubView,events:hubView,calendar:hubView,bulletin:hubView,community:communityHub,create:communityHub,collabs:communityHub,opportunities:communityHub,life:communityHub,clubs:clubsView,connect:clubsView,challenges:challengeHub,play:challengeHub,dares:challengeHub,leaderboard:challengeHub,stuco:stucoPage,suggestions:stucoPage,lost:stucoPage,voice:stucoPage,working:stucoPage,overview,tasks:()=>tasks(),proposals,attendance,members,history:historyView};
+  const VIEWFN={hub:hubView,events:hubView,calendar:hubView,bulletin:hubView,community:communityHub,create:communityHub,collabs:communityHub,opportunities:communityHub,life:communityHub,clubs:clubsView,connect:clubsView,challenges:challengeHub,play:challengeHub,dares:challengeHub,leaderboard:challengeHub,stuco:stucoPage,myspace:mySpaceView,suggestions:stucoPage,lost:stucoPage,voice:stucoPage,working:stucoPage,overview,tasks:()=>tasks(),proposals,attendance,members,history:historyView};
   const ae=document.activeElement,keep=ae&&ae.id&&$("#main").contains(ae)?{id:ae.id,val:ae.value,sel:ae.selectionStart!=null?[ae.selectionStart,ae.selectionEnd]:null}:null;
   $("#main").innerHTML=banner+VIEWFN[shownView()]();
   $("#bandH1").innerHTML=pageHead.title||"";const bc=$("#bandCtx");bc.innerHTML=pageHead.context||"";bc.hidden=!pageHead.context;
@@ -1047,7 +1074,7 @@ function calendar(){
   const m=calCursor,start=addDays(m,-m.getDay());
   const days=[];for(let i=0;i<42;i++)days.push(addDays(start,i));
   const rows=days[35].getMonth()!==m.getMonth()?days.slice(0,35):days;
-  const evs=S.events.slice().sort(byDate);
+  const evs=S.events.filter(evVisible).slice().sort(byDate);
   const dues=S.tasks.filter(t=>t.due&&taskState(t).status!=="done");
   const monthKey=iso(m).slice(0,7);
   const monthEvents=evs.filter(e=>(e.date||"").startsWith(monthKey));
@@ -1148,7 +1175,7 @@ const needAccess=what=>HOSTED?`<button class="btn sm" data-act="signin">Sign in<
 function weekView(){
   const in14=iso(addDays(new Date(),14)),in30=iso(addDays(new Date(),30)),ago7=iso(addDays(new Date(),-7));
   const changes=[...S.events.filter(e=>e.change&&e.date>=TODAY&&e.date<=in30).map(e=>({title:e.title,text:e.change,date:e.date})),...S.bulletin.filter(p=>p.tag==="Schedule change"&&(p.date||"")>=ago7).map(p=>({title:p.title,text:p.body,date:p.date}))];
-  const upcoming=S.events.filter(e=>e.date>=TODAY&&e.date<=in14).sort(byDate);
+  const upcoming=S.events.filter(e=>evVisible(e)&&e.date>=TODAY&&e.date<=in14).sort(byDate);
   const deadlines=[...S.events.filter(e=>e.type==="deadline"&&e.date>=TODAY&&e.date<=in14).map(e=>({title:e.title,date:e.date,href:"#calendar"})),
     ...S.events.filter(e=>e.signup&&e.signup!=="none"&&e.closes&&e.closes>=TODAY&&e.closes<=in14).map(e=>({title:`${label(SIGNUP_KINDS,e.signup)} for ${e.title}`,date:e.closes,href:"#events"})),
     ...S.opps.filter(o=>o.deadline&&o.deadline>=TODAY&&o.deadline<=in14).map(o=>({title:`Apply: ${o.title}`,date:o.deadline,href:"#opportunities"}))].sort((a,b)=>a.date.localeCompare(b.date));
@@ -2069,6 +2096,73 @@ async function downloadDeck(){const it=lfItems();if(!it.length){toast("No items 
   await offer(`Lost and found ${new Date().toLocaleDateString(undefined,{month:"long",year:"numeric"})}.pptx`,data);
 }
 
+/* ---------- MySpace: each student's own page ----------
+   spaces/<uid>   public to members: colors, banner, status, skills, clubs and activities
+   mine/<uid>     private to the student: pinned posts and their own calendar items
+   bookings/<uid> room bookings, readable by members so everyone sees what's taken */
+const ACCENTS=[["#F4B400","Gold"],["#2446C7","Blue"],["#C8373B","Red"],["#1D7A45","Green"],["#8A4FBF","Purple"],["#F08A24","Orange"],["#0F7C8C","Teal"],["#C2407A","Pink"]];
+const BANNERS=[["stripes","Stripes"],["dots","Dots"],["checker","Pixel checker"],["solid","Solid"]];
+let myCursor=firstOfMonth(new Date()),roomDate=TODAY,helpQ="";
+const mySpace=()=>S.spaces.find(d=>d.id===me.id)||{};
+const myMine=()=>S.mine.find(d=>d.id===me.id)||{};
+const myGrade=()=>(RM()&&RM().grade)||myPlay().grade||"";
+const evVisible=e=>!e.grade||e.grade===myGrade()||council();
+const accentOf=sp=>ACCENTS.some(a=>a[0]===sp.accent)?sp.accent:"#F4B400";
+function saveMine(patch){const m=myMine();return db.doc("mine/"+me.id).set({pins:m.pins||{},items:m.items||{},...patch})}
+function myShouts(){const n=gnorm(myName());if(!n||n.length<3)return[];const out=[];
+  S.aviators.forEach(a=>{if(gnorm(a.name)===n)out.push({k:"Aviator of the Week",t:a.why||"",d:a.date||""})});
+  S.wins.forEach(w=>{if(w.who&&gnorm(w.who).includes(n))out.push({k:"Student Council shout-out",t:w.title,d:w.date||""})});
+  S.posts.forEach(p=>{if(p.featured&&p.by===me.id)out.push({k:"Featured on the home page",t:p.title,d:(p.at||"").slice(0,10)})});
+  return out.sort((a,b)=>b.d.localeCompare(a.d))}
+function myCalHTML(){
+  const m=myCursor,start=addDays(m,-m.getDay()),days=[];for(let i=0;i<42;i++)days.push(addDays(start,i));
+  const rows=days[35].getMonth()!==m.getMonth()?days.slice(0,35):days,acc=accentOf(mySpace()),items=Object.entries(myMine().items||{}).map(([k,v])=>({...v,key:k})),evs=S.events.filter(evVisible),g=myGrade();
+  const mine=items.filter(x=>(x.date||"").startsWith(iso(m).slice(0,7))).sort((a,b)=>(a.date+(a.time||"")).localeCompare(b.date+(b.time||"")));
+  return`<div class="calbar"><button class="btn sm" data-act="mycal-prev" aria-label="Previous month">←</button><h3 class="mycal-m">${m.toLocaleDateString(undefined,{month:"long",year:"numeric"})}</h3><button class="btn sm" data-act="mycal-next" aria-label="Next month">→</button><span class="sp"></span><div class="legend"><span class="chip">School</span>${g?`<span class="chip assessment">Grade ${esc(g)}</span>`:""}<span class="chip mine-chip" style="--acc:${acc}">Only you</span></div></div>
+  <div class="calscroll"><div class="cal">${["Sun","Mon","Tue","Wed","Thu","Fri","Sat"].map(d=>`<div class="dow">${d}</div>`).join("")}${rows.map(d=>{const k=iso(d),de=evs.filter(e=>e.date===k),dm=items.filter(x=>x.date===k);
+    return`<button class="day ${d.getMonth()!==m.getMonth()?"out":""} ${k===TODAY?"today":""}" data-act="my-add" data-date="${k}" aria-label="${d.toDateString()}: add your own item"><span class="num">${d.getDate()}</span>${de.map(e=>`<span class="ev chip ${e.grade?"assessment":esc(e.type)}" title="${esc(e.title)}">${esc(e.title)}</span>`).join("")}${dm.map(x=>`<span class="ev chip mine-chip" style="--acc:${acc}" title="${esc(x.title)}">${esc(x.title)}</span>`).join("")}</button>`}).join("")}</div></div>
+  ${mine.length?`<ul class="list">${mine.map(x=>`<li>${datebox(x.date)}<div class="grow"><div class="title">${esc(x.title)}</div><div class="sub">${x.time?esc(fmtTime(x.time)):"All day"}${x.note?", "+esc(x.note):""}</div></div><button class="btn sm ghost" data-act="my-del" data-id="${esc(x.key)}">Remove</button></li>`).join("")}</ul>`:`<p class="sub" style="margin:8px 0 0">Click a day to add something only you can see: a test, practice, a reminder.</p>`}`}
+const allBookings=()=>{const out=[];for(const d of S.bookings)for(const[k,v]of Object.entries(d.items||{}))if(v&&v.room)out.push({...v,key:k,uid:d.id});return out.sort((a,b)=>(a.date+a.start).localeCompare(b.date+b.start))};
+function roomsHTML(){const rooms=CFG.rooms||[],bk=allBookings(),day=bk.filter(b=>b.date===roomDate),mine=bk.filter(b=>b.uid===me.id&&b.date>=TODAY);
+  if(!rooms.length)return isPres?`<p class="sub" style="margin:0">Add the rooms students can book.</p><button class="btn sm" data-act="rooms-edit">Set up rooms</button>`:`<p class="sub" style="margin:0">Room booking isn't set up yet.</p>`;
+  return`<div class="toolbar"><label class="sub" for="roomDate">Availability on</label><input type="date" id="roomDate" value="${roomDate}" min="${TODAY}"><button class="btn sm primary" data-act="room-book">Book a room</button>${isPres?`<button class="btn sm ghost" data-act="rooms-edit">Edit rooms</button>`:""}</div>
+  <ul class="rooms">${rooms.map(r=>{const bs=day.filter(b=>b.room===r);return`<li><b>${esc(r)}</b><span>${bs.length?bs.map(b=>`<span class="slot">${esc(fmtTime(b.start))} to ${esc(fmtTime(b.end))}${council()?`, ${esc(b.name||"Student")}: ${esc(b.purpose||"")} <button class="btn sm ghost" data-act="room-cancel" data-uid="${esc(b.uid)}" data-id="${esc(b.key)}">Cancel</button>`:""}</span>`).join(""):`<span class="sub">Free all day</span>`}</span></li>`}).join("")}</ul>
+  ${mine.length?`<div class="sub" style="margin-top:6px"><b>Your bookings:</b></div><ul class="list">${mine.map(b=>`<li><div class="grow"><div class="title">${esc(b.room)}</div><div class="sub">${esc(longd(b.date))}, ${esc(fmtTime(b.start))} to ${esc(fmtTime(b.end))}${b.purpose?". "+esc(b.purpose):""}</div></div><button class="btn sm ghost" data-act="room-cancel" data-uid="${esc(me.id)}" data-id="${esc(b.key)}">Cancel</button></li>`).join("")}</ul>`:""}`}
+function helpHTML(){const q=helpQ.trim().toLowerCase(),people=S.spaces.filter(d=>d.id!==me.id&&((d.skills||[]).length||(d.activities||[]).length)).filter(d=>!q||[d.name,...(d.skills||[]),...(d.activities||[])].join(" ").toLowerCase().includes(q));
+  return`<input id="helpQ" type="search" placeholder="Search a skill, like video editing or calculus" value="${esc(helpQ)}" aria-label="Search people by skill"><div id="helpList">${helpList(people)}</div>`}
+function helpList(people){return people.length?`<ul class="list">${people.slice(0,12).map(d=>`<li><span class="avatar lg" style="background:${accentOf(d)}">${esc(initials(d.name))}</span><div class="grow"><div class="title">${esc(d.name||"Student")}${d.grade?`<span class="sub">, Grade ${esc(d.grade)}</span>`:""}</div><div class="tags">${(d.skills||[]).map(x=>`<span class="tag">${esc(x)}</span>`).join("")}</div>${(d.activities||[]).length?`<div class="sub">${(d.activities||[]).map(esc).join(", ")}</div>`:""}</div></li>`).join("")}</ul>`:`<p class="sub" style="margin:8px 0 0">${helpQ?"No one has listed that yet.":"When students list their skills, you can find them here."}</p>`}
+function mySpaceView(){
+  if(!me.id||!canJoin()){pageHead={title:"MySpace",context:"Your own corner of Atlas."};return`<div class="banner">${HOSTED?`${needAccess("open your MySpace")}`:"Sign in to see your MySpace."}</div>`}
+  const sp=mySpace(),acc=accentOf(sp),name=myName()||"You",g=myGrade(),pins=myMine().pins||{},own=S.posts.filter(p=>p.by===me.id).sort((a,b)=>(pins[b.id]?1:0)-(pins[a.id]?1:0)||(b.at||"").localeCompare(a.at||"")),pending=allSubs().filter(d=>d.uid===me.id&&d.status==="pending"),shouts=myShouts(),saved=S.opps.filter(o=>savedOpps.has(o.id)),pts=ptsOf(S.scores.find(d=>d.id===me.id));
+  pageHead={title:"MySpace",context:"Your posts, your calendar, your spaces and skills, in one place."};
+  return`<div class="myspace" style="--acc:${acc}">
+  <section class="me-card"><div class="me-banner b-${esc(sp.banner||"stripes")}"></div><div class="me-row"><span class="me-pic">${esc(initials(name))}</span><div class="grow"><h2>${esc(name)}</h2><div class="sub parts">${g?`<span>Grade ${esc(g)}</span>`:""}<span>${pts} points</span>${shouts.length?`<span>${shouts.length} shout-out${shouts.length===1?"":"s"}</span>`:""}</div>${sp.status?`<p class="me-status">${esc(sp.status)}</p>`:""}</div><button class="btn" data-act="my-edit">Customize</button></div>
+  <div class="tags">${(sp.skills||[]).map(x=>`<span class="tag">${esc(x)}</span>`).join("")}${(sp.activities||[]).map(x=>`<span class="tag tag-act">${esc(x)}</span>`).join("")}${!(sp.skills||[]).length&&!(sp.activities||[]).length?`<span class="sub">Add your skills and the clubs or activities you're in, so people know what you can help with.</span>`:""}</div></section>
+  <div class="my-grid"><div class="my-col">
+    <section class="panel"><h2>My calendar</h2>${myCalHTML()}</section>
+    <section class="panel"><h2>My posts <a href="#community">Post something</a></h2>${pending.length?`<p class="sub" style="margin:8px 0 0">${pending.length} waiting for Student Council approval.</p>`:""}${own.length?`<ul class="list">${own.map(p=>`<li><div class="grow"><div class="title">${pins[p.id]?"📌 ":""}${esc(p.title||POST_KIND[p.kind])}</div><div class="sub">${POST_KIND[p.kind]||"Post"}, ${esc(short((p.at||"").slice(0,10)))}</div></div><button class="btn sm" data-act="my-pin" data-id="${p.id}" aria-pressed="${!!pins[p.id]}">${pins[p.id]?"Pinned":"Pin"}</button></li>`).join("")}</ul>`:`<p class="sub" style="margin:8px 0 0">Nothing posted yet. Your approved posts show here, and you can pin your favorites to the top.</p>`}</section>
+    <section class="panel"><h2>Shout-outs</h2>${shouts.length?`<ul class="list">${shouts.map(x=>`<li><span class="chip gold">${esc(x.k)}</span><div class="grow"><div class="title">${esc(x.t)}</div><div class="sub">${x.d?esc(fmt(x.d,{month:"long",day:"numeric",year:"numeric"})):""}</div></div></li>`).join("")}</ul>`:`<p class="sub" style="margin:8px 0 0">When you're named Aviator of the Week, credited on a Student Council win or featured on the home page, it's saved here.</p>`}</section>
+  </div><div class="my-col">
+    <section class="panel"><h2>Book a room</h2>${roomsHTML()}</section>
+    <section class="panel"><h2>Saved opportunities <a href="#opportunities">Find more</a></h2>${saved.length?`<ul class="list">${saved.map(o=>`<li><div class="grow"><div class="title">${esc(o.title)}</div><div class="sub">${o.deadline?(o.deadline<TODAY?"Closed":"Apply by "+esc(short(o.deadline))):"No deadline"}</div></div>${safeUrl(o.link)?`<a class="btn sm" href="${esc(o.link)}" target="_blank" rel="noopener">Apply</a>`:""}<button class="btn sm ghost" data-act="opp-save" data-id="${o.id}">Unsave</button></li>`).join("")}</ul>`:`<p class="sub" style="margin:8px 0 0">Tap Save on any opportunity and it's pinned here.</p>`}</section>
+    <section class="panel"><h2>Who can help</h2>${helpHTML()}</section>
+  </div></div></div>`}
+function mySpaceForm(){const sp=mySpace();
+  openForm({title:"Customize your MySpace",submitLabel:"Save",note:"Your colors, banner, status, skills and activities are visible to other students. Your calendar and pins stay private.",
+    fields:[{id:"accent",label:"Color",type:"select",options:ACCENTS.map(([v,l])=>[v,l])},{id:"banner",label:"Banner",type:"select",options:BANNERS},{id:"status",label:"Status",full:true,placeholder:"e.g. Studying for the SAT, ask me about robotics"},{id:"skills",label:"Skills you can help with",full:true,placeholder:"Comma between each: video editing, calculus, Spanish"},{id:"activities",label:"Clubs, teams and activities",full:true,placeholder:"Comma between each: Robotics, JV soccer, Model UN"}],
+    values:{accent:accentOf(sp),banner:sp.banner||"stripes",status:sp.status||"",skills:(sp.skills||[]).join(", "),activities:(sp.activities||[]).join(", ")},
+    submit:v=>{const list=t=>{const seen=new Set();return String(t||"").split(",").map(x=>x.trim().slice(0,40)).filter(x=>x&&!seen.has(x.toLowerCase())&&seen.add(x.toLowerCase())).slice(0,15)};
+      return save(()=>db.doc("spaces/"+me.id).set({name:myName(),grade:myGrade(),accent:v.accent,banner:v.banner,status:v.status.slice(0,120),skills:list(v.skills),activities:list(v.activities)}),"Saved")}})}
+function myItemForm(date){openForm({title:"Add to your calendar",submitLabel:"Add",note:"Only you can see this.",fields:[{id:"title",label:"What",required:true,full:true,placeholder:"e.g. Chem test, Soccer practice"},{id:"date",label:"Date",type:"date",required:true},{id:"time",label:"Time (optional)",type:"time"},{id:"note",label:"Note",full:true}],values:{date:date||TODAY},
+  submit:v=>save(()=>saveMine({items:{...(myMine().items||{}),[Date.now().toString(36)]:v}}),"Added")})}
+function bookForm(){const rooms=CFG.rooms||[];
+  openForm({title:"Book a room",submitLabel:"Book it",note:"Bookings are visible to other students so nobody double-books. Student Council can cancel a booking if a room isn't available.",
+    fields:[{id:"room",label:"Room",type:"select",full:true,options:rooms.map(r=>[r,r])},{id:"date",label:"Date",type:"date",required:true},{id:"start",label:"From",type:"time",required:true},{id:"end",label:"Until",type:"time",required:true},{id:"purpose",label:"What it's for",required:true,full:true,placeholder:"e.g. Robotics build session"}],values:{room:rooms[0],date:roomDate},
+    submit:v=>{if(v.date<TODAY){$("#merr").textContent="Pick today or a later date.";return false}if(v.end<=v.start){$("#merr").textContent="The end time has to be after the start time.";return false}
+      const clash=allBookings().find(b=>b.room===v.room&&b.date===v.date&&v.start<b.end&&b.start<v.end);if(clash){$("#merr").textContent=`${v.room} is already booked ${fmtTime(clash.start)} to ${fmtTime(clash.end)} that day.`;return false}
+      const cur=(S.bookings.find(d=>d.id===me.id)||{}).items||{};roomDate=v.date;
+      return save(()=>db.doc("bookings/"+me.id).set({items:{...cur,[Date.now().toString(36)]:{...v,name:myName(),grade:myGrade(),at:new Date().toISOString()}}}),`${v.room} booked`)}})}
+
 /* ---------- proposals ---------- */
 function tally(p){const v=p.votes||{},t={aye:0,nay:0,abstain:0};for(const k in v)if(t[v[k]]!=null&&isApproved(S.members.find(m=>m.id===k)))t[v[k]]++;return t}
 function nextNumber(){const yy=String(new Date().getFullYear()).slice(2);const n=S.proposals.filter(p=>(p.number||"").startsWith("P-"+yy)).length+1;return`P-${yy}-${pad(n)}`}
@@ -2265,7 +2359,7 @@ async function saveEditor(){
   else{const ref=col("proposals").doc();ok=await save(()=>ref.set({...data,number:nextNumber(),status:"draft",votes:{},author:me.id||null,created:new Date().toISOString()}),"Proposal saved",["wrote","proposal",data.title]);if(ok)selProposal=ref.id}
   if(ok){editing=null;$("#main").innerHTML="";render()}
 }
-document.addEventListener("input",e=>{if(e.target.id==="oppQ"){oppQ=e.target.value;const l=$("#oppList");if(l)l.innerHTML=oppList();return}if(editing&&e.target.closest&&e.target.closest("#pform")){readEditor();const pv=$("#preview");if(pv)pv.innerHTML=docHTML(editing.d)}});
+document.addEventListener("input",e=>{if(e.target.id==="helpQ"){helpQ=e.target.value;const q=helpQ.trim().toLowerCase(),l=$("#helpList");if(l)l.innerHTML=helpList(S.spaces.filter(d=>d.id!==me.id&&((d.skills||[]).length||(d.activities||[]).length)).filter(d=>!q||[d.name,...(d.skills||[]),...(d.activities||[])].join(" ").toLowerCase().includes(q)));return}if(e.target.id==="oppQ"){oppQ=e.target.value;const l=$("#oppList");if(l)l.innerHTML=oppList();return}if(editing&&e.target.closest&&e.target.closest("#pform")){readEditor();const pv=$("#preview");if(pv)pv.innerHTML=docHTML(editing.d)}});
 
 /* attendance */
 function quorum(m){const r=m.records||{},ms=roster(),total=ms.length;let here=0;for(const x of ms)if(r[x.id]==="present"||r[x.id]==="late")here++;return{here,total,met:total>0&&here>total/2,need:Math.floor(total/2)+1}}
@@ -2399,7 +2493,7 @@ function crud(colName,{title,fields,noun,kind,titleKey="title"}){
 }
 const PROFILE_FIELDS=[{id:"name",label:"Full name",required:true,full:true},{id:"grade",label:"Grade"},{id:"committee",label:"Committee",list:COMMITTEES},{id:"bio",label:"About you",type:"textarea",placeholder:"What you do on council, what you want to get done this year, a fun fact."},{id:"photo",label:"Photo",type:"photo"}];
 const forms={
-  event:()=>crud("events",{title:"Add event",noun:"event",kind:"event",fields:[{id:"title",label:"Title",required:true,full:true},{id:"date",label:"Date",type:"date",required:true},{id:"time",label:"Time",type:"time"},{id:"type",label:"Type",type:"select",options:EV_TYPES},{id:"location",label:"Location"},{id:"details",label:"Details",type:"textarea"},{id:"schedule",label:"Schedule, one line per item",type:"textarea"},{id:"signup",label:"Sign-up",type:"select",options:SIGNUP_KINDS},{id:"capacity",label:"Spots (blank for no limit)",type:"number"},{id:"price",label:"Price and how to pay",placeholder:"e.g. $25, pay at the front desk"},{id:"closes",label:"Sign-up closes",type:"date"},{id:"askTeam",label:"Ask for a team name",type:"checkbox"},{id:"change",label:"Schedule or location change",full:true,placeholder:"e.g. Moved to the gym. Shows as an alert on the Student Hub."}]}),
+  event:()=>crud("events",{title:"Add event",noun:"event",kind:"event",fields:[{id:"title",label:"Title",required:true,full:true},{id:"date",label:"Date",type:"date",required:true},{id:"time",label:"Time",type:"time"},{id:"type",label:"Type",type:"select",options:EV_TYPES},{id:"grade",label:"Who it's for",type:"select",options:[["","Everyone"],...GRADES.map(g=>[g,"Grade "+g+" only"])]},{id:"location",label:"Location"},{id:"details",label:"Details",type:"textarea"},{id:"schedule",label:"Schedule, one line per item",type:"textarea"},{id:"signup",label:"Sign-up",type:"select",options:SIGNUP_KINDS},{id:"capacity",label:"Spots (blank for no limit)",type:"number"},{id:"price",label:"Price and how to pay",placeholder:"e.g. $25, pay at the front desk"},{id:"closes",label:"Sign-up closes",type:"date"},{id:"askTeam",label:"Ask for a team name",type:"checkbox"},{id:"change",label:"Schedule or location change",full:true,placeholder:"e.g. Moved to the gym. Shows as an alert on the Student Hub."}]}),
   club:()=>crud("clubs",{title:"Add a club",noun:"club",kind:"club",titleKey:"name",fields:[{id:"name",label:"Club name",required:true,full:true},{id:"meets",label:"When and where it meets",placeholder:"e.g. Tuesdays at lunch, Room 512"},{id:"leader",label:"Who runs it"},{id:"link",label:"Link (optional)",full:true,placeholder:"https://"},{id:"news",label:"Latest update",full:true,placeholder:"e.g. Bake sale this Friday"},{id:"about",label:"What the club does",type:"textarea"}]}),
   opp:()=>crud("opps",{title:"Post an opportunity",noun:"opportunity",kind:"opportunity",fields:[{id:"title",label:"Title",required:true,full:true},{id:"category",label:"Category",type:"select",options:OPP_GROUPS},{id:"deadline",label:"Deadline",type:"date"},{id:"org",label:"Organization or club",full:true},{id:"who",label:"Who can apply",full:true,placeholder:"e.g. Grades 9 to 12"},{id:"link",label:"Link to apply or learn more",full:true,placeholder:"https://"},{id:"details",label:"Details",type:"textarea"}]}),
   task:()=>crud("tasks",{title:"Assign a task",noun:"task",kind:"task",fields:[{id:"title",label:"Task",required:true,full:true},{id:"assignee",label:"Assign to",type:"select",options:memberOpts("Open — any member can accept")},{id:"due",label:"Due date",type:"date"},{id:"priority",label:"Priority",type:"select",options:PRI},{id:"committee",label:"Committee",list:COMMITTEES},{id:"details",label:"Details",type:"textarea"}]}),
@@ -2470,6 +2564,15 @@ document.addEventListener("click",async e=>{
     case"new-post":return postForm(b.dataset.kind);
     case"new-work":return postForm("create");
     case"win":return openWin(id);
+    case"my-edit":return mySpaceForm();
+    case"my-add":return myItemForm(b.dataset.date);
+    case"my-del":{const it={...(myMine().items||{})};delete it[id];return save(()=>saveMine({items:it}),"Removed")}
+    case"my-pin":{const p={...(myMine().pins||{})};if(p[id])delete p[id];else p[id]=true;return save(()=>saveMine({pins:p}))}
+    case"mycal-prev":myCursor=new Date(myCursor.getFullYear(),myCursor.getMonth()-1,1);return render();
+    case"mycal-next":myCursor=new Date(myCursor.getFullYear(),myCursor.getMonth()+1,1);return render();
+    case"room-book":return bookForm();
+    case"room-cancel":{const d=S.bookings.find(x=>x.id===b.dataset.uid);if(!d)return;const it={...d.items};delete it[id];return save(()=>db.doc("bookings/"+d.id).set({items:it}),"Booking cancelled")}
+    case"rooms-edit":return openForm({title:"Rooms students can book",fields:[{id:"rooms",label:"One room per line",type:"textarea",placeholder:"Room 512\nLibrary study room\nBlack box theater"}],values:{rooms:(CFG.rooms||[]).join("\n")},submit:v=>save(()=>cfgSet(c=>{c.rooms=[...new Set(v.rooms.split("\n").map(x=>x.trim()).filter(Boolean))].slice(0,40)}),"Rooms saved")});
     case"archive-open":return openArchive(+b.dataset.to);
     case"archive-close":return closeArchive();
     case"arc-add":{const y=+b.dataset.to;return openForm({title:"Add a memory to "+yearLabel(y),submitLabel:"Add to the tape",fields:[{id:"title",label:"What happened?",required:true,full:true},{id:"date",label:"When",type:"date"},{id:"who",label:"Who made it happen",full:true},{id:"photos",label:"Photos",type:"photos",multiple:true},{id:"description",label:"The story",type:"textarea"}],values:{date:y+"-10-01",photos:[]},submit:v=>{if(v.date&&schoolYear(v.date)!==y){$("#merr").textContent=`Pick a date between August ${y} and July ${y+1}.`;return false}return save(()=>col("wins").add({...v,date:v.date||y+"-10-01",status:"done",created:new Date().toISOString()}),"Added to "+yearLabel(y),["added a memory to","win",yearLabel(y)])}})}
@@ -2581,7 +2684,8 @@ document.addEventListener("click",async e=>{
     case"sample":b.disabled=true;return loadSample();
   }
 });
-document.addEventListener("change",e=>{if(e.target.id==="rosterOnly"){const on=e.target.checked;save(()=>cfgSet(c=>{c.rosterOnly=on}),on?"Only listed emails can join now":"Anyone who signs in can join now");return}
+document.addEventListener("change",e=>{if(e.target.id==="roomDate"){roomDate=e.target.value||TODAY;render();return}
+  if(e.target.id==="rosterOnly"){const on=e.target.checked;save(()=>cfgSet(c=>{c.rosterOnly=on}),on?"Only listed emails can join now":"Anyone who signs in can join now");return}
   if(e.target.id==="sugFilter"){sugFilter=e.target.value;render()}
   if(e.target.dataset&&e.target.dataset.sug){const t=e.target,x=allSuggestions().find(s=>s.key===t.dataset.key);save(()=>db.doc("suggestions/"+t.dataset.sug).update({items:{[t.dataset.key]:{status:t.value,reviewedBy:me.id,reviewedAt:new Date().toISOString()}}}),"Status updated",["marked as "+label(SUG_STATUS,t.value).toLowerCase()+":","suggestion",x&&x.title])}
   if(e.target.id==="taskFilter"){taskFilter=e.target.value;render()}if(e.target.id==="histFilter"){histFilter=e.target.value;render()}});
