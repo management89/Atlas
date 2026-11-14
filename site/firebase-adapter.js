@@ -23,8 +23,8 @@
   const auth = firebase.auth();
   const fs = firebase.firestore();
   try { fs.settings({ ignoreUndefinedProperties: true, merge: true }); } catch (e) {}
-  // Keep a copy in the browser so reopening the site within a session doesn't re-read everything.
-  try { fs.enablePersistence({ synchronizeTabs: true }).catch(() => {}); } catch (e) {}
+  // No offline persistence: with it, a second visit kept showing the cached copy and never reconnected
+  // (tested 2026-11-14), and Firestore bills a fresh read after 30 minutes away anyway.
 
   let user = null, isOwner = false, isCouncil = false, isLeader = false;
 
