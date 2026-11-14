@@ -55,6 +55,7 @@ service cloud.firestore {
     match /predictions/{id} { allow read: if member(); allow write: if isCouncil(); }
     match /scores/{id}      { allow read: if member(); allow write: if isCouncil(); }
     match /clubposts/{id}   { allow read: if member(); allow write: if isCouncil(); }
+    match /years/{id}       { allow read: if member(); allow write: if isCouncil(); }
     match /wins/{id}        { allow read: if member(); allow write: if isCouncil(); }
     match /posts/{id}       { allow read: if member(); allow write: if isCouncil(); }
     match /challenges/{id}  { allow read: if member(); allow write: if isCouncil(); }
