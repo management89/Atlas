@@ -95,6 +95,10 @@ service cloud.firestore {
     match /gamekeys/{id}    { allow read, write: if isCouncil(); }
     match /gamevotes/{uid}  { allow read: if member(); allow write: if isSelf(uid) || isCouncil(); }
     match /plays/{uid}      { allow read: if isSelf(uid) || isCouncil(); allow write: if isSelf(uid); }
+    // MySpace: the public card, private pins and calendar items, and room bookings everyone can see
+    match /spaces/{uid}     { allow read: if member(); allow write: if isSelf(uid); }
+    match /mine/{uid}       { allow read, write: if isSelf(uid); }
+    match /bookings/{uid}   { allow read: if member(); allow write: if isSelf(uid) || isCouncil(); }
     // Lost and found items show right away; the poster or council marks them returned
     match /lostfound/{uid}   { allow read: if member(); allow write: if isSelf(uid) || isCouncil(); }
     match /profiles/{uid} { allow read: if member(); allow write: if signedIn() && request.auth.uid == uid; }
