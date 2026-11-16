@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://alexanderhuang.codeberg.page/Atlas/sitemap.xml
+Sitemap: https://management89.github.io/Atlas/sitemap.xml
