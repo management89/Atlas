@@ -1,15 +1,16 @@
 # Handoff: Atlas (Avenues Student Hub)
 
-Everything a new session needs to keep building this site. Last updated 2026-11-14.
+Everything a new session needs to keep building this site. Last updated 2026-11-16.
 
 ## What it is
 
 A community site for high school students at Avenues The World School, run by Student Council. The president (Alexander) is the owner and approves everything.
 
-- **Live site:** https://alexanderhuang.codeberg.page/Atlas/
-- **Repo:** https://codeberg.org/alexanderhuang/Atlas (public). `main` holds the source; `pages` holds the built site that Codeberg Pages serves (through a git-pages webhook on the repo).
+- **Live site:** https://management89.github.io/Atlas/ (GitHub Pages, serving the `pages` branch).
+- **Repo:** https://github.com/management89/Atlas (public). `main` holds the source; `pages` holds the built site. Moved from Codeberg on 2026-11-16; the old Codeberg repo is retired.
+- **Approval rule:** a ruleset protects `main` and `pages`. Anyone but the owner needs a pull request with 1 approval from the owner; new pushes cancel the approval; no force-push or deletion. Collaborators: work on a branch and open a PR against `main`, never push to `main` or `pages`.
 - **Backend:** Firebase project `atlas-bae05` (Google sign-in + Cloud Firestore, free plan). President's Firebase user ID: `4Dtjya2UUbdNGnynIZ8zCKRzfdT2`.
-- **Second copy:** a claude.ai artifact, https://claude.ai/artifact/32d7F77SoUYbsDNwsQUiV3. Same source file. It can't enforce the student list, so the Codeberg site is the real one.
+- **Second copy:** a claude.ai artifact, https://claude.ai/artifact/32d7F77SoUYbsDNwsQUiV3. Same source file. It can't enforce the student list, so the GitHub Pages site is the real one.
 
 ## Files
 
@@ -31,20 +32,20 @@ A community site for high school students at Avenues The World School, run by St
 
 ```bash
 # 1. clone if the folder is gone (the old one was a temporary session folder)
-git clone https://codeberg.org/alexanderhuang/Atlas.git && cd Atlas
-git config user.name alexanderhuang && git config user.email alexanderhuang@noreply.codeberg.org
-git remote rename origin codeberg
+git clone https://github.com/management89/Atlas.git && cd Atlas
+# owner: run `gh auth switch -u management89` first (this repo belongs to that GitHub account)
 
 # 2. after editing stuco-hub.html
 python3 tools/build_site.py
 git add -A && git commit -m "…"      # end messages with the Co-Authored-By line
 SPLIT=$(git subtree split --prefix site)
-git push codeberg main "${SPLIT}:refs/heads/pages"   # normal push only; force-push is blocked by the safety check
+git push origin main "${SPLIT}:refs/heads/pages"   # owner only; force-push is blocked by the ruleset
+# collaborators instead: git push origin <branch> && gh pr create --base main
 ```
 
 - In zsh, write `"${SPLIT}:refs/…"` with braces: `"$SPLIT:r…"` breaks because `:r` is a zsh modifier.
-- The live site updates within a minute or two. Check with `curl -s https://alexanderhuang.codeberg.page/Atlas/ | grep -c <new function name>`.
-- The Codeberg token is in the Mac keychain (pushes work without a prompt). Never handle the president's passwords or tokens.
+- The live site updates within a minute or two. Check with `curl -s https://management89.github.io/Atlas/ | grep -c <new function name>`.
+- GitHub sign-in is through `gh` (keychain). Never handle the president's passwords or tokens.
 - Then republish the claude.ai artifact from `stuco-hub.html` (pass `tools/artifact-capabilities.json` only if rules changed).
 
 ## How the app is organized
@@ -69,7 +70,7 @@ Serve a copy locally (`python3 -m http.server`), add a doctype/viewport wrapper,
 
 - President still to do: install `tools/nightly` (then add the Web Push key in MySpace); install `tools/calendar-feed`; publish the latest `firestore.rules`; import the real student list; test that school Google accounts can sign in (unknown; if blocked, the list needs personal emails); set up bookable rooms; install the Google Slides script.
 - Possible next steps: rebrand the visible name from "Avenues Student Hub" to **Atlas**; Google Search Console verification; automatic publishing on merge; move saved opportunities from the browser to the account.
-- A GitHub repo `AlexanderHuangAvenuesPresident/Avenues-Student-Hub` exists but is empty and unused. Collaborator bingst0n should make a Codeberg account and send pull requests to the Codeberg repo.
+- A GitHub repo `AlexanderHuangAvenuesPresident/Avenues-Student-Hub` exists but is empty and unused. Collaborators send pull requests to `management89/Atlas`.
 
 ## How the president works
 

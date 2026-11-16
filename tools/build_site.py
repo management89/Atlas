@@ -2,7 +2,7 @@
 
 stuco-hub.html is the single source for both versions:
   - published as-is, it is the claude.ai artifact;
-  - wrapped by this script with Firebase, it is the website on Codeberg Pages.
+  - wrapped by this script with Firebase, it is the website on GitHub Pages.
 
 Run from the repo root:  python3 tools/build_site.py
 """
@@ -11,7 +11,7 @@ import re
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
-SITE_URL = "https://alexanderhuang.codeberg.page/Atlas/"
+SITE_URL = "https://management89.github.io/Atlas/"
 FIREBASE = "10.12.2"
 TITLE = "Avenues Student Hub"
 DESCRIPTION = ("Events, sign-ups, the weekly bulletin, opportunities and Student Council news "

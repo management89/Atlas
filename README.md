@@ -2,7 +2,7 @@
 
 The student hub and Student Council workspace for Avenues The World School.
 
-**Website:** https://alexanderhuang.codeberg.page/Atlas/
+**Website:** https://management89.github.io/Atlas/
 
 ## What's in it
 
@@ -35,7 +35,7 @@ The rules in `firestore.rules` enforce this on Firebase's servers, not just in t
 | File | What it is |
 |---|---|
 | `stuco-hub.html` | The whole app. The single source for both the claude.ai artifact and the website. |
-| `site/` | The website, served by Codeberg Pages from the `pages` branch. |
+| `site/` | The website, served by GitHub Pages from the `pages` branch. |
 | `site/index.html` | Built from `stuco-hub.html` by `tools/build_site.py`. Don't edit it by hand. |
 | `site/firebase-config.js` | Your Firebase project settings and the president's user ID. |
 | `site/firebase-adapter.js` | Connects the app to Firebase (Google sign-in, database, photos, downloads). |
@@ -46,7 +46,7 @@ The rules in `firestore.rules` enforce this on Firebase's servers, not just in t
 
 1. Go to https://console.firebase.google.com and click **Create a project**. Use a Google account made for Student Council, not a personal one. Google Analytics isn't needed.
 2. **Authentication → Get started → Google → Enable**, then save.
-3. **Authentication → Settings → Authorized domains → Add domain:** `alexanderhuang.codeberg.page`
+3. **Authentication → Settings → Authorized domains → Add domain:** `management89.github.io`
 4. **Firestore Database → Create database.** Pick a location near you and start in **production mode**.
 5. **Project settings (gear icon) → General → Your apps → Web (`</>`)**. Register an app called "Student Hub" (no Firebase Hosting), then copy the `firebaseConfig` values into `site/firebase-config.js`.
 6. Open the site and sign in with Google. A box at the bottom shows your user ID. Paste it into `site/firebase-config.js` (`OWNER_UID`) and into `firestore.rules` (replace `PASTE_PRESIDENT_UID`).
@@ -94,13 +94,14 @@ Set it up once, signed in to the Google account that created the Firebase projec
 ```bash
 python3 tools/build_site.py
 git add -A && git commit -m "Update site"
-git push codeberg main
-git subtree split --prefix site -b pages && git push -f codeberg pages
+git push origin main
+SPLIT=$(git subtree split --prefix site)
+git push origin "${SPLIT}:refs/heads/pages"
 ```
 
 ## Getting listed on Google
 
-1. Go to https://search.google.com/search-console and add the property `https://alexanderhuang.codeberg.page/Atlas/` using the **URL prefix** option.
+1. Go to https://search.google.com/search-console and add the property `https://management89.github.io/Atlas/` using the **URL prefix** option.
 2. To verify, pick **HTML tag**, copy the `<meta name="google-site-verification" ...>` tag, and add it to the head in `tools/build_site.py`. Rebuild, push, then click **Verify**.
 3. Under **Sitemaps**, submit `sitemap.xml`. Then use **URL inspection → Request indexing**.
 
